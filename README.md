@@ -1,4 +1,4 @@
 Stylish
 =======
 
-Stylish for Safary
+Stylish for Safari
