@@ -53,17 +53,24 @@
 		function renderList() {
 			if (DB.size()) {
 				var list = $('#styleslist').empty(),
-					url = safari.application.activeBrowserWindow.activeTab.url;
+					url = safari.application.activeBrowserWindow.activeTab.url,
+					empty = true;
 				for (var i=0;i<DB.size();i++) {
 					var id = DB.key(i);
 						json = $.parseJSON(DB.get(id)),
-						valid = json.sections.filter(function(section) { return filterSection(url,section);});
+						valid = json.sections.filter(function(section){return filterSection(url,section)});
 					
-					if (valid.length) {	
+					if (valid.length) {
+						empty = false;
 						list.append(
-							$('<li/>',{id:id,text:json.name,class:(json.enabled?'on':'off')})
+							$('<li/>',{id:id,text:json.name, 'class':(json.enabled?'on':'off')})
 						);
 					}
+				}
+				if (empty) {
+					list.append(
+						$('<li/>',{text:'No styles for this page...', 'class':'nostyles'})
+					);
 				}
 				$('input[rel="on"]',list).attr('checked','checked');
 			}

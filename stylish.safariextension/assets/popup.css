@@ -51,6 +51,9 @@ body {
 	background-image:url(../images/green.png);
 	color:#000;
 }
+#styleslist li.nostyles {
+	background-image:url(../images/red.png);
+}
 
 
 #find, #manage {
