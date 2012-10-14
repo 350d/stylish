@@ -102,6 +102,7 @@ $(function() {
 		if (JSON.stringify(data).hashCode()!=JSON.stringify(datain).hashCode()) {
 			ping('saveStyle', {"id":id,"json":data});
 		}
+		saved = true;
 		if (!event.altKey) window.location = safari.extension.baseURI + "manage.html";
 	});
 
