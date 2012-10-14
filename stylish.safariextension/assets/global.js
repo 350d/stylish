@@ -83,6 +83,10 @@ function pong(event) {
 				}
 			}
 		break;
+		case 'badge':
+			safari.extension.settings.unreadMessages = m;
+			safari.extension.toolbarItems[0].badge = m;
+		break;
 	}
 }
 
@@ -125,9 +129,5 @@ function getHost(url) {
 	host = a.hostname.replace('www.','');
     return host;
 }
-
-function log(l) {
-	console.log(l);
-};
 
 safari.application.addEventListener("message", pong, true);

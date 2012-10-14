@@ -8,11 +8,16 @@ function injectStyle(css,id) {
 	if (!dl.host) return;
 //	if (w != w.top) return;
 	if (d.getElementById(''+id)) removeStyle(id);
-	var style = d.createElement('style');
+	var regex_timer = /\?timer=(.\d)/gi,
+		regex_rnd = /\?rnd=(.\d)/gi,
+		time = (new Date()).getTime(),
+		timer = function(s,n) {return '?timer='+Math.floor(time/(1000*parseInt(n)))}, // Cahche images for 10 minutes
+		rnd = '?rnd='+Math.random(),
+		style = d.createElement('style');
 	style.setAttribute('id', '' + id);
 	style.style.display = 'none !important';
 	style.setAttribute('type', 'text/css');
-	style.innerText = css.replace(/\r|\n/gm,'');
+	style.innerText = css.replace(/\r|\n/gm,'').replace(regex_timer,timer).replace(regex_rnd,rnd);
 //	d.documentElement.insertBefore(style, null);
 //	d.head ? d.head.appendChild(style) : d.documentElement.appendChild(style);
 	(d.head || d.documentElement).appendChild(style, null);
@@ -24,7 +29,7 @@ function removeStyle(id) {
 	}
 }
 
-function ping(name,data) {
+function ping(name, data) {
     safari.self.tab.dispatchMessage(name, data);
 }
  
@@ -47,11 +52,8 @@ function pong(event) {
 	}
 }
 
-function com(event) {}
-
-function log(event) {
-	console.log(event);
-}
+function log(l) {
+	console.log('injected: ',l);
+};
 
 safari.self.addEventListener("message", pong, false);
-safari.self.addEventListener("command", com, false);

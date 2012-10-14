@@ -1,9 +1,11 @@
 var tpl1 = '<dl><dt>Edit style #{ID}</dt><dd class="editor"><form id="{ID}" class="styleseditor"><p class="stitle"><label for="TITLE{ID}">Title:</label><input type="text" name="title" value="{TITLE}" id="TITLE{ID}"></p></form></dd></dl><p class="controls"><button class="add">Add section</button><button id="save" class="fr">Save Style</button></p>',
-	tpl2 = '<fieldset><legend>Section #{NUM}</legend><p class="code"><label for="CSS{NUM}">CSS:</label><textarea class="code zc-use_tab-true zc-syntax-css zc-profile-css" id="CSS{NUM}">{CODE}</textarea></p>{RULES}<p class="controls section"><button class="remove fr">Delete section</button></p></fieldset>',
-	tpl3 = '<p class="rule last" rel="RULE{NUM}"><label>Applies to:</label><select name="apply"><option value="url">URL</option><option value="pre">URL prefix</option><option value="dom">Domain</option><option value="reg">Regexp</option></select><input name="rule" type="text" value="{RULE}"><button class="remove">Delete</button><button class="add">Add rule</button></p>',
+	tpl2 = '<fieldset><legend>Section #{NUM}</legend><p class="code"><label for="CSS{NUM}">CSS:</label><textarea class="code zc-use_tab-true zc-syntax-css zc-profile-css" id="CSS{NUM}">{CODE}</textarea></p><p class="controls section"><button class="remove fr red">Delete section</button></p>{RULES}</fieldset>',
+	tpl3 = '<p class="rule" rel="RULE{NUM}"><label>Applies to:</label><select name="apply"><option value="url">URL</option><option value="pre">URL prefix</option><option value="dom">Domain</option><option value="reg">Regexp</option></select><input name="rule" type="text" value="{RULE}"><button class="remove red">Delete</button><button class="add">Add rule</button></p>',
 	datain, b,
 	dl = document.location,
-	id = dl.hash.substr(1);
+	id = dl.hash.substr(1),
+	altKey = false,
+	saved = true;
 
 $(function() {
 	navInit();
@@ -12,7 +14,7 @@ $(function() {
 	$('.rule .add').live('click',function(event) {
 		event.preventDefault();
 		var b = $(this), p = b.parent(), n = parseInt($('.rule',p.parent()).length)+1;
-		$('.rule .remove',p.parent()).removeAttr('disabled');
+		$('.rule .remove', p.parent()).removeAttr('disabled');
 		p.after(
 			$(tpl3.replace(/\{RULE\}/g,'').replace(/\{NUM\}/g,n))
 		);
@@ -65,7 +67,7 @@ $(function() {
 		return false;
 	})
 	
-	$('#save').live('click',function() {
+	$('#save').live('click',function(event) {
 		var data = {}, id = $(this).val();
 		data = { "enabled":datain.enabled, "name" : $('.stitle input').val(), "url" : datain.url, "updateUrl" : datain.updateUrl, "sections" : [] };
 
@@ -100,7 +102,7 @@ $(function() {
 		if (JSON.stringify(data).hashCode()!=JSON.stringify(datain).hashCode()) {
 			ping('saveStyle', {"id":id,"json":data});
 		}
-		window.location = safari.extension.baseURI + "manage.html";
+		if (!event.altKey) window.location = safari.extension.baseURI + "manage.html";
 	});
 
 	$('#back').live('click',function(event) {
@@ -163,6 +165,31 @@ $(function() {
 
 		zen_textarea.setup();
 	}
+
+
+$(window)
+	.keydown(function(event) {
+    	if (event.altKey) {
+			altKey = true;
+			$('#save').html('Quick Save');
+		}
+	})
+	.keyup(function(event) {
+	    if (!event.altKey) {
+			altKey = false;
+			$('#save').html('Save Style');
+		}
+	})
+	.keypress(function() {
+		saved = false;
+	});
+
+window.onbeforeunload = function(e) {
+	var msg = 'Some changes are not saved.',
+		e = e || window.event;
+	if (e) e.returnValue = msg;
+	if (!saved) return msg;
+}
 
 function ping(name,data) {
 	safari.self.tab.dispatchMessage(name,data);

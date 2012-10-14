@@ -1,4 +1,4 @@
-version = '1.3.4';
+version = '1.3.5';
 
 DB = {
 	set: function(name, data) {	
@@ -122,3 +122,7 @@ String.prototype.hashCode = function() {
 	}
 	return hash;
 }
+
+function log(l) {
+	console.log(l);
+};

@@ -44,10 +44,10 @@ function renderStylesList(m) {
 		
 		list.append(
 			$('<dt/>',{id:el.id,text:json.name,'class':json.enabled?'enabled':'disabled'}).data('json',json).append(custom?$('<span/>',{'class':'badge',text:'Custom'}):''),
-			$('<dd/>',{rev:el.id,'class':json.enabled?'enabled':'disabled'}).append(
+			$('<dd/>',{rev:el.id,'class':(json.enabled?'enabled':'disabled')+(custom?' custom':'')}).append(
 				domains,
 				$('<button/>',{rel:el.id,text:'Edit',class:'edit'}),
-				$('<button/>',{rel:el.id,text:'Delete',class:'delete'}),
+				$('<button/>',{rel:el.id,text:'Delete',class:'delete red'}),
 				$('<button/>',{rel:el.id,text:json.enabled?'Disable':'Enable',class:'toggle'}),
 				$('<button/>',{rel:el.id,text:'Check Updates',class:'checkupdate'}),
 				$('<button/>',{rel:el.id,text:'Update',class:'update'}).hide()
@@ -82,8 +82,8 @@ function renderStylesList(m) {
 			options = $('#style-options',html).length ? true : false;
 			if (options) {
 				options = '?';
-				$('#style-options li', html).each(function(i,e) {
-					e = $('select, input', e);
+				$('#style-options>li>input, #style-options>li>select, #style-options li li input:checked', html).each(function(i,e) {
+					e = $(e);
 					options += (i?'&':'')+e.attr('name')+'='+e.val().replace('#','%23');
 				});
 			} else {
@@ -93,13 +93,11 @@ function renderStylesList(m) {
 			$.getJSON('http://userstyles.org/styles/chrome/'+id+'.json'+options,function(data) {
 				$('span.busy', dd).attr('class','message');
 				data.enabled = true;
-				delta = Math.abs(JSON.stringify(json).length - JSON.stringify(data).length);
-				if ( delta > 1) {
+				if ( JSON.stringify(json).hashCode()!=JSON.stringify(data).hashCode() ) {
 					b.hide().text('Check Updates').next().show();
 					$('span.message',dd).text('Update available!');
 					$('#'+id).data('newjson',data);
 					busy = false;
-					//ping("saveStyle",{"id":id,"json":json});
 				} else {
 					$('span.message',dd).text('No updates found...');
 					b.delay(4000).fadeIn(function() {
@@ -111,7 +109,6 @@ function renderStylesList(m) {
 			});
 			
 		});
-//		ping('checkUpdate', {"id":id});
 		return false;
 	})
 	
@@ -124,7 +121,6 @@ function renderStylesList(m) {
 	
 	$('.edit').click(function() {
 		var b = $(this), id = b.attr('rel'), el = $('#'+id);
-//		console.log(el.data('json'));
 		window.location = safari.extension.baseURI + "edit.html#" + id;
 	});
 	

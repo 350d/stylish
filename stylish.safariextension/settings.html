@@ -29,9 +29,29 @@
 
 	<section id="content" class="cln">
 		<dl>
-			<dt>Coming soon</dt>
-			<dd>Stay tuned on stylish <a href="http://sobolev.us/stylish">home page</a>.</dd>
+			<dt>Account Login</dt>
+			<dd>
+				<form id="loginform" method="POST" action="http://userstyles.org/login/authenticate_normal" class="hide">
+					<fieldset>
+						<legend></legend>
+						<input id="login" name="login">
+						<input id="password" name="password" type="password">
+						<button>Log in</button>
+					</fieldset>
+				</form>
+				
+				<form id="logoutform" method="GET" action="http://userstyles.org/logout" class="h1ide">
+					<fieldset>
+						<legend></legend>		
+						<button>Log out</button>
+					</fieldset>
+				</form>
+			</dd>
 		</dl>
+		
+		
+
+		
 	</section>
 </body>
 </html>

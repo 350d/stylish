@@ -1,9 +1,9 @@
 button {
-	background:#3b88d8 -webkit-gradient(linear, 0 0, 0 100%, from(#52a8e8), to(#377ad0));
+	background:#196bd1 -webkit-gradient(linear, 0 0, 0 100%, from(rgba(255,255,255,.3)), to(rgba(255,255,255,.1)));
 	border:1px solid;
-	border-color:#4081af #2e69a3 #20559a #2e69a3;
+	border-color:rgba(0,0,0,.1) rgba(0,0,0,.2) rgba(0,0,0,.5) rgba(0,0,0,.2);
+	-webkit-box-shadow:inset 0 1px 0 0 rgba(255,255,255,.3), 0 1px 2px 0 rgba(0,0,0,.3);
 	border-radius:12px;
-	-webkit-box-shadow:inset 0 1px 0 0 #72b9eb, 0 1px 2px 0 #b3b3b3;
 	color:#fff;
 	font-size:10px;
 	font-weight:normal;
@@ -11,37 +11,42 @@ button {
 	width:92px;
 	padding:2px 0 3px;
 	text-align:center;
-	text-shadow:0 -1px 1px #3275bc;
-	-webkit-background-clip:padding-box;
+	text-shadow:0 -1px 1px rgba(0,0,0,.1);
 	margin-right:.5em;
+	-webkit-box-sizing:border-box;
+	/*
+	-webkit-background-clip: padding-box;
+	*/
+	-webkit-transition: all .2s ease-in;
+}
+button.red {
+	background-color:#f96161;
 }
 
 button:hover {
-	background:#2a81d7 -webkit-gradient(linear, 0% 0%, 0% 100%, from(#3e9ee5), to(#206bcb));
-	border-color:#2a73a6 #165899 #07428f #165899;
-	-webkit-box-shadow:inset 0 1px 0 0 #62b1e9;
+	background-image:-webkit-gradient(linear, 0 0, 0 100%, from(rgba(255,255,255,.2)), to(rgba(255,255,255,.05)));
+	-webkit-box-shadow:inset 0 1px 0 0 rgba(255,255,255,.2);
 	cursor:pointer;
-	text-shadow:0 -1px 1px #1d62ab;
+	text-shadow:0 -1px 1px rgba(0,0,0,.2);
 }
 
 button:active {
-	background:#3282d3;
-	border:1px solid #154c8c;
-	border-bottom:1px solid #0e408e;
-	-webkit-box-shadow:inset 0 0 6px 3px #1657b5, 0 1px 0 0 #fff;
-	text-shadow:0 -1px 1px #2361a4;
+	background-image:none;
+	border:1px solid rgba(0,0,0,.5);
+	-webkit-box-shadow:inset 0 0 6px 3px rgba(0,0,0,.2), 0 1px 0 0 #fff;
+	text-shadow:0 -1px 1px rgba(0,0,0,.4);
 }
 
 button[disabled], button.disabled,
 button[disabled]:hover, button.disabled:hover,
 button[disabled]:active, button.disabled:active {
-	background:#999 -webkit-gradient(linear, 0% 0%, 0% 100%, from(#dadada), to(#f3f3f3));
-	border-color:#c5c5c5 #cecece #d9d9d9 #cecece;
-	color:#8f8f8f;
+	background-color:#aaa;
+	color:#999;
 	box-shadow:none;
+	border-color:rgba(0,0,0,.2);
 	-webkit-box-shadow:none;
 	cursor:not-allowed;
-	text-shadow:0 -1px 1px #ebebeb;
+	text-shadow:0 1px 1px rgba(255,255,255,.5);
 }
 
 a {
