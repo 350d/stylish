@@ -31,7 +31,6 @@ $(function() {
 		return false;
 	});
 	renderList();
-	
 });
 
 function validate(event) {

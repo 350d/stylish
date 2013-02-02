@@ -22,6 +22,9 @@ function pong(event) {
 		l;
 		
 	switch(n) {
+		case 'installStyle':
+			installStyle(m);
+		break;
 		case 'saveStyle':
 			saveData(m.id,m.json);
 			pingAll('applyStyle', {"id":m.id});
@@ -54,6 +57,11 @@ function pong(event) {
 					);
 				}
 				ping(event, 'setInstalledStyles', list);
+			}
+		break;
+		case 'checkInstall':
+			if (l = DB.size()) {
+				ping(event, 'checkInstall', DB.check(m));
 			}
 		break;
 		case 'getStyles':
@@ -129,5 +137,25 @@ function getHost(url) {
 	host = a.hostname.replace('www.','');
     return host;
 }
+
+function installStyle(id) {
+		$.get('http://userstyles.org/styles/'+id+'?v='+Math.random(), function(html) {
+			options = $('#style-options',html).length ? true : false;
+			if (options) {
+				options = '?';
+				$('#style-options li', html).each(function(i,e) {
+					e = $('select, input', e);
+					options += (i?'&':'')+e.attr('name')+'='+e.val().replace('#','%23');
+				});
+			} else {
+				options = '';
+			}
+			
+			$.getJSON('http://userstyles.org/styles/chrome/'+id+'.json'+options,function(json) {
+				saveData(id,json);
+				pingAll('applyStyle', {"id":id});
+			});
+		});
+};
 
 safari.application.addEventListener("message", pong, true);

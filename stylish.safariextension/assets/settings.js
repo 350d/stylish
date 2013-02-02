@@ -5,32 +5,44 @@ $(function() {
 	navInit();
 	ping('getInstalledStyles','');
 	
+	toggleLoginForm(false,true);
+	form = $('#logoutform').addClass('busy');
 
 	$.get('http://userstyles.org/login',function(html) {
+		form = $('#logoutform').removeClass('busy');
 		var user = getUserInfo(html);
-		$('#loginform').toggle(!user.loggedin);
-		$('#logoutform').toggle(user.loggedin);
-		log(user);
+		toggleLoginForm(!user.loggedin,user.loggedin);
 	})
 	
 	$('#loginform').submit(function() {
 		var name = $('#login').val(),
-			pass = $('#password').val();	
+			pass = $('#password').val(),
+			form = $(this).addClass('busy');	
 		$.post('http://userstyles.org/login/authenticate_normal',{login:name,password:pass,remember:true},function(html) {
-			log(getUserInfo(html));
+			var user = getUserInfo(html);
+			toggleLoginForm(!user.loggedin,user.loggedin);
+			form.removeClass('busy');
 		})
 		return false;
 	})
 	
 	$('#logoutform').submit(function() {
+		var form = $(this).addClass('busy');
 		$.get('http://userstyles.org/logout',function(html) {
-			log(getUserInfo(html+'password-login'));
+			var user = getUserInfo(html+'password-login');
+			toggleLoginForm(!user.loggedin,user.loggedin);
+			form.removeClass('busy');
 		})
 		return false;
 	})
 
 	
 })
+
+function toggleLoginForm(f1,f2) {
+	$('#loginform').toggle(f1);
+	$('#logoutform').toggle(f2);
+};
 
 function updateStylesInfo(m) {
 	var content = $('#content'), list = $('<dl/>',{id:'stylesstatus'}).appendTo(content);

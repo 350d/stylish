@@ -153,7 +153,7 @@ button.delete {
 	font-size:12px;
 	color:#666;
 }
-#styleslist dd:hover button.delete {
+#styleslist button.delete:hover {
 	opacity:1;
 }
 
@@ -479,4 +479,11 @@ fieldset p.rule:last-of-type .add {
 }
 #popup img.before:hover {
 	opacity:1;
+}
+
+/* SETTINGS */
+
+#loginform.busy, #logoutform.busy {
+	padding-right:20px;
+	background:url(../images/busy2.gif) 100% 50% no-repeat;
 }

@@ -1,4 +1,4 @@
-version = '1.3.6';
+version = '1.3.8';
 
 DB = {
 	set: function(name, data) {	
@@ -18,6 +18,9 @@ DB = {
 	},
 	key: function(i) {
 		return localStorage.key(i);
+	},
+	check: function(name) {
+		return !(localStorage.getItem(name) === null);
 	}
 }
 
@@ -122,6 +125,10 @@ String.prototype.hashCode = function() {
 	}
 	return hash;
 }
+
+function sortData(data,method) {
+	return data.sort(function(a,b) {return b[method]-a[method]});
+};
 
 function log(l) {
 	console.log(l);

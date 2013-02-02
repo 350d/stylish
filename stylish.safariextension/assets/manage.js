@@ -22,7 +22,10 @@ function pong(event) {
 
 function renderStylesList(m) {
 	var content = $('#content'), list = $('<dl/>',{id:'styleslist'}).appendTo(content);
-	$.each(m, function(i,el) {
+	$.each(m,function(i,el){
+		el.enabled = $.parseJSON(el.json).enabled;
+	});
+	$.each(sortData(m,'enabled'), function(i,el) {
 		var json = $.parseJSON(el.json), domains = $('<ul/>',{class:'applies'}), custom = (el.id.length > 12);
 
 			$.each(json.sections,function(i,el) {
