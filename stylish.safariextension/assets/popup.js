@@ -47,7 +47,7 @@ function renderList() {
 				json = $.parseJSON(DB.get(id)),
 				valid = json.sections.filter(function(section){return filterSection(url,section)});
 			
-			if (valid.length) {
+			if (valid.length && !json.hidden) {
 				empty = false;
 				list.append(
 					$('<li/>',{id:id,text:json.name, 'class':(json.enabled?'on':'off')})

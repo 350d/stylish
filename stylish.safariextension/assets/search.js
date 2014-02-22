@@ -21,14 +21,13 @@ $(function() {
 			options = $('#style-options',html).length ? true : false;
 			if (options) {
 				options = '?';
-				$('#style-options li', html).each(function(i,e) {
-					e = $('select, input', e);
-					options += (i?'&':'')+e.attr('name')+'='+e.val().replace('#','%23');
+				$('#style-options>li', html).each(function(i,e) {
+					e = $('select, input:checked', e);
+					options += (i?'&':'')+e.attr('name')+'='+escape(e.val());
 				});
 			} else {
 				options = '';
 			}
-			
 			$.getJSON('http://userstyles.org/styles/chrome/'+id+'.json'+options,function(json) {
 				t.text('Installed');
 				s.removeClass('busy').addClass('installed');
@@ -114,10 +113,14 @@ function renderList(html,host) {
 	if ($('.style-brief',html).length) {
 		html = $('#main-article',html).html();
 		content.append(html);
+		$('.style-brief-text header a').each(function(n,a){
+			var a = $(a), id = a.attr('href').split('/')[2];
+			a.closest('.style-brief').attr('id',id);
+		});
 		$('a',content).each(function(n,a) {
 			var a = $(a);
 			if (a.hasClass('delete-link')) {
-				a.parent().parent().parent().attr('id',a.attr('href').replace('/styles/delete/',''));
+				a.closest('style-brief').attr('id',a.attr('href').replace('/styles/delete/',''));
 			}
 			a.not('.pagination a').replaceWith(a.html());
 		});
@@ -183,8 +186,7 @@ function renderNav() {
 		var a = $(this),
 			href = a.attr('href');
 		a.attr('href', href.split('?')[1].replace('page=','') )
-	})
-	
+	});
 	
 	var nav = $('.pagination'),
 		total = parseInt(nav.children().last().prev().text()),
@@ -221,10 +223,12 @@ function renderSitesList(html) {
 function getSearchResults(host,page) {
 	$('#searchresult').addClass('busy');
 	if (host) {
+		domain = getDomain(host);
 		document.title = 'Usertyles for «'+host+'»';
+//		OLD STYLE
 //		var usss = 'http://userstyles.org/styles/browse/';
 		var usss = 'http://userstyles.org/styles/browse/site?search_terms=';
-		$.get(usss+host+'&per_page=22'+(page?'&page='+page:''), function(html) {
+		$.get(usss+domain+'&per_page=22'+(page?'&page='+page:''), function(html) {
 			$('#searchresult').removeClass('busy');
 			renderList(html,host);
 		})

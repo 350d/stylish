@@ -27,7 +27,7 @@ function pong(event) {
 		break;
 		case 'saveStyle':
 			saveData(m.id,m.json);
-			pingAll('applyStyle', {"id":m.id});
+			if (!m.import) pingAll('applyStyle', {"id":m.id});
 		break;
 		case 'disableStyle':
 			disableStyle(m.id);
@@ -138,24 +138,14 @@ function getHost(url) {
     return host;
 }
 
-function installStyle(id) {
-		$.get('http://userstyles.org/styles/'+id+'?v='+Math.random(), function(html) {
-			options = $('#style-options',html).length ? true : false;
-			if (options) {
-				options = '?';
-				$('#style-options li', html).each(function(i,e) {
-					e = $('select, input', e);
-					options += (i?'&':'')+e.attr('name')+'='+e.val().replace('#','%23');
-				});
-			} else {
-				options = '';
-			}
-			
-			$.getJSON('http://userstyles.org/styles/chrome/'+id+'.json'+options,function(json) {
-				saveData(id,json);
-				pingAll('applyStyle', {"id":id});
+function installStyle(m) {
+//		$.get('http://userstyles.org/styles/'+id+'?v='+Math.random(), function(html) {
+			var styleurl = 'http://userstyles.org/styles/chrome/'+m.id+'.json?'+m.options;
+			$.getJSON(styleurl,function(json) {
+				saveData(m.id,json);
+				pingAll('applyStyle', {"id":m.id});
 			});
-		});
+//		});
 };
 
 safari.application.addEventListener("message", pong, true);

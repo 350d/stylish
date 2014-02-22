@@ -59,7 +59,7 @@ function pong(event) {
 	}
 	switch(type) {
 		case 'stylishInstall':
-			ping('installStyle',metaid);
+			stylishInstallGlobal(metaid);
 		break;
 	}
 }
@@ -68,6 +68,16 @@ document.addEventListener('DOMContentLoaded', function() {
 		userstyles();
 	}
 });
+
+function stylishInstallGlobal(id) {
+	var options = '';
+	if(document.getElementById('style-options')) {
+		var form = document.createElement('form');
+		form.appendChild(document.getElementById('style-options').cloneNode(true));
+		options = serialize(form);
+	}
+	ping('installStyle',{id:id,options:options});
+};
 
 function loadScript(src) {
 	var script = d.createElement('script');
@@ -104,4 +114,72 @@ function getMeta(name) {
 		if (m[i].rel == name) return m[i].href;
 	}
 	return false;
+}
+
+function serialize(form) {
+    'use strict';
+    var i, j, len, jLen, formElement, q = [];
+    function addNameValue(name, value) {
+        q.push(name + '=' + value);
+    }
+    if (!form || !form.nodeName || form.nodeName.toLowerCase() !== 'form') {
+        throw 'You must supply a form element';
+    }
+    for (i = 0, len = form.elements.length; i < len; i++) {
+        formElement = form.elements[i];
+        if (formElement.name === '' || formElement.disabled) {
+            continue;
+        }
+        switch (formElement.nodeName.toLowerCase()) {
+        case 'input':
+            switch (formElement.type) {
+            case 'text':
+            case 'hidden':
+            case 'password':
+            case 'button':
+            case 'submit':
+                addNameValue(formElement.name, formElement.value);
+                break;
+            case 'checkbox':
+            case 'radio':
+                if (formElement.checked) {
+                    addNameValue(formElement.name, formElement.value);
+                }
+                break;
+            case 'file':
+                addNameValue(formElement.name, formElement.value);
+                break;
+            case 'reset':
+                break;
+            }
+            break;
+        case 'textarea':
+            addNameValue(formElement.name, formElement.value);
+            break;
+        case 'select':
+            switch (formElement.type) {
+            case 'select-one':
+                addNameValue(formElement.name, formElement.value);
+                break;
+            case 'select-multiple':
+                for (j = 0, jLen = formElement.options.length; j < jLen; j++) {
+                    if (formElement.options[j].selected) {
+                        addNameValue(formElement.name, formElement.options[j].value);
+                    }
+                }
+                break;
+            }
+            break;
+        case 'button':
+            switch (formElement.type) {
+            case 'reset':
+            case 'submit':
+            case 'button':
+                addNameValue(formElement.name, formElement.value);
+                break;
+            }
+            break;
+        }
+    }
+    return q.join('&');
 }

@@ -1,57 +1,198 @@
-var loggedin = false;
+var loggedin = false,
+	stylishjson = {},
+	busy = false;
+
+ping('getInstalledStyles','');
 
 $(function() {
-	
+
 	navInit();
-	ping('getInstalledStyles','');
 	
 	toggleLoginForm(false,true);
-	form = $('#logoutform').addClass('busy');
+	form = $('#logoutform');
+	$('.loginform').addClass('busy');
 
 	$.get('http://userstyles.org/login',function(html) {
-		form = $('#logoutform').removeClass('busy');
+		form = $('#logoutform');
+		$('.loginform').removeClass('busy');
 		var user = getUserInfo(html);
 		toggleLoginForm(!user.loggedin,user.loggedin);
+		if (user.loggedin) updateInfo(user);
 	})
 	
 	$('#loginform').submit(function() {
 		var name = $('#login').val(),
 			pass = $('#password').val(),
-			form = $(this).addClass('busy');	
+			form = $(this);
+		$('.loginform').addClass('busy');	
 		$.post('http://userstyles.org/login/authenticate_normal',{login:name,password:pass,remember:true},function(html) {
 			var user = getUserInfo(html);
 			toggleLoginForm(!user.loggedin,user.loggedin);
-			form.removeClass('busy');
+			$('.loginform').removeClass('busy');
+			if (user.loggedin) updateInfo(user);
 		})
 		return false;
 	})
 	
 	$('#logoutform').submit(function() {
-		var form = $(this).addClass('busy');
+		var form = $(this);
+		$('.loginform').addClass('busy');
 		$.get('http://userstyles.org/logout',function(html) {
 			var user = getUserInfo(html+'password-login');
 			toggleLoginForm(!user.loggedin,user.loggedin);
-			form.removeClass('busy');
+			$('.loginform').removeClass('busy');
+			updateInfo();
 		})
 		return false;
-	})
-
+	});
 	
-})
+	$('#jsonfile')
+		.change(function(data) {
+			$('.importexportform').addClass('busy');
+			var timestamp = (new Date()).getTime();
+			$('#jsontextarea').val('');
+			$('#timestamp').val(timestamp);
+			$('#importexport').iframer({
+				onComplete: function() {
+					$.getJSON('http://sobolev.us/stylish/export.php',{timestamp:timestamp},function(json) {
+						$.each(json.data, function(n,e) {
+							ping('saveStyle',{"import":true,"id":e.id,"json":$.parseJSON(e.json)});
+						});
+						$('.importexportform').removeClass('busy');
+					});
+				}
+			});
+		})
+		.hover(
+			function() {$('#import').addClass('hover')},
+			function() {$('#import').removeClass('hover')}
+		);
+	
+	$('#export').click(function(data) {
+		$('.importexportform').addClass('busy');
+		$('#jsontextarea').val(JSON.stringify(stylishjson));
+		$('#importexport').iframer().delay(2000).show(function() {
+			$('.importexportform').removeClass('busy')
+		});
+	});
+	
+	var dbkey = 'lTgjafl34YA=|97NKxhx3Xhniq36M1hMxzlFlDJjKI/jceqNtlXQLOw==',
+		client = new Dropbox.Client({
+			key: dbkey,
+			sandbox: true
+		}),
+		dbform = $('#dropbox').show(),
+		dbsync = $('#sync').hide(),
+		dblink = $('#link').show(),
+		dbunlink = $('#unlink').hide();
+
+	client.authDriver(new Dropbox.Drivers.Popup({
+		rememberUser: true,
+	    receiverUrl: 'http://sobolev.us/stylish/oauth.html'
+	}));
+	
+	client.authenticate({interactive: false}, function(error, client) {
+		if (client.isAuthenticated() && !error) {
+			dblink.hide();
+			dbsync.show();
+			dbunlink.show();
+		} else {
+			dblink.show();
+		}
+		return false;
+	});
+		
+	dblink.click(function() {
+		
+		var dropboxstyle = {"hidden":true,"enabled":true,"name":"Dropbox","url":"","updateUrl":"","sections":[{"code":"body {\n\tbackground:red;\n}","domains":[],"regexps":[],"urlPrefixes":["https://www.dropbox.com/1/oauth/authorize?oauth_callback="],"urls":[]}]};
+		
+		ping("saveStyle",{"id":"dropbox","json":dropboxstyle});
+		
+		client.authenticate(function(error, client) {
+			if (!error) {
+				dblink.hide();
+				dbsync.show();
+				dbunlink.show();
+				ping('deleteStyle', {"id":"dropbox"});
+			}
+		});
+		return false;
+	});	
+	dbsync.click(function() {
+		client.readdir("/", function(error, entries) {
+			var i = $.inArray('stylish.json',entries);
+			if (i > -1) {
+				client.readFile('stylish.json', function(error, data) {
+					log(data);
+				});
+			} else {
+				client.writeFile("stylish.json", '{"test":4}', function(error, stat) {
+					log(stat.versionTag);
+				});
+			}
+		});
+		return false;
+	});
+	
+	dbunlink.click(function() {
+		ping('deleteStyle', {"id":"dropbox"});
+		client.signOut(function() {
+			dblink.show();
+			dbsync.hide();
+			dbunlink.hide();
+		});
+		return false;
+	});
+
+});
+
+$.fn.extend({
+	iframer: function(options) {
+		options = $.extend({},{ src:'null.html',id: 'iframer-'+(new Date()).getTime(), onComplete:function(){}},options);
+		var iframe = $('<iframe/>',{seamless:true,name:options.id,id:options.id}).hide().load(function() {
+				iframe.load(function() {
+					//options.onComplete(iframe.contents().find('body').html());
+					form.removeAttr('target');
+					options.onComplete();
+				}).delay(10000).hide(function() {
+					iframe.remove();
+				});
+			}),
+			form = $(this);
+		form.append(iframe).attr('target', options.id).submit();
+		return form;
+	}
+});
+
+
+function updateInfo(user) {
+	log(user);
+	var i = $('.userinfo');
+	if (!user) {
+		i.empty();
+	} else {
+		i.append(
+			'Name: '+user.name
+		);
+		if (user.styles.length) {
+			i.append('<ul/>');
+			$.each(user.styles, function(n,s) {
+				$('ul',i).append('<li>'+s.name+'</li>');
+			})
+		}
+	}
+};
 
 function toggleLoginForm(f1,f2) {
 	$('#loginform').toggle(f1);
 	$('#logoutform').toggle(f2);
 };
 
-function updateStylesInfo(m) {
-	var content = $('#content'), list = $('<dl/>',{id:'stylesstatus'}).appendTo(content);
-	log(m)
+function updateStylesInfo(list) {
+	//var content = $('#content'), list = $('<dl/>',{id:'stylesstatus'}).appendTo(content);
+	//log(m)
+	stylishjson = {"data":list};
 };
-
-function ping(name,data) {
-	//safari.self.tab.dispatchMessage(name,data);
-}
 
 function getUserInfo(html) {
 	var user = {}, trs, tds, style = {};
@@ -62,7 +203,8 @@ function getUserInfo(html) {
 		if (trs = $('.author-styles tbody tr', html)) {
 			user.styles = [];
 			$.each(trs,function(n,tr) {
-				tds = $('td', tr);
+				tds = $('td', tr),
+				style = {};
 				if ($(tds[0]).hasClass('obsolete')) return;
 				style.name = $(tds[0]).text();
 				style.installs = parseFloat($(tds[3]).text().replace(',',''));
@@ -88,4 +230,4 @@ function pong(event) {
 
 function log(e) {console.log(e)};
 
-//safari.self.addEventListener("message", pong, true);
+function ping(name,data) {safari.self.tab.dispatchMessage(name,data)};safari.self.addEventListener("message", pong, true);

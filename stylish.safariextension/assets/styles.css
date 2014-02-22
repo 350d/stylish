@@ -483,7 +483,65 @@ fieldset p.rule:last-of-type .add {
 
 /* SETTINGS */
 
-#loginform.busy, #logoutform.busy {
-	padding-right:20px;
+.loginform fieldset {
+	display:inline-block;
+	padding-right:16px;
+}
+
+#logoutform {
+
+}
+#logoutform fieldset {
+	
+}
+
+.loginform.busy fieldset.controls,
+.importexportform.busy fieldset {
 	background:url(../images/busy2.gif) 100% 50% no-repeat;
 }
+#logoutform fieldset.controls {
+	padding:0 0 0 16px;
+	background-position:0 50%;
+}
+
+#content.settings dd {
+	padding-right:0;
+}
+
+dt sup {
+	font-weight:normal;
+	font-size:.6em;
+	color:#aaa;
+}
+
+.settings dd {
+	padding-top:10px;
+	overflow:hidden;
+	clear:both;
+}
+
+.userinfo {
+	text-align:left;
+	float:none;
+	display:static;
+}
+.userinfo li {
+	font-size:11px;
+	color:#888;
+}
+
+#importexport span {
+	position:relative;
+}
+#importexport span input {
+	opacity:.01;
+	position:absolute;
+	left:0;
+	top:-3px;
+	width:90px;
+	margin:0;
+	padding:0 1px;
+	font-size:18px;
+	line-height:1px;
+}
+::-webkit-file-upload-button { cursor:pointer;}

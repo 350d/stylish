@@ -1,0 +1,50 @@
+<!DOCTYPE HTML>
+<html lang="ru-RU">
+<head>
+	<meta charset="UTF-8">
+	<title>https://github.com/dropbox/dropbox-js</title>
+	<script src="http://cdnjs.cloudflare.com/ajax/libs/dropbox.js/0.9.0/dropbox.min.js"></script>
+	<script type="text/javascript" src="https://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+	<style type="text/css">
+	</style>
+	<script type="text/javascript">
+	
+		$(function() {
+			var dbkey = 'lTgjafl34YA=|97NKxhx3Xhniq36M1hMxzlFlDJjKI/jceqNtlXQLOw==';
+			
+			var client = new Dropbox.Client({
+			    key: dbkey, sandbox: true
+			});
+			
+			client.authDriver(new Dropbox.Drivers.Popup({
+				rememberUser: true,
+			    receiverUrl: "http://sobolev.us/stylish/oauth.html"
+			}));
+			
+			client.authenticate(function(error, client) {
+				if (error) {
+					log(error);
+			  	}
+				client.getUserInfo(function(error, userInfo) {
+				  log(userInfo);
+				});
+				client.readdir("/", function(error, entries) {
+				  log(entries);
+				});
+				client.writeFile("stylish.json", '{"test":4}', function(error, stat) {
+				  log(stat.versionTag);
+				});
+				client.readFile("stylish.json", function(error, data) {
+				  log(data);
+				});
+			});
+		})
+		
+		function log(e){try{console.log(e)}catch(e){}};
+		
+	</script>
+</head>
+<body>
+
+</body>
+</html>

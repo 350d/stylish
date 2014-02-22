@@ -7,6 +7,8 @@
 	<link rel="stylesheet" type="text/css" href="assets/styles.css" media="all">
 	<script type="text/javascript" src="assets/jquery.js"></script>
 	<script type="text/javascript" src="assets/fn.js"></script>
+	<script type="text/javascript" src="assets/md5.js"></script>
+	<script type="text/javascript" src="assets/dropbox.js"></script>
 	<script type="text/javascript" src="assets/settings.js"></script>
 	
 </head>
@@ -29,29 +31,57 @@
 
 	<section id="content" class="cln settings">
 		<dl>
-			<dt>Account Login - β</dt>
-			<dd>
+			<dt>Userstyles.org account <sup>β</sup></dt>
+			<dd class="loginform">
 				<form id="loginform" method="POST" action="http://userstyles.org/login/authenticate_normal" class="hide">
-					<fieldset>
+					<fieldset class="controls">
 						<legend></legend>
-						<input id="login" name="login">
-						<input id="password" name="password" type="password">
+						<input id="login" name="login" placeholder="name">
+						<input id="password" name="password" type="password" placeholder="password">
 						<button>Log in</button>
 					</fieldset>
 				</form>
 				
 				<form id="logoutform" method="GET" action="http://userstyles.org/logout" class="h1ide">
-					<fieldset>
-						<legend></legend>		
-						<button>Log out</button>
+					<fieldset class="fl userinfo">
+					</fieldset>
+					<fieldset class="controls fr">
+						<legend></legend>
+						<button class="red">Log out</button>
 					</fieldset>
 				</form>
 			</dd>
+			
+			<dl>
+				<dt>Import/Export <sup>β</sup></dt>
+				<dd class="importexportform">
+					<form action="http://sobolev.us/stylish/export.php" id="importexport" method="POST" enctype="multipart/form-data">
+						<fieldset>
+							<span>
+								<input type="file" name="jsonfile" id="jsonfile">
+								<input type="hidden" name="timestamp" id="timestamp">
+								<button id="import">Import</button>
+							</span>
+							<button id="export">Export</button>
+							<textarea name="json" class="hide" id="jsontextarea"></textarea>
+						</fieldset>
+					</form>
+				</dd>
+			</dl>
+			
+			<dl class="hide">
+				<dt>Dropbox synchronization <sup>β</sup></dt>
+				<dd>
+					<form action="null.html" id="dropbox" class="hide">
+						<fieldset>
+							<button id="link">Link Dropbox</button>
+							<button id="sync">Sync Data</button>
+							<button id="unlink" class="red fr">Unlink Dropbox</button>
+						</fieldset>
+					</form>
+				</dd>
+			</dl>
 		</dl>
-		
-		
-
-		
-	</section>
+	</section>	
 </body>
 </html>

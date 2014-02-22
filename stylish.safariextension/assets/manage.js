@@ -26,7 +26,10 @@ function renderStylesList(m) {
 		el.enabled = $.parseJSON(el.json).enabled;
 	});
 	$.each(sortData(m,'enabled'), function(i,el) {
+
 		var json = $.parseJSON(el.json), domains = $('<ul/>',{class:'applies'}), custom = (el.id.length > 12);
+
+			if (json.hidden) return;
 
 			$.each(json.sections,function(i,el) {
 				$.each(el.domains,function(i,el) {
