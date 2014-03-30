@@ -81,38 +81,25 @@ function renderStylesList(m) {
 		b.text('Checking...');
 		$('span.busy, span.message',dd).remove();
 		dd.append($('<span/>',{'class':'busy'}));
-		
-		$.get('http://userstyles.org/styles/'+id+'?v='+Math.random(), function(html) {
-			options = $('#style-settings',html).length ? true : false;
-			if (options) {
-				options = '?';
-				$('#style-settings>li>input, #style-settings>li>select, #style-settings li li input:checked', html).each(function(i,e) {
-					e = $(e);
-					options += (i?'&':'')+e.attr('name')+'='+e.val().replace('#','%23');
-				});
+
+		$.getJSON(json.updateUrl,function(data) {
+			$('span.busy', dd).attr('class','message');
+			data.enabled = true;
+			if ( JSON.stringify(json).hashCode()!=JSON.stringify(data).hashCode() ) {
+				b.hide().text('Check Updates').next().show();
+				$('span.message',dd).text('Update available!');
+				$('#'+id).data('newjson',data);
+				busy = false;
 			} else {
-				options = '';
-			}
-			
-			$.getJSON('http://userstyles.org/styles/chrome/'+id+'.json'+options,function(data) {
-				$('span.busy', dd).attr('class','message');
-				data.enabled = true;
-				if ( JSON.stringify(json).hashCode()!=JSON.stringify(data).hashCode() ) {
-					b.hide().text('Check Updates').next().show();
-					$('span.message',dd).text('Update available!');
-					$('#'+id).data('newjson',data);
+				$('span.message',dd).text('No updates found...');
+				b.delay(4000).fadeIn(function() {
 					busy = false;
-				} else {
-					$('span.message',dd).text('No updates found...');
-					b.delay(4000).fadeIn(function() {
-						busy = false;
-						$(this).text('Check Updates');
-						$('span.message',dd).remove();
-					});
-				}
-			});
-			
+					$(this).text('Check Updates');
+					$('span.message',dd).remove();
+				});
+			}
 		});
+
 		return false;
 	})
 	

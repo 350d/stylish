@@ -13,28 +13,13 @@ $(function() {
 	$('.style-install').live('click',function() {
 		var t = $(this).attr('disabled','disabled').text('Downloading'),
 			s = t.parent();
-			id = t.attr('rel'),
-			options = false, author;
+			id = t.attr('rel');
 		s.addClass('busy');
-		
-		$.get('http://userstyles.org/styles/'+id+'?v='+Math.random(), function(html) {
-			options = $('#style-settings',html).length ? true : false;
-			if (options) {
-				options = '?';
-				$('#style-options>li', html).each(function(i,e) {
-					e = $('select, input:checked', e);
-					options += (i?'&':'')+e.attr('name')+'='+escape(e.val());
-				});
-			} else {
-				options = '';
-			}
-			$.getJSON('http://userstyles.org/styles/chrome/'+id+'.json'+options,function(json) {
-				t.text('Installed');
-				s.removeClass('busy').addClass('installed');
-				json.enabled = true;
-				ping("saveStyle",{"id":id,"json":json});
-			});
-			
+		$.getJSON('http://userstyles.org/styles/chrome/'+id+'.json',function(json) {
+			t.text('Installed');
+			s.removeClass('busy').addClass('installed');
+			json.enabled = true;
+			ping("saveStyle",{"id":id,"json":json});
 		});
 	});
 	
