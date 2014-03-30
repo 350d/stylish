@@ -212,7 +212,7 @@ function getSearchResults(host,page) {
 		document.title = 'Usertyles for «'+host+'»';
 //		OLD STYLE
 //		var usss = 'http://userstyles.org/styles/browse/';
-		var usss = 'http://userstyles.org/styles/browse/site?search_terms=';
+		var usss = 'http://userstyles.org/styles/browse/site?sort=popularity&search_terms=';
 		$.get(usss+domain+'&per_page=22'+(page?'&page='+page:''), function(html) {
 			$('#searchresult').removeClass('busy');
 			renderList(html,host);

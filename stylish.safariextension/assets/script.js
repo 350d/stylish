@@ -6,11 +6,10 @@ var d = document,
 
 if (dl.host) {
 	safari.self.addEventListener("message", pong, false);
-	d.addEventListener("stylishInstall", function(event) {
-		pong(event);
-	},false);
 	ping('getStyles',dl.href);
 }
+
+d.addEventListener("stylishInstall", function(event) {pong(event);},false);
 
 function injectStyle(css,id) {
 	if (!dl.host) return;

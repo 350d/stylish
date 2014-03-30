@@ -77,12 +77,14 @@ function renderStylesList(m) {
 	$('.checkupdate').click(function() {
 		if (busy) return;
 		busy = true;
-		var b = $(this), id = b.attr('rel'), json = $('#'+id).data('json'), delta, dd = $('dd[rev="'+id+'"]'), options = false;
+
+		var b = $(this), id = b.attr('rel'), json = $('#'+id).data('json'), delta, dd = $('dd[rev="'+id+'"]'), options = false,
+			updateurl = json.hasOwnProperty('updateUrl')&&json.updateUrl!=null?json.updateUrl:'http://userstyles.org/styles/chrome/'+id+'.json';
+
 		b.text('Checking...');
 		$('span.busy, span.message',dd).remove();
 		dd.append($('<span/>',{'class':'busy'}));
-
-		$.getJSON(json.updateUrl,function(data) {
+		$.getJSON(updateurl,function(data) {
 			$('span.busy', dd).attr('class','message');
 			data.enabled = true;
 			if ( JSON.stringify(json).hashCode()!=JSON.stringify(data).hashCode() ) {
@@ -98,6 +100,7 @@ function renderStylesList(m) {
 					$('span.message',dd).remove();
 				});
 			}
+		}).error(function(data){
 		});
 
 		return false;
