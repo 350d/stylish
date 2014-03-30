@@ -27,7 +27,7 @@ function renderStylesList(m) {
 	});
 	$.each(sortData(m,'enabled'), function(i,el) {
 
-		var json = $.parseJSON(el.json), domains = $('<ul/>',{class:'applies'}), custom = (el.id.length > 12);
+		var json = $.parseJSON(el.json), domains = $('<ul/>',{'class':'applies'}), custom = (el.id.length > 12);
 
 			if (json.hidden) return;
 
@@ -45,18 +45,16 @@ function renderStylesList(m) {
 					domains.append($('<li/>',{text:'Regexp', title:el}));
 				});
 			})
-		
 		domains.html(domains.children().slice(0,8));
-		
 		list.append(
-			$('<dt/>',{id:el.id,text:json.name,'class':json.enabled?'enabled':'disabled'}).data('json',json).append(custom?$('<span/>',{'class':'badge',text:'Custom'}):''),
+			$('<dt/>',{id:el.id,text:json.name,'class':json.enabled?'enabled':'disabled'}).data('json',json).append(custom?$('<span/>',{'class':'badge',text:'Custom'}):$('<a/>',{'class':'badge userstyles',text:'Userstyles.org',href:'http://userstyles.org/styles/'+el.id,target:'_blank',title:'Link to original style'})),
 			$('<dd/>',{rev:el.id,'class':(json.enabled?'enabled':'disabled')+(custom?' custom':'')}).append(
 				domains,
-				$('<button/>',{rel:el.id,text:'Edit',class:'edit'}),
-				$('<button/>',{rel:el.id,text:'Delete',class:'delete red'}),
-				$('<button/>',{rel:el.id,text:json.enabled?'Disable':'Enable',class:'toggle'}),
-				$('<button/>',{rel:el.id,text:'Check Updates',class:'checkupdate'}),
-				$('<button/>',{rel:el.id,text:'Update',class:'update'}).hide()
+				$('<button/>',{rel:el.id,text:'Edit','class':'edit'}),
+				$('<button/>',{rel:el.id,text:'Delete','class':'delete red'}),
+				$('<button/>',{rel:el.id,text:json.enabled?'Disable':'Enable','class':'toggle'}),
+				$('<button/>',{rel:el.id,text:'Check Updates','class':'checkupdate'}),
+				$('<button/>',{rel:el.id,text:'Update','class':'update'}).hide()
 			)
 		);
 	});
@@ -82,13 +80,13 @@ function renderStylesList(m) {
 		var b = $(this), id = b.attr('rel'), json = $('#'+id).data('json'), delta, dd = $('dd[rev="'+id+'"]'), options = false;
 		b.text('Checking...');
 		$('span.busy, span.message',dd).remove();
-		dd.append($('<span/>',{class:'busy'}));
+		dd.append($('<span/>',{'class':'busy'}));
 		
 		$.get('http://userstyles.org/styles/'+id+'?v='+Math.random(), function(html) {
-			options = $('#style-options',html).length ? true : false;
+			options = $('#style-settings',html).length ? true : false;
 			if (options) {
 				options = '?';
-				$('#style-options>li>input, #style-options>li>select, #style-options li li input:checked', html).each(function(i,e) {
+				$('#style-settings>li>input, #style-settings>li>select, #style-settings li li input:checked', html).each(function(i,e) {
 					e = $(e);
 					options += (i?'&':'')+e.attr('name')+'='+e.val().replace('#','%23');
 				});

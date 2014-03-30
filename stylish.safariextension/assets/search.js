@@ -14,11 +14,11 @@ $(function() {
 		var t = $(this).attr('disabled','disabled').text('Downloading'),
 			s = t.parent();
 			id = t.attr('rel'),
-			options = false;
+			options = false, author;
 		s.addClass('busy');
 		
 		$.get('http://userstyles.org/styles/'+id+'?v='+Math.random(), function(html) {
-			options = $('#style-options',html).length ? true : false;
+			options = $('#style-settings',html).length ? true : false;
 			if (options) {
 				options = '?';
 				$('#style-options>li', html).each(function(i,e) {
@@ -126,11 +126,11 @@ function renderList(html,host) {
 		});
 		$('.style-brief-control-links, div[style="clear:left"], .ad').remove();
 		$('.style-brief-stats').each(function() {
-			var d = $(this), s = d.parent().parent(), a = s.attr('average-rating'),
-				r = Math.round(a*2)*10;
+			var d = $(this), s = d.closest('article.style-brief'), a = s.attr('average-rating')*1,
+				r = Math.round(a*1.666666);
 			d.html(
-				$('<span/>',{class:'ratio'}).append(
-					$('<span/>',{title:'Average rating: '+a}).css('width',r+'%')
+				$('<span/>',{class:'ratio',title:'Average rating: '+(r>0?r+'/5':'N/A')}).append(
+					$('<span/>').css('width',r*20+'%')
 				)
 			);
 		});

@@ -1,4 +1,4 @@
-version = '1.4.3';
+version = '1.4.4';
 
 DB = {
 	set: function(name, data) {	

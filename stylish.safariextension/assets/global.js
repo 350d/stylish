@@ -139,13 +139,11 @@ function getHost(url) {
 }
 
 function installStyle(m) {
-//		$.get('http://userstyles.org/styles/'+id+'?v='+Math.random(), function(html) {
-			var styleurl = 'http://userstyles.org/styles/chrome/'+m.id+'.json?'+m.options;
-			$.getJSON(styleurl,function(json) {
-				saveData(m.id,json);
-				pingAll('applyStyle', {"id":m.id});
-			});
-//		});
+	var styleurl = 'http://userstyles.org/styles/chrome/'+m.id+'.json?'+m.options;
+	$.getJSON(styleurl,function(json) {
+		saveData(m.id,json);
+		pingAll('applyStyle', {"id":m.id});
+	});
 };
 
 safari.application.addEventListener("message", pong, true);
