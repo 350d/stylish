@@ -2,12 +2,20 @@ var d = document,
 	dl = d.location,
 	w = window;
 
-ping('getStyles',dl.href);
+//console.log(safari);
+
+if (dl.host) {
+	safari.self.addEventListener("message", pong, false);
+	d.addEventListener("stylishInstall", function(event) {
+		pong(event);
+	},false);
+	ping('getStyles',dl.href);
+}
 
 function injectStyle(css,id) {
 	if (!dl.host) return;
 //	if (w != w.top) return;
-	if (d.getElementById(''+id)) removeStyle(id);
+	removeStyle(id);
 	var regex_timer = /\?timer=(.\d)/gi,
 		regex_rnd = /\?rnd=(.\d)/gi,
 		time = (new Date()).getTime(),
@@ -17,20 +25,17 @@ function injectStyle(css,id) {
 	style.setAttribute('id', '' + id);
 	style.style.display = 'none !important';
 	style.setAttribute('type', 'text/css');
-	style.innerText = css.replace(/\r|\n/gm,'').replace(regex_timer,timer).replace(regex_rnd,rnd);
-//	d.documentElement.insertBefore(style, null);
-//	d.head ? d.head.appendChild(style) : d.documentElement.appendChild(style);
+	css = minify_css(css);
+	style.innerText = css.replace(regex_timer,timer).replace(regex_rnd,rnd);
 	(d.head || d.documentElement).appendChild(style, null);
 }
 
 function removeStyle(id) {
-	if (e = d.getElementById(''+id)) {
-		e.parentNode.removeChild(e);
-	}
+	if (e = d.getElementById(''+id)) e.parentNode.removeChild(e);
 }
 
 function ping(name, data) {
-    safari.self.tab.dispatchMessage(name, data);
+	safari.self.tab.dispatchMessage(name, data);
 }
  
 function pong(event) {
@@ -91,13 +96,6 @@ function loadScript(src) {
 function log(l) {
 	console.log('injected: ',l);
 };
-
-safari.self.addEventListener("message", pong, false);
-
-
-d.addEventListener("stylishInstall", function(event) {
-	pong(event);
-},false)
 
 function userstyles() {
 	var sid = getMeta('stylish-id-url').replace('http://userstyles.org/styles/','');
@@ -186,4 +184,19 @@ function serialize(form) {
 		}
 	}
 	return q.join('&');
+}
+
+function minify_css(css){
+	var patterns = [
+			[ '\\/\\*.*?\\*\/',''],
+			[ '\\s+',' '],
+			[ '\\s([\\[\(\)\{\}\|\:\;\,\\]])','$1'],
+			[ '([\(\[\{\}\|\:\)\;\,])\\s','$1'],
+			[ '(\\s*)([-+~=>*!])(\\s*)','$2'],
+			[ '\\s*\;\\s*(\})\\s*','$1']
+		];
+	patterns.map(function(pattern){
+		css = css.replace(new RegExp(pattern[0],"g"),pattern[1]);
+	});
+	return css.trim();
 }

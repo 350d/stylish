@@ -15,7 +15,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>1.4</string>
 	<key>CFBundleVersion</key>
-	<string>1.4.4</string>
+	<string>1.4.6</string>
 	<key>Chrome</key>
 	<dict>
 		<key>Global Page</key>
@@ -41,7 +41,7 @@
 				<key>Identifier</key>
 				<string>stylish</string>
 				<key>Image</key>
-				<string>icon16-grayscale.png</string>
+				<string>toolbar_icon.png</string>
 				<key>Label</key>
 				<string>Stylish</string>
 				<key>Popover</key>
