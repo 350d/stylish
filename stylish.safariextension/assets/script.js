@@ -2,14 +2,14 @@ var d = document,
 	dl = d.location,
 	w = window;
 
-//console.log(safari);
-
-if (dl.host) {
+if (typeof(safari) == 'object') {
 	safari.self.addEventListener("message", pong, false);
+	d.addEventListener("stylishInstall", function(event) {pong(event);},false);
 	ping('getStyles',dl.href);
+	domready(function(){
+		if (getMeta('stylish-id-url')) userstyles();
+	});
 }
-
-d.addEventListener("stylishInstall", function(event) {pong(event);},false);
 
 function injectStyle(css,id) {
 	if (!dl.host) return;
@@ -69,11 +69,6 @@ function pong(event) {
 		break;
 	}
 }
-d.addEventListener('DOMContentLoaded', function() {
-	if (getMeta('stylish-id-url')) {
-		userstyles();
-	}
-});
 
 function stylishInstallGlobal(id) {
 	var options = '';
@@ -198,4 +193,8 @@ function minify_css(css){
 		css = css.replace(new RegExp(pattern[0],"g"),pattern[1]);
 	});
 	return css.trim();
+}
+
+function domready(f) {
+	/in/.test(document.readyState)?setTimeout('domready('+f+')',9):f();
 }
