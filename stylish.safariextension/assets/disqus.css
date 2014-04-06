@@ -1,0 +1,66 @@
+body {
+	font-family:"Myriad Pro", "MyriadPro", "Helvetica Neue", Helvetica, Arial, Verdana, sans-serif !important;
+}
+#thread-share-menu,
+#thread-votes,
+li.share,
+li.likes,
+#thread-subscribe-button,
+li.tab-community {
+	display: none;
+}
+img {
+	opacity: 0;
+}
+img[fixed] {
+	opacity: 1;
+}
+#footer {
+	opacity: .2;
+}
+#footer:hover {
+	opacity: 1;
+}
+
+.nav-primary a {
+	font-size: 13px !important;
+}
+.nav-secondary {
+	position: absolute !important;
+	left:100px !important;
+	top:24px !important;
+}
+
+.nav-primary a,
+.nav-primary strong,
+.nav-secondary a,
+.nav-secondary strong {
+	font-weight: normal !important;
+}
+
+*[class^="icon-"]::before,
+*[class*=" icon-"]::before {
+	font-size: 15px !important;
+}
+
+.post-content .post-menu .dropdown-menu li a {
+	height:22px;
+	line-height: 24px !important;
+	padding: 0 8px !important;
+	font-weight: normal !important;
+}
+.post-content .post-menu .dropdown-menu li a:hover {
+	color: #fff !important;
+	background: #08c !important;
+}
+
+ul,
+.textarea-wrapper,
+.post-actions,
+.alert {
+	border-width:1px !important;
+}
+
+.post-actions .btn {
+	top:-1px !important;
+}

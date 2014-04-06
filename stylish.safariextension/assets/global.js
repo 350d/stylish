@@ -31,11 +31,11 @@ function pong(event) {
 		break;
 		case 'disableStyle':
 			disableStyle(m.id);
-			pingAll('removeStyle', {"id":m.id});
+			pingAll('disableStyle', {"id":m.id});
 		break;
 		case 'enableStyle':
 			enableStyle(m.id);
-			pingAll('applyStyle', {"id":m.id});
+			pingAll('enableStyle', {"id":m.id});
 		break;
 		case 'updateStyle':
 			updateStyle(m.id, m.json);
@@ -143,7 +143,12 @@ function installStyle(m) {
 	$.getJSON(styleurl,function(json) {
 		saveData(m.id,json);
 		pingAll('applyStyle', {"id":m.id});
+		pingAll('updateListing', {"id":m.id});
 	});
+};
+
+function log(e) {
+	pingAll('log',e);
 };
 
 safari.application.addEventListener("message", pong, true);

@@ -166,7 +166,7 @@ $.fn.extend({
 
 
 function updateInfo(user) {
-	log(user);
+	//log(user);
 	var i = $('.userinfo');
 	if (!user) {
 		i.empty();
@@ -177,7 +177,7 @@ function updateInfo(user) {
 		if (user.styles.length) {
 			i.append('<ul/>');
 			$.each(user.styles, function(n,s) {
-				$('ul',i).append('<li>'+s.name+'</li>');
+				$('ul',i).append('<li>- '+s.name+'</li>');
 			})
 		}
 	}
@@ -195,22 +195,24 @@ function updateStylesInfo(list) {
 };
 
 function getUserInfo(html) {
-	var user = {}, trs, tds, style = {};
+	var user = {}, trs;
 	user.loggedin = (html.indexOf('password-login') < 0);
 	if (user.loggedin) {
-		user.id = $('a[href^="/users/edit_password/"]',html).attr('href').split('/')[3];
+		user.id = $('a[href^="/users/edit_login_methods/"]',html).attr('href').split('/')[3];
 		user.name = unescape($('a[href*="/messages/add/"]',html).attr('href').split('/')[5]);
-		if (trs = $('.author-styles tbody tr', html)) {
+		if (trs = $('.author-styles tbody tr[class!="style-warnings"]', html)) {
 			user.styles = [];
 			$.each(trs,function(n,tr) {
-				tds = $('td', tr),
-				style = {};
-				if ($(tds[0]).hasClass('obsolete')) return;
-				style.name = $(tds[0]).text();
-				style.installs = parseFloat($(tds[3]).text().replace(',',''));
-				style.url = $(tds[0]).find('a').attr('href');
-				style.id = style.url.split('/')[2];
-				user.styles.push(style);
+				var tds = $('td', tr),
+					style = {};
+				if (tds.length) {
+					if ($(tds[0]).hasClass('obsolete')) return;
+					style.name = $('a',tds[0]).text();
+					style.installs = parseFloat($(tds[3]).text().replace(',',''));
+					style.url = $('a',tds[0]).prop('href');
+					style.id = style.url.split('/')[2];
+					user.styles.push(style);
+				}
 			})
 		}
 	}

@@ -17,11 +17,14 @@ function pong(event) {
 		case 'setInstalledStyles':
 			renderStylesList(m);
 		break;
+		case 'updateListing':
+			ping("getInstalledStyles",'');
+		break;
 	}
 }
 
 function renderStylesList(m) {
-	var content = $('#content'), list = $('<dl/>',{id:'styleslist'}).appendTo(content);
+	var content = $('#content').empty(), list = $('<dl/>',{id:'styleslist'}).appendTo(content);
 	$.each(m,function(i,el){
 		el.enabled = $.parseJSON(el.json).enabled;
 	});
@@ -75,34 +78,21 @@ function renderStylesList(m) {
 	})
 	
 	$('.checkupdate').click(function() {
-		if (busy) return;
-		busy = true;
+		//if (busy) return;
+		//busy = true;
 
 		var b = $(this), id = b.attr('rel'), json = $('#'+id).data('json'), delta, dd = $('dd[rev="'+id+'"]'), options = false,
 			updateurl = json.hasOwnProperty('updateUrl')&&json.updateUrl!=null?json.updateUrl:'http://userstyles.org/styles/chrome/'+id+'.json';
 
-		b.text('Checking...');
-		$('span.busy, span.message',dd).remove();
-		dd.append($('<span/>',{'class':'busy'}));
-		$.getJSON(updateurl,function(data) {
-			$('span.busy', dd).attr('class','message');
-			data.enabled = true;
-			if ( JSON.stringify(json).hashCode()!=JSON.stringify(data).hashCode() ) {
-				b.hide().text('Check Updates').next().show();
-				$('span.message',dd).text('Update available!');
-				$('#'+id).data('newjson',data);
-				busy = false;
-			} else {
-				$('span.message',dd).text('No updates found...');
-				b.delay(4000).fadeIn(function() {
-					busy = false;
-					$(this).text('Check Updates');
-					$('span.message',dd).remove();
-				});
-			}
-		}).error(function(data){
+//		log(json.originalMd5);
+//		$.get(json.md5Url,function(md5){log(md5)});
+		
+		checkUpdate(id);
+		
+		$.when(updateAvailable(id)).done(function(result){
+			log(result);
 		});
-
+		
 		return false;
 	})
 	
@@ -110,6 +100,7 @@ function renderStylesList(m) {
 		var b = $(this), id = b.attr('rel'), json = $('#'+id).data('newjson'), dd = $('dd[rev="'+id+'"]');
 		$('span.message',dd).remove();
 		b.text('Updated!').delay(2000).fadeIn(function() {$(this).text('Update').hide().prev().show()});
+		$('#'+id).data('json',json);
 		ping("saveStyle",{"id":id,"json":json});
 	});
 	
@@ -118,6 +109,48 @@ function renderStylesList(m) {
 		window.location = safari.extension.baseURI + "edit.html#" + id;
 	});
 	
+};
+
+function updateAvailable(id) {
+	var json = $.parseJSON(DB.get(id)),
+		d = $.Deferred();
+	$.get(json.md5Url+'?_'+Math.random()*1E17,function(md5) {
+		log(json.originalMd5);
+		log(md5);
+		d.resolve(json.originalMd5 != md5);
+	});
+	return d.promise();
+};
+
+function checkUpdate(id) {
+	var dd = $('dd[rev="'+id+'"]'),
+		b = $('button.checkupdate[rel="'+id+'"]'),
+		json = $.parseJSON(DB.get(id)),
+		updateurl = json.updateUrl || 'http://userstyles.org/styles/chrome/'+id+'.json';
+
+	b.text('Checking...');
+	$('span.busy, span.message',dd).remove();
+	dd.append($('<span/>',{'class':'busy'}));
+	
+	//		log(json.originalMd5);
+	//		$.get(json.md5Url,function(md5){log(md5)});
+
+	$.getJSON(updateurl,function(data) {
+		$('span.busy', dd).attr('class','message');
+		data.enabled = true;
+		if ( JSON.stringify(json).hashCode()!=JSON.stringify(data).hashCode() ) {
+			b.hide().text('Check Updates').next().show();
+			$('span.message',dd).text('Update available!');
+			$('#'+id).data('newjson',data);
+		} else {
+			$('span.message',dd).text('No updates found...');
+			b.delay(4000).fadeIn(function() {
+				$(this).text('Check Updates');
+				$('span.message',dd).remove();
+			});
+		}
+	}).error(function(data){
+	});
 };
 
 function log(l) {

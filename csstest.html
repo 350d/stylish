@@ -1,0 +1,72 @@
+<!DOCTYPE HTML>
+<html lang="ru-RU">
+<head>
+	<meta charset="UTF-8">
+	<title>CSS minify</title>
+	<script type="text/javascript" src="http://ajax.googleapis.com/ajax/libs/jquery/1/jquery.min.js"></script>
+	<script type="text/javascript">
+	
+		//log(new Array(24 + 1).join('\n'));
+		
+		function minify_css(css){
+			var patterns = [
+					[ '\\/\\*.*?\\*\/',''],
+					[ '\\s+',' '],
+					[ ';}','}']
+				];
+			log(css.length);
+			patterns.map(function(pattern){
+				css = css.replace(new RegExp(pattern[0],"g"),pattern[1]);
+				log(css.length);
+			});
+			return css.trim();
+		}
+		
+		$(function() {
+			$('#go').click(function(){
+				var css1 = $('#css1').val(),
+					original_size = css1.length,
+					css2 = minify_css(css1),
+					compressed_size = css2.length;
+					
+				$('#css2').val(css2);
+				document.title = original_size+' > '+compressed_size+' ( '+(original_size/compressed_size).toFixed(3)+' )';
+				return false;
+			})
+
+		})
+		
+		
+		function log(e){console.log(e)}
+		
+	</script>
+	
+</head>
+<body>
+	<textarea id="css1" cols="60" rows="20">
+		p *          				i ,  html       
+		/* remove spaces */
+
+		/* " comments have no escapes \*/
+		body/* keep */ /* space */p,
+		p  [ remove ~= " spaces  " ]  :nth-child( 3 + 2n )  >  b span   i  ,   div::after
+
+		{
+		  /* comment */
+		    background :  url(  "  /* string */  " )  -28px -145px blue  !important ;
+		        content  :  " escapes \" allowed \\" ;
+		      width: calc( 100%  - 3em+  5px ) ;
+		  margin-top : 0;
+		  margin-bottom : 0;
+		  margin-left : 10px;
+		  margin-right : 10px;
+		}
+		.test {border:0;}
+		.test2 {border:1;}
+
+		
+	</textarea>
+	<textarea id="css2" cols="60" rows="20"></textarea>
+	<button id="go">Compress</button>
+</body>
+</html>

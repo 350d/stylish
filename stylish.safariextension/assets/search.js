@@ -19,6 +19,7 @@ $(function() {
 			t.text('Installed');
 			s.removeClass('busy').addClass('installed');
 			json.enabled = true;
+			$.get('https://userstyles.org/styles/install/1?source=stylish-sf').error(function(){});
 			ping("saveStyle",{"id":id,"json":json});
 		});
 	});
@@ -209,7 +210,7 @@ function getSearchResults(host,page) {
 	$('#searchresult').addClass('busy');
 	if (host) {
 		domain = getDomain(host);
-		document.title = 'Usertyles for «'+host+'»';
+		document.title = 'userstyles for «'+host+'»';
 //		OLD STYLE
 //		var usss = 'http://userstyles.org/styles/browse/';
 		var usss = 'http://userstyles.org/styles/browse/site?sort=popularity&search_terms=';
@@ -218,7 +219,7 @@ function getSearchResults(host,page) {
 			renderList(html,host);
 		})
 	} else {
-		document.title = 'Search Usertyles';
+		document.title = 'Search userstyles';
 		var usss = 'http://userstyles.org/categories/site';
 		$.get(usss, function(html) {
 			$('#searchresult').removeClass('busy');

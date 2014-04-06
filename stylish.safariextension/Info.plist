@@ -5,7 +5,7 @@
 	<key>Author</key>
 	<string>Vladimir Sobolev</string>
 	<key>Builder Version</key>
-	<string>9537.74.9</string>
+	<string>9537.75.14</string>
 	<key>CFBundleDisplayName</key>
 	<string>Stylish</string>
 	<key>CFBundleIdentifier</key>
@@ -13,9 +13,9 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.4</string>
+	<string>1.5</string>
 	<key>CFBundleVersion</key>
-	<string>1.4.9</string>
+	<string>1.5.3</string>
 	<key>Chrome</key>
 	<dict>
 		<key>Global Page</key>

@@ -3,13 +3,22 @@ var d = document,
 	w = window;
 
 if (typeof(safari) == 'object') {
+	ping('getStyles',dl.href);
 	safari.self.addEventListener("message", pong, false);
 	d.addEventListener("stylishInstall", function(event) {pong(event);},false);
-	ping('getStyles',dl.href);
-	domready(function(){
+	d.addEventListener('DOMContentLoaded',function(){
 		if (getMeta('stylish-id-url')) userstyles();
 	});
 }
+
+if (dl.href.indexOf('disqus.com/embed/comments')>0) {
+	d.addEventListener('DOMContentLoaded',function(){
+		loadScript(safari.extension.baseURI+'assets/fn.js');
+		loadScript(safari.extension.baseURI+'assets/jquery.js');
+		loadScript(safari.extension.baseURI+'assets/disqus.js');
+		loadStyle(safari.extension.baseURI+'assets/disqus.css');
+	});
+};
 
 function injectStyle(css,id) {
 	if (!dl.host) return;
@@ -51,16 +60,24 @@ function pong(event) {
 			removeStyle(m.id);
 			if (m.id == metaid) sendEvent('styleCanBeInstalled');
 		break;
+		case 'disableStyle':
+			removeStyle(m.id);
+		break;
+		case 'enableStyle':
+			ping('applyStyle',{'id':m.id, 'href':dl.href});
+		break;
 		case 'updateStyle':
+			ping('applyStyle',{'id':m.id, 'href':dl.href});
 		break;
 		case 'checkInstall':
 			sendEvent(m?'styleAlreadyInstalled':'styleCanBeInstalled');
 		break;
 		case 'applyStyle':
 			ping('applyStyle',{'id':m.id, 'href':dl.href});
-			if (metaid && m.id && m.id == metaid) {
-				sendEvent('styleAlreadyInstalled');
-			}
+			if (metaid && m.id && m.id == metaid) sendEvent('styleAlreadyInstalled');
+		break;
+		case 'log':
+			console.log('Global: ',m);
 		break;
 	}
 	switch(type) {
@@ -80,11 +97,19 @@ function stylishInstallGlobal(id) {
 	ping('installStyle',{id:id,options:options});
 };
 
-function loadScript(src) {
+function loadScript(src, async) {
 	var script = d.createElement('script');
 	script.type = 'text/javascript';
 	script.src = src;
+	if (async) script.async = true;
 	d.getElementsByTagName('head')[0].appendChild(script);
+};
+function loadStyle(src) {
+	var link = document.createElement('link');
+	link.type = 'text/css';
+	link.rel = 'stylesheet';
+	link.href = src;
+	document.getElementsByTagName('head')[0].appendChild(link);
 };
 
 function log(l) {
@@ -97,6 +122,7 @@ function userstyles() {
 };
 
 function sendEvent(name) {
+	log('EVENT: '+name);
 	var event = d.createEvent("Events");
 	event.initEvent(name, false, false, d.defaultView, null);
 	d.dispatchEvent(event);
@@ -183,18 +209,10 @@ function serialize(form) {
 function minify_css(css){
 	var patterns = [
 			[ '\\/\\*.*?\\*\/',''],
-			[ '\\s+',' '],
-			[ '\\s([\\[\(\)\{\}\|\:\;\,\\]])','$1'],
-			[ '([\(\[\{\}\|\:\)\;\,])\\s','$1'],
-			[ '(\\s*)([-+~=>*!])(\\s*)','$2'],
-			[ '\\s*\;\\s*(\})\\s*','$1']
+			[ '\\s+',' ']
 		];
 	patterns.map(function(pattern){
 		css = css.replace(new RegExp(pattern[0],"g"),pattern[1]);
 	});
 	return css.trim();
-}
-
-function domready(f) {
-	/in/.test(document.readyState)?setTimeout('domready('+f+')',9):f();
 }

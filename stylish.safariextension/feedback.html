@@ -2,13 +2,13 @@
 <html lang="en-US">
 <head>
 	<meta charset="UTF-8">
-	<title>Styles manager</title>
+	<title>Stylish Feedback</title>
 
 	<link rel="stylesheet" type="text/css" href="assets/styles.css" media="all">
 	<script type="text/javascript" src="assets/jquery.js"></script>
 	<script type="text/javascript" src="assets/fn.js"></script>
-	<script type="text/javascript" src="assets/manage.js"></script>
-
+	<script type="text/javascript" src="assets/feedback.js"></script>
+	
 </head>
 <body class="cln">
 
@@ -20,15 +20,21 @@
 		<nav>
 			<ul>
 				<li><a href="#" rel="search">Search</a></li>
-				<li><a href="#" rel="manage" class="active">Manage</a></li>
+				<li><a href="#" rel="manage">Manage</a></li>
 				<li><a href="#" rel="edit">Edit</a></li>
 				<li><a href="#" rel="settings">Settings</a></li>
-				<li><a href="#" rel="feedback">Feedback</a></li>
+				<li><a href="#" rel="feedback" class="active">Feedback</a></li>
 			</ul>
 		</nav>
 	</section>
 
-	<section id="content" class="cln">
-	</section>
+	<section id="content" class="cln feedback">
+		<dl>
+			<dt>Feedback</dt>
+			<dd>
+				<div id="disqus_thread"></div>			
+			</dd>
+		</dl>
+	</section>	
 </body>
 </html>

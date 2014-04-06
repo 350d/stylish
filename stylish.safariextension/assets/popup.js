@@ -24,8 +24,7 @@ $(function() {
 		var li = $(this),
 			id = li.attr('id');
 		var json = $.parseJSON(DB.get(id));
-		json.enabled = !json.enabled;
-		json.enabled ? pingAll("applyStyle",{"id":id}) : pingAll("removeStyle",{"id":id})
+		pingAll((json.enabled = !json.enabled)?"enableStyle":"disableStyle",{"id":id})
 		DB.set(id,JSON.stringify(json));
 		renderList();
 		return false;
