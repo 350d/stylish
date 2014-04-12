@@ -9,7 +9,12 @@ stylish.safariextension/test.html
 stylish-original/
 
 stylish.zip
+stylish.safariextz
 
 *.psd
 
+dropbox
 dropbox/
+dropbox.html
+csstest.html
+.gitignore
