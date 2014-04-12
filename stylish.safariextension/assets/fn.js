@@ -1,4 +1,4 @@
-version = '1.5.3';
+version = getVersion();
 
 DB = {
 	set: function(name, data) {	
@@ -23,6 +23,11 @@ DB = {
 		return !(localStorage.getItem(name) === null);
 	}
 }
+
+function getVersion() {
+	var keys = (new DOMParser()).parseFromString(ajax('info.plist',false).replace(/\r|\n|\t/gm,''),"text/xml").getElementsByTagName('key');
+	for (var i=0; i<keys.length; i++) if (keys[i].textContent == 'CFBundleVersion') return keys[i].nextSibling.textContent;
+};
 
 function filterSection(href, section) {
 	if (!section.urls.length && !section.urlPrefixes.length && !section.domains.length && !section.regexps.length) return true;
@@ -139,6 +144,33 @@ function loadStyle(src) {
 	script.rel = 'stylesheet';
 	script.href = src;
 	document.getElementsByTagName('head')[0].appendChild(script);
+};
+
+function ajax(url, async, callback, json) {
+	var xmlhttp = new XMLHttpRequest();
+	xmlhttp.open("GET", url, async);
+	xmlhttp.send(null);
+	if (async) {
+		xmlhttp.onreadystatechange = function() {
+			if ( callback && xmlhttp.readyState == 4 && xmlhttp.status == 200) {
+				callback(json?JSON.parse(xmlhttp.responseText):xmlhttp.responseText);
+			}
+		}
+	} else {
+		return xmlhttp.responseText;
+	}
+}
+
+function getJSON(url, callback) {
+	ajax(url,true, callback, true);
+};
+
+function get(url, callback) {
+	ajax(url,true, callback);
+};
+
+function g(id) {
+	return document.getElementById(id);
 };
 
 function log(l) {

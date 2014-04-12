@@ -141,7 +141,6 @@ h1, h2, h3, h4, h5 ,h6 {
 
 button.delete {
 	float:right;
-	opacity:.4;
 }
 #styleslist dd {
 	padding-right:0;
@@ -159,9 +158,6 @@ button.delete {
 #styleslist dd span.message {
 	font-size:12px;
 	color:#666;
-}
-#styleslist button.delete:hover {
-	opacity:1;
 }
 
 /* badges */
@@ -579,4 +575,10 @@ dt sup {
 }
 #disqus_thread iframe {
 	min-height:240px;
+}
+
+/* ANIMATION */
+
+.ani {
+	transition:all 200ms ease-in-out;
 }

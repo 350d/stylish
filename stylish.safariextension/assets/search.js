@@ -15,7 +15,7 @@ $(function() {
 			s = t.parent();
 			id = t.attr('rel');
 		s.addClass('busy');
-		$.getJSON('http://userstyles.org/styles/chrome/'+id+'.json',function(json) {
+		$.getJSON('https://userstyles.org/styles/chrome/'+id+'.json',function(json) {
 			t.text('Installed');
 			s.removeClass('busy').addClass('installed');
 			json.enabled = true;
@@ -212,15 +212,15 @@ function getSearchResults(host,page) {
 		domain = getDomain(host);
 		document.title = 'userstyles for «'+host+'»';
 //		OLD STYLE
-//		var usss = 'http://userstyles.org/styles/browse/';
-		var usss = 'http://userstyles.org/styles/browse/site?sort=popularity&search_terms=';
+//		var usss = 'https://userstyles.org/styles/browse/';
+		var usss = 'https://userstyles.org/styles/browse/site?sort=popularity&search_terms=';
 		$.get(usss+domain+'&per_page=22'+(page?'&page='+page:''), function(html) {
 			$('#searchresult').removeClass('busy');
 			renderList(html,host);
 		})
 	} else {
 		document.title = 'Search userstyles';
-		var usss = 'http://userstyles.org/categories/site';
+		var usss = 'https://userstyles.org/categories/site';
 		$.get(usss, function(html) {
 			$('#searchresult').removeClass('busy');
 			renderSitesList(html);

@@ -12,7 +12,7 @@ $(function() {
 	form = $('#logoutform');
 	$('.loginform').addClass('busy');
 
-	$.get('http://userstyles.org/login',function(html) {
+	$.get('https://userstyles.org/login',function(html) {
 		form = $('#logoutform');
 		$('.loginform').removeClass('busy');
 		var user = getUserInfo(html);
@@ -25,7 +25,7 @@ $(function() {
 			pass = $('#password').val(),
 			form = $(this);
 		$('.loginform').addClass('busy');	
-		$.post('http://userstyles.org/login/authenticate_normal',{login:name,password:pass,remember:true},function(html) {
+		$.post('https://userstyles.org/login/authenticate_normal',{login:name,password:pass,remember:true},function(html) {
 			var user = getUserInfo(html);
 			toggleLoginForm(!user.loggedin,user.loggedin);
 			$('.loginform').removeClass('busy');
@@ -37,7 +37,7 @@ $(function() {
 	$('#logoutform').submit(function() {
 		var form = $(this);
 		$('.loginform').addClass('busy');
-		$.get('http://userstyles.org/logout',function(html) {
+		$.get('https://userstyles.org/logout',function(html) {
 			var user = getUserInfo(html+'password-login');
 			toggleLoginForm(!user.loggedin,user.loggedin);
 			$('.loginform').removeClass('busy');

@@ -4,10 +4,14 @@
 html {
 	height:100%;
 	overflow:hidden;
+	background:url(../images/red.png) -100px 0 no-repeat;
 }
 body {
 	padding:0 4px;
 	height:100%;
+	-webkit-user-select: none;
+	user-select: none;
+	background:url(../images/green.png) -100px 0 no-repeat;
 }
 
 #popover {
@@ -42,17 +46,23 @@ body {
 	line-height:20px;
 	height:20px;
 	padding:0 8px 0 16px;
-	background:url(../images/grey.png) 0 0 no-repeat;
+	background: 0 0 no-repeat;
 	color:#666;
 	cursor:default;
 }
-
+#styleslist li.off {
+	background-image:url(../images/grey.png);
+}
 #styleslist li.on {
 	background-image:url(../images/green.png);
 	color:#000;
 }
 #styleslist li.nostyles {
 	background-image:url(../images/red.png);
+}
+#styleslist li:hover {
+	color:#000;
+	cursor:pointer;
 }
 
 
@@ -64,4 +74,10 @@ body {
 }
 #manage {
 	float:right;
+}
+
+/* ANIMATION */
+
+.ani {
+	transition:all 200ms ease-in-out;
 }

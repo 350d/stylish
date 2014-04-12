@@ -1,13 +1,6 @@
-var usss = 'http://userstyles.org/styles/browse/', href,
+var usss = 'https://userstyles.org/styles/browse/', href,
 	w = window,
 	page;
-	
-$.ajaxSetup({
-    timeout: 10000,
-    error: function(event, request, settings) {
-		console.error('Ajax: ' + request);
-	}
-});
 
 function ping(event, name, data) {
 	if ( page = event.target.page) {
@@ -67,7 +60,7 @@ function pong(event) {
 		case 'getStyles':
 			if (l = DB.size()) {
 				for (var i=0;i<l;i++) {
-					var json = $.parseJSON(DB.get(DB.key(i))),
+					var json = JSON.parse(DB.get(DB.key(i))),
 						id = DB.key(i),
 						filter, css;
 					if (json.enabled) {
@@ -81,7 +74,7 @@ function pong(event) {
 			}
 		break;
 		case 'applyStyle':
-			var json = $.parseJSON(DB.get(m.id)),
+			var json = JSON.parse(DB.get(m.id)),
 				filter, css;
 			if (json.enabled) {
 				if (filter = json.sections.filter(function(section) { return filterSection(m.href,section)})) {
@@ -99,13 +92,13 @@ function pong(event) {
 }
 
 function disableStyle(id) {
-	var json = $.parseJSON(DB.get(id));
+	var json = JSON.parse(DB.get(id));
 	json.enabled = false;
 	DB.set(id,JSON.stringify(json));
 }
 
 function enableStyle(id) {
-	var json = $.parseJSON(DB.get(id));
+	var json = JSON.parse(DB.get(id));
 	json.enabled = true;
 	DB.set(id,JSON.stringify(json));	
 }
@@ -139,8 +132,8 @@ function getHost(url) {
 }
 
 function installStyle(m) {
-	var styleurl = 'http://userstyles.org/styles/chrome/'+m.id+'.json?'+m.options;
-	$.getJSON(styleurl,function(json) {
+	var styleurl = 'https://userstyles.org/styles/chrome/'+m.id+'.json?'+m.options;
+	getJSON(styleurl,function(json) {
 		saveData(m.id,json);
 		pingAll('applyStyle', {"id":m.id});
 		pingAll('updateListing', {"id":m.id});

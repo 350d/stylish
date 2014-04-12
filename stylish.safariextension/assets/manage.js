@@ -50,7 +50,7 @@ function renderStylesList(m) {
 			})
 		domains.html(domains.children().slice(0,8));
 		list.append(
-			$('<dt/>',{id:el.id,text:json.name,'class':json.enabled?'enabled':'disabled'}).data('json',json).append(custom?$('<span/>',{'class':'badge',text:'Custom'}):$('<a/>',{'class':'badge userstyles',text:'Userstyles.org',href:'http://userstyles.org/styles/'+el.id,target:'_blank',title:'Link to original style'})),
+			$('<dt/>',{id:el.id,text:json.name,'class':json.enabled?'enabled':'disabled'}).data('json',json).append(custom?$('<span/>',{'class':'badge',text:'Custom'}):$('<a/>',{'class':'badge userstyles ani',text:'Userstyles.org',href:'https://userstyles.org/styles/'+el.id,target:'_blank',title:'Link to original style'})),
 			$('<dd/>',{rev:el.id,'class':(json.enabled?'enabled':'disabled')+(custom?' custom':'')}).append(
 				domains,
 				$('<button/>',{rel:el.id,text:'Edit','class':'edit'}),
@@ -82,7 +82,7 @@ function renderStylesList(m) {
 		//busy = true;
 
 		var b = $(this), id = b.attr('rel'), json = $('#'+id).data('json'), delta, dd = $('dd[rev="'+id+'"]'), options = false,
-			updateurl = json.hasOwnProperty('updateUrl')&&json.updateUrl!=null?json.updateUrl:'http://userstyles.org/styles/chrome/'+id+'.json';
+			updateurl = json.hasOwnProperty('updateUrl')&&json.updateUrl!=null?json.updateUrl:'https://userstyles.org/styles/chrome/'+id+'.json';
 
 //		log(json.originalMd5);
 //		$.get(json.md5Url,function(md5){log(md5)});
@@ -126,7 +126,7 @@ function checkUpdate(id) {
 	var dd = $('dd[rev="'+id+'"]'),
 		b = $('button.checkupdate[rel="'+id+'"]'),
 		json = $.parseJSON(DB.get(id)),
-		updateurl = json.updateUrl || 'http://userstyles.org/styles/chrome/'+id+'.json';
+		updateurl = json.updateUrl || 'https://userstyles.org/styles/chrome/'+id+'.json';
 
 	b.text('Checking...');
 	$('span.busy, span.message',dd).remove();

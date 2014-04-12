@@ -51,7 +51,7 @@ function pong(event) {
 		t = event.target,
 		m = event.message,
 		type = event.type,
-		metaid = getMeta('stylish-id-url')?getMeta('stylish-id-url').replace('http://userstyles.org/styles/',''):false;
+		metaid = getMeta('stylish-id-url')?getMeta('stylish-id-url').replace('https://userstyles.org/styles/',''):false;
 	switch(n) {
 		case 'injectStyle':
 			if (m.location == dl.href) injectStyle(m.css,m.id);
@@ -117,7 +117,7 @@ function log(l) {
 };
 
 function userstyles() {
-	var sid = getMeta('stylish-id-url').replace('http://userstyles.org/styles/','');
+	var sid = getMeta('stylish-id-url').replace('https://userstyles.org/styles/','');
 	ping('checkInstall',sid);
 };
 

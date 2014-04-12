@@ -15,7 +15,7 @@
 	<key>CFBundleShortVersionString</key>
 	<string>1.5</string>
 	<key>CFBundleVersion</key>
-	<string>1.5.3</string>
+	<string>1.5.7</string>
 	<key>Chrome</key>
 	<dict>
 		<key>Global Page</key>
@@ -76,7 +76,7 @@
 		</dict>
 	</dict>
 	<key>Update Manifest URL</key>
-	<string>http://sobolev.us/stylish/update.plist</string>
+	<string>http://sobolev.us/download/stylish/update.plist</string>
 	<key>Website</key>
 	<string>http://sobolev.us/stylish</string>
 </dict>

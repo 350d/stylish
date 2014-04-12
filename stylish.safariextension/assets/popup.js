@@ -1,6 +1,26 @@
 var DB = safari.extension.globalPage.contentWindow.DB;
-$(function() {
-	$('#find').live('click',function(event) {
+
+document.addEventListener('click', events, false);
+document.addEventListener('DOMContentLoaded',f);
+
+function f() {
+	renderList();
+};
+
+function events(event) {
+	var t = event.target || event.srcElement,
+		c = t.className;
+	if (c.match(/style/)) {
+		event.preventDefault();
+		var id = t.id,
+			json = JSON.parse(DB.get(id));
+		pingAll((json.enabled = !json.enabled)?"enableStyle":"disableStyle",{"id":id})
+		DB.set(id,JSON.stringify(json));
+		t.className = 'style ani ' + (c.match(/off/)?'on':'off');
+		//renderList();
+		return false;
+	}
+	if (t.id == 'find') {
 		event.preventDefault();
 		var url = safari.application.activeBrowserWindow.activeTab.url,
 			host = getHost(url),
@@ -9,28 +29,17 @@ $(function() {
 			newTab = safari.application.activeBrowserWindow.openTab();
 			newTab.url = safari.extension.baseURI + "search.html#"+host;
 		}
+		safari.self.hide();
 		return false;
-	});
-
-	$('#manage').live('click',function(event) {
+	}
+	if (t.id == 'manage') {
 		event.preventDefault();
 		var newTab = safari.application.activeBrowserWindow.openTab();
 		newTab.url = safari.extension.baseURI + "manage.html";
+		safari.self.hide();
 		return false;
-	});
-
-	$('#styleslist li').live('click', function(event) {
-		event.preventDefault();
-		var li = $(this),
-			id = li.attr('id');
-		var json = $.parseJSON(DB.get(id));
-		pingAll((json.enabled = !json.enabled)?"enableStyle":"disableStyle",{"id":id})
-		DB.set(id,JSON.stringify(json));
-		renderList();
-		return false;
-	});
-	renderList();
-});
+	}
+};
 
 function validate(event) {
 	renderList();
@@ -38,27 +47,18 @@ function validate(event) {
 
 function renderList() {
 	if (DB.size()) {
-		var list = $('#styleslist').empty(),
-			url = safari.application.activeBrowserWindow.activeTab.url,
-			empty = true;
+		var url = safari.application.activeBrowserWindow.activeTab.url,
+			html = '';
 		for (var i=0;i<DB.size();i++) {
 			var id = DB.key(i);
-				json = $.parseJSON(DB.get(id)),
+				json = JSON.parse(DB.get(id)),
 				valid = json.sections.filter(function(section){return filterSection(url,section)});
-			
 			if (valid.length && !json.hidden) {
-				empty = false;
-				list.append(
-					$('<li/>',{id:id,text:json.name, 'class':(json.enabled?'on':'off')})
-				);
+				html += '<li id="'+id+'" class="style ani '+(json.enabled?'on':'off')+'">'+json.name+'</li>';
 			}
 		}
-		if (empty) {
-			list.append(
-				$('<li/>',{text:'No styles for this page...', 'class':'nostyles'})
-			);
-		}
-		$('input[rel="on"]',list).attr('checked','checked');
+		if (html=='') html = '<li class="style nostyles ani">No styles for this page...</li>';
+		g('styleslist').innerHTML = html;
 	}
 };
 
@@ -96,7 +96,7 @@ function log(l) {
 };
 
 function getRSS(url) {
-	$.getJSON('http://www.google.com/uds/Gfeeds',
+	getJSON('http://www.google.com/uds/Gfeeds',
 		{
 			context: 0,
 			num: 10,
