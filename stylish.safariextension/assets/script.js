@@ -11,15 +11,6 @@ if (typeof(safari) == 'object') {
 	});
 }
 
-if (dl.href.indexOf('disqus.com/embed/comments')>0) {
-	d.addEventListener('DOMContentLoaded',function(){
-		loadScript(safari.extension.baseURI+'assets/fn.js');
-		loadScript(safari.extension.baseURI+'assets/jquery.js');
-		loadScript(safari.extension.baseURI+'assets/disqus.js');
-		loadStyle(safari.extension.baseURI+'assets/disqus.css');
-	});
-};
-
 function injectStyle(css,id) {
 	if (!dl.host) return;
 //	if (w != w.top) return;
@@ -51,7 +42,7 @@ function pong(event) {
 		t = event.target,
 		m = event.message,
 		type = event.type,
-		metaid = getMeta('stylish-id-url')?getMeta('stylish-id-url').replace('https://userstyles.org/styles/',''):false;
+		metaid = getMeta('stylish-id-url')?getMeta('stylish-id-url').replace(/^https?:\/\/userstyles.org\/styles\//,''):false;
 	switch(n) {
 		case 'injectStyle':
 			if (m.location == dl.href) injectStyle(m.css,m.id);
@@ -117,7 +108,7 @@ function log(l) {
 };
 
 function userstyles() {
-	var sid = getMeta('stylish-id-url').replace('https://userstyles.org/styles/','');
+	var sid = getMeta('stylish-id-url').replace(/^https?:\/\/userstyles.org\/styles\//,'');
 	ping('checkInstall',sid);
 };
 

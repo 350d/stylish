@@ -107,13 +107,11 @@ function pingAll(name, data) {
 }
 
 function navInit() {
+	var path = window.location.pathname,
+		name = path.substring(path.lastIndexOf('/')+1);
 	document.getElementById('version').innerHTML = version;
-	$('#menu nav a').click(function(event) {
-		event.preventDefault();
-		var a = $(this), url = a.attr('rel');
-		if (!a.hasClass('active')) window.location = safari.extension.baseURI + url + ".html";
-		return false;
-	})
+	$('#menu').append('<nav><ul><li><a href="search.html">Search</a></li><li><a href="manage.html">Manage</a></li><li><a href="edit.html">Edit</a></li><li><a href="settings.html">Settings</a></li></ul></nav>');
+	$('#menu a[href="'+name+'"]').addClass('active').click(function() { return false; });
 };
 
 String.prototype.hashCode = function() {
