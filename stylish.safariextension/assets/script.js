@@ -6,6 +6,7 @@ if (typeof(safari) == 'object') {
 	ping('getStyles',dl.href);
 	safari.self.addEventListener("message", pong, false);
 	d.addEventListener("stylishInstall", function(event) {pong(event);},false);
+	d.addEventListener("stylishUpdate", function(event) {pong(event);},false);
 	d.addEventListener('DOMContentLoaded',function(){
 		if (getMeta('stylish-id-url')) userstyles();
 	});
@@ -61,6 +62,7 @@ function pong(event) {
 			ping('applyStyle',{'id':m.id, 'href':dl.href});
 		break;
 		case 'checkInstall':
+			log(m);
 			sendEvent(m?'styleAlreadyInstalled':'styleCanBeInstalled');
 		break;
 		case 'applyStyle':
@@ -75,18 +77,29 @@ function pong(event) {
 		case 'stylishInstall':
 			stylishInstallGlobal(metaid);
 		break;
+		case 'stylishUpdate':
+			stylishUpdateGlobal(metaid);
+		break;
 	}
 }
 
 function stylishInstallGlobal(id) {
-	var options = '';
-	if(d.getElementById('style-settings')) {
-		var form = d.createElement('form');
-		form.appendChild(d.getElementById('style-settings').cloneNode(true));
-		options = serialize(form);
-	}
-	ping('installStyle',{id:id,options:options});
+	ping('installStyle',{id:id,options:getOptions()});
 };
+function stylishUpdateGlobal(id) {
+	ping('installStyle',{id:id,options:getOptions()});
+};
+function getOptions() {
+	var form, new_form = d.createElement('form'), i, options = '';
+	if (form = d.getElementById('style-settings')) {
+		var old_selects = form.getElementsByTagName('select'),
+			new_selects = new_form.getElementsByTagName('select');
+		new_form.appendChild(form.cloneNode(true))
+		for (i in old_selects) new_selects[i].selectedIndex = old_selects[i].selectedIndex;
+		options = serialize(new_form);
+	}
+	return options;
+}
 
 function loadScript(src, async) {
 	var script = d.createElement('script');
@@ -113,7 +126,6 @@ function userstyles() {
 };
 
 function sendEvent(name) {
-	log('EVENT: '+name);
 	var event = d.createEvent("Events");
 	event.initEvent(name, false, false, d.defaultView, null);
 	d.dispatchEvent(event);
@@ -130,67 +142,53 @@ function getMeta(name) {
 }
 
 function serialize(form) {
-	'use strict';
-	var i, j, len, jLen, formElement, q = [];
-	function addNameValue(name, value) {
-		q.push(name + '=' + value);
+	var i, j, el, q = [], n, v, t, elements, options;
+	function add_value(name, value) {
+		q.push(name+'='+value);
 	}
-	if (!form || !form.nodeName || form.nodeName.toLowerCase() !== 'form') {
-		throw 'You must supply a form element';
-	}
-	for (i = 0, len = form.elements.length; i < len; i++) {
-		formElement = form.elements[i];
-		if (formElement.name === '' || formElement.disabled) {
-			continue;
-		}
-		switch (formElement.nodeName.toLowerCase()) {
-		case 'input':
-			switch (formElement.type) {
-			case 'text':
-			case 'hidden':
-			case 'password':
-			case 'button':
-			case 'submit':
-				addNameValue(formElement.name, formElement.value);
-				break;
-			case 'checkbox':
-			case 'radio':
-				if (formElement.checked) {
-					addNameValue(formElement.name, formElement.value);
+	if (!form || !form.nodeName || form.nodeName.toLowerCase() !== 'form') throw 'You must supply a form element';
+	elements = form.elements;
+	for (i in elements) {
+		if (typeof(el = elements[i]) !== 'object' || el.disabled) continue;
+		n = el.name;
+		v = el.value;
+		t = el.type;
+		switch (el.nodeName.toLowerCase()) {
+			case 'input':
+				switch (t) {
+					case 'checkbox':
+					case 'radio':
+						if (el.checked) add_value(n,v);
+					break;
+					case 'reset':
+					break;
+					default:
+						add_value(n,v);
+					break;
 				}
-				break;
-			case 'file':
-				addNameValue(formElement.name, formElement.value);
-				break;
-			case 'reset':
-				break;
-			}
 			break;
-		case 'textarea':
-			addNameValue(formElement.name, formElement.value);
+			case 'textarea':
+				add_value(n,v);
 			break;
-		case 'select':
-			switch (formElement.type) {
-			case 'select-one':
-				addNameValue(formElement.name, formElement.value);
-				break;
-			case 'select-multiple':
-				for (j = 0, jLen = formElement.options.length; j < jLen; j++) {
-					if (formElement.options[j].selected) {
-						addNameValue(formElement.name, formElement.options[j].value);
-					}
+			case 'select':
+				switch(t) {
+					case 'select-one':
+						add_value(n,v);
+					break;
+					case 'select-multiple':
+						options = el.options;
+						for (j in options) if (options[j].selected) add_value(n, options[j].value);
+					break;
 				}
-				break;
-			}
 			break;
-		case 'button':
-			switch (formElement.type) {
-			case 'reset':
-			case 'submit':
 			case 'button':
-				addNameValue(formElement.name, formElement.value);
-				break;
-			}
+				switch (t) {
+					case 'reset':
+					case 'submit':
+					case 'button':
+						add_value(n,v);
+					break;
+				}
 			break;
 		}
 	}

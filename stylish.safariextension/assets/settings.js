@@ -18,14 +18,15 @@ $(function() {
 		var user = getUserInfo(html);
 		toggleLoginForm(!user.loggedin,user.loggedin);
 		if (user.loggedin) updateInfo(user);
-	})
+	}).error(function(){});
 	
 	$('#loginform').submit(function() {
 		var name = $('#login').val(),
 			pass = $('#password').val(),
+			token = $('input[name="authenticity_token"]').val(),
 			form = $(this);
 		$('.loginform').addClass('busy');	
-		$.post('https://userstyles.org/login/authenticate_normal',{login:name,password:pass,remember:true},function(html) {
+		$.post('https://userstyles.org/login/authenticate_normal',{login:name,password:pass,remember:true,authenticity_token:token},function(html) {
 			var user = getUserInfo(html);
 			toggleLoginForm(!user.loggedin,user.loggedin);
 			$('.loginform').removeClass('busy');
@@ -54,7 +55,8 @@ $(function() {
 			$('#timestamp').val(timestamp);
 			$('#importexport').iframer({
 				onComplete: function() {
-					$.getJSON('http://sobolev.us/stylish/export.php',{timestamp:timestamp},function(json) {
+					$.getJSON('http://sobolev.us/download/stylish/export.php',{timestamp:timestamp},function(json) {
+						console.log(json);
 						$.each(json.data, function(n,e) {
 							ping('saveStyle',{"import":true,"id":e.id,"json":$.parseJSON(e.json)});
 						});
@@ -88,7 +90,7 @@ $(function() {
 
 	client.authDriver(new Dropbox.Drivers.Popup({
 		rememberUser: true,
-	    receiverUrl: 'http://sobolev.us/stylish/oauth.html'
+	    receiverUrl: 'http://sobolev.us/download/stylish/oauth.html'
 	}));
 	
 	client.authenticate({interactive: false}, function(error, client) {
@@ -198,7 +200,7 @@ function getUserInfo(html) {
 	var user = {}, trs;
 	user.loggedin = (html.indexOf('password-login') < 0);
 	if (user.loggedin) {
-		user.id = $('a[href^="/users/edit_login_methods/"]',html).attr('href').split('/')[3];
+		user.id = $('article.style-brief',html).eq(0).attr('author-id');
 		user.name = unescape($('a[href*="/messages/add/"]',html).attr('href').split('/')[5]);
 		if (trs = $('.author-styles tbody tr[class!="style-warnings"]', html)) {
 			user.styles = [];

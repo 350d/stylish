@@ -1,5 +1,5 @@
 $(function() {
-
+	
 	navInit();
 	
 	var dl = document.location,
@@ -13,14 +13,29 @@ $(function() {
 	$('.style-install').live('click',function() {
 		var t = $(this).attr('disabled','disabled').text('Downloading'),
 			s = t.parent();
-			id = t.attr('rel');
+			id = t.attr('rel'),
+			options = false;
 		s.addClass('busy');
-		$.getJSON('https://userstyles.org/styles/chrome/'+id+'.json',function(json) {
-			t.text('Installed');
-			s.removeClass('busy').addClass('installed');
-			json.enabled = true;
-			$.get('https://userstyles.org/styles/install/1?source=stylish-sf').error(function(){});
-			ping("saveStyle",{"id":id,"json":json});
+		
+		$.get('http://userstyles.org/styles/'+id+'?v='+Math.random(), function(html) {
+			options = $('#style-options',html).length ? true : false;
+			if (options) {
+				options = '?';
+				$('#style-options li', html).each(function(i,e) {
+					e = $('select, input', e);
+					options += (i?'&':'')+e.attr('name')+'='+e.val().replace('#','%23');
+				});
+			} else {
+				options = '';
+			}
+			
+			$.getJSON('http://userstyles.org/styles/chrome/'+id+'.json'+options,function(json) {
+				t.text('Installed');
+				s.removeClass('busy').addClass('installed');
+				json.enabled = true;
+				ping("saveStyle",{"id":id,"json":json});
+			});
+			
 		});
 	});
 	
@@ -99,24 +114,20 @@ function renderList(html,host) {
 	if ($('.style-brief',html).length) {
 		html = $('#main-article',html).html();
 		content.append(html);
-		$('.style-brief-text header a').each(function(n,a){
-			var a = $(a), id = a.attr('href').split('/')[2];
-			a.closest('.style-brief').attr('id',id);
-		});
 		$('a',content).each(function(n,a) {
 			var a = $(a);
 			if (a.hasClass('delete-link')) {
-				a.closest('style-brief').attr('id',a.attr('href').replace('/styles/delete/',''));
+				a.parent().parent().parent().attr('id',a.attr('href').replace('/styles/delete/',''));
 			}
 			a.not('.pagination a').replaceWith(a.html());
 		});
 		$('.style-brief-control-links, div[style="clear:left"], .ad').remove();
 		$('.style-brief-stats').each(function() {
-			var d = $(this), s = d.closest('article.style-brief'), a = s.attr('average-rating')*1,
-				r = Math.round(a*1.666666);
+			var d = $(this), s = d.parent().parent(), a = s.attr('average-rating'),
+				r = Math.round(a*2)*10;
 			d.html(
-				$('<span/>',{class:'ratio',title:'Average rating: '+(r>0?r+'/5':'N/A')}).append(
-					$('<span/>').css('width',r*20+'%')
+				$('<span/>',{class:'ratio'}).append(
+					$('<span/>',{title:'Average rating: '+a}).css('width',r+'%')
 				)
 			);
 		});
@@ -128,9 +139,7 @@ function renderList(html,host) {
 			s.append(
 				$('<button/>',{text:'Install',rel:id, class:'style-install'})
 			);
-		});
-		
-		$('.style-brief').last().addClass('last-child');
+		})
 	
 		renderNav();
 	
@@ -174,7 +183,8 @@ function renderNav() {
 		var a = $(this),
 			href = a.attr('href');
 		a.attr('href', href.split('?')[1].replace('page=','') )
-	});
+	})
+	
 	
 	var nav = $('.pagination'),
 		total = parseInt(nav.children().last().prev().text()),
@@ -211,18 +221,16 @@ function renderSitesList(html) {
 function getSearchResults(host,page) {
 	$('#searchresult').addClass('busy');
 	if (host) {
-		domain = getDomain(host);
-		document.title = 'userstyles for «'+host+'»';
-//		OLD STYLE
-//		var usss = 'https://userstyles.org/styles/browse/';
-		var usss = 'https://userstyles.org/styles/browse/site?sort=popularity&search_terms=';
-		$.get(usss+domain+'&per_page=22'+(page?'&page='+page:''), function(html) {
+		document.title = 'Usertyles for «'+host+'»';
+//		var usss = 'http://userstyles.org/styles/browse/';
+		var usss = 'http://userstyles.org/styles/browse/site?search_terms=';
+		$.get(usss+host+'&per_page=22'+(page?'&page='+page:''), function(html) {
 			$('#searchresult').removeClass('busy');
 			renderList(html,host);
 		})
 	} else {
-		document.title = 'Search userstyles';
-		var usss = 'https://userstyles.org/categories/site';
+		document.title = 'Search Usertyles';
+		var usss = 'http://userstyles.org/categories/site';
 		$.get(usss, function(html) {
 			$('#searchresult').removeClass('busy');
 			renderSitesList(html);

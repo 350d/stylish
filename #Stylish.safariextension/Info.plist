@@ -5,7 +5,7 @@
 	<key>Author</key>
 	<string>Vladimir Sobolev</string>
 	<key>Builder Version</key>
-	<string>10600.2.5</string>
+	<string>8536.25</string>
 	<key>CFBundleDisplayName</key>
 	<string>Stylish</string>
 	<key>CFBundleIdentifier</key>
@@ -13,9 +13,9 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.6</string>
+	<string>1.3</string>
 	<key>CFBundleVersion</key>
-	<string>1.6.7</string>
+	<string>1.3.4</string>
 	<key>Chrome</key>
 	<dict>
 		<key>Global Page</key>
@@ -41,7 +41,7 @@
 				<key>Identifier</key>
 				<string>stylish</string>
 				<key>Image</key>
-				<string>toolbar_icon.png</string>
+				<string>icon16-grayscale.png</string>
 				<key>Label</key>
 				<string>Stylish</string>
 				<key>Popover</key>
@@ -63,8 +63,6 @@
 	</dict>
 	<key>Description</key>
 	<string>Stylish for Safari</string>
-	<key>DeveloperIdentifier</key>
-	<string>5555L95H45</string>
 	<key>ExtensionInfoDictionaryVersion</key>
 	<string>1.0</string>
 	<key>Permissions</key>
@@ -78,7 +76,7 @@
 		</dict>
 	</dict>
 	<key>Update Manifest URL</key>
-	<string>http://sobolev.us/download/stylish/update.plist</string>
+	<string>http://sobolev.us/stylish/update.plist</string>
 	<key>Website</key>
 	<string>http://sobolev.us/stylish</string>
 </dict>
