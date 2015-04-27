@@ -49,21 +49,25 @@ $(function() {
 	
 	$('#jsonfile')
 		.change(function(data) {
-			$('.importexportform').addClass('busy');
-			var timestamp = (new Date()).getTime();
-			$('#jsontextarea').val('');
-			$('#timestamp').val(timestamp);
-			$('#importexport').iframer({
-				onComplete: function() {
-					$.getJSON('http://sobolev.us/download/stylish/export.php',{timestamp:timestamp},function(json) {
-						console.log(json);
-						$.each(json.data, function(n,e) {
-							ping('saveStyle',{"import":true,"id":e.id,"json":$.parseJSON(e.json)});
-						});
-						$('.importexportform').removeClass('busy');
+			
+			var reader = new FileReader(),
+				file = data.srcElement.files[0];
+			
+			reader.onload = function(e){
+				try {
+					json = $.parseJSON(e.target.result);
+					$.each(json.data, function(n,e) {
+						ping('saveStyle',{"import":true,"id":e.id,"json":$.parseJSON(e.json)});
 					});
+					$('.importexportform').removeClass('busy');
+				} catch(e) {
+					alert('Wrong file format');
 				}
-			});
+			}
+			
+			reader.readAsText(file);
+			$('.importexportform').addClass('busy');
+
 		})
 		.hover(
 			function() {$('#import').addClass('hover')},
@@ -150,18 +154,9 @@ $(function() {
 
 $.fn.extend({
 	iframer: function(options) {
-		options = $.extend({},{ src:'null.html',id: 'iframer-'+(new Date()).getTime(), onComplete:function(){}},options);
-		var iframe = $('<iframe/>',{seamless:true,name:options.id,id:options.id}).hide().load(function() {
-				iframe.load(function() {
-					//options.onComplete(iframe.contents().find('body').html());
-					form.removeAttr('target');
-					options.onComplete();
-				}).delay(10000).hide(function() {
-					iframe.remove();
-				});
-			}),
-			form = $(this);
-		form.append(iframe).attr('target', options.id).submit();
+		options = $.extend({},{ src:'null.html', id: 'iframer-'+(new Date()).getTime(), onComplete:function(){}},options);
+		var iframe = $('<iframe/>',{seamless:true,name:options.id,id:options.id}).hide(),
+			form = $(this).append(iframe).attr('target', options.id).submit();
 		return form;
 	}
 });
