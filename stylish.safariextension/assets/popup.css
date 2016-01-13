@@ -4,14 +4,12 @@
 html {
 	height:100%;
 	overflow:hidden;
-	background:url(../images/red.png) -100px 0 no-repeat;
 }
 body {
 	padding:0 4px;
 	height:100%;
 	-webkit-user-select: none;
 	user-select: none;
-	background:url(../images/green.png) -100px 0 no-repeat;
 }
 
 #popover {
@@ -46,19 +44,33 @@ body {
 	line-height:20px;
 	height:20px;
 	padding:0 8px 0 16px;
-	background: 0 0 no-repeat;
 	color:#666;
 	cursor:default;
+	position: relative;
 }
-#styleslist li.off {
-	background-image:url(../images/grey.png);
+#styleslist li:before {
+	content:'';
+	position: absolute;
+	left:7px;
+	top:9px;
+	width: 6px;
+	height: 6px;
+	border-radius:50%;
+	-webkit-transform: translate(-50%,-50%);
+	border:1px solid transparent;
 }
-#styleslist li.on {
-	background-image:url(../images/green.png);
+#styleslist li.off:before {
+	background: #aaa;
+	border-color:#999;
+}
+#styleslist li.on:before {
+	background:#40c74a;
+	border-color:#2ea72d;
 	color:#000;
 }
-#styleslist li.nostyles {
-	background-image:url(../images/red.png);
+#styleslist li.nostyles:before {
+	background:#fa615b;
+	border-color:#dd4844;
 }
 #styleslist li:hover {
 	color:#000;

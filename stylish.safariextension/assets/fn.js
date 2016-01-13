@@ -25,8 +25,11 @@ DB = {
 }
 
 function getVersion() {
-	var keys = (new DOMParser()).parseFromString(ajax('info.plist',false).replace(/\r|\n|\t/gm,''),"text/xml").getElementsByTagName('key');
-	for (var i=0; i<keys.length; i++) if (keys[i].textContent == 'CFBundleVersion') return keys[i].nextSibling.textContent;
+	var keys = (new DOMParser()).parseFromString(ajax('info.plist', false).replace(/\r|\n|\t/gm,''),"text/xml").getElementsByTagName('key');
+	for (var i=0; i<keys.length; i++) {
+		//log(keys[i].textContent, keys[i].nextSibling.textContent);
+		if (keys[i].textContent == 'CFBundleVersion') return keys[i].nextSibling.textContent;
+	}
 };
 
 function filterSection(href, section) {
@@ -108,15 +111,18 @@ function pingAll(name, data) {
 
 function navInit() {
 	var path = window.location.pathname,
-		name = path.substring(path.lastIndexOf('/')+1);
+		name = path.substring(path.lastIndexOf('/')+1),
+		arrow = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M238.3 373l84.5-96c1-1.3 1.4-2.8 2.3-4 1.3-1.8 2.4-3.4 3-5.4 1-2 1.4-4 1.8-6.2.4-2 .7-3.7.7-5.6 0-2.2-.4-4.3-.8-6.5-.4-1.8-.8-3.6-1.4-5.4-1-2.3-2-4-3.4-6-1-1-1-2.5-2-3.6l-85.4-95.8c-11.7-13.2-32-14.4-45.2-2.6-13.2 12-14.4 32-2.6 45.3L256 256l-65.8 75c-11.7 13-10.4 33.4 3 45 13.2 11.7 33.4 10.4 45-3z" /></svg>';
 	document.getElementById('version').innerHTML = version;
-	$('#menu').append('<nav><ul><li><a href="search.html">Search</a></li><li><a href="manage.html">Manage</a></li><li><a href="edit.html">Edit</a></li><li><a href="settings.html">Settings</a></li></ul></nav>');
+	$('#menu').append('<nav><ul><li><a href="search.html">Search'+arrow+'</a></li><li><a href="manage.html">Manage'+arrow+'</a></li><li><a href="edit.html">Edit'+arrow+'</a></li><li><a href="settings.html">Settings'+arrow+'</a></li></ul></nav>');
 	$('#menu a[href="'+name+'"]').addClass('active').click(function() { return false; });
 	
 	$('#menu').append(
 		'<div class="social ani"><iframe src="https://www.facebook.com/plugins/like.php?locale=en_US&amp;href=https://www.facebook.com/safaristylish&amp;send=false&amp;layout=button&amp;width=125&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font=arial&amp;height=20" frameborder="0" scrolling="no" id="fblike"></iframe>'+
 		'<iframe src="https://plusone.google.com/_/+1/fastbutton?bsv&amp;size=medium&amp;hl=en-US&amp;url=https://www.facebook.com/safaristylish" allowtransparency="true" frameborder="0" scrolling="no" title="+1" marginheight="0" marginwidth="0" id="gplus"></iframe>'+
-		'<iframe src="http://platform.twitter.com/widgets/tweet_button.html?lang=en&count=horizontal&amp;url=http://sobolev.us/stylish/&amp;height=20&amp;text=Safari extension for customizing your favorite web sites with Stylish and user styles!" frameborder="0" scrolling="no" id="tw"></iframe></div>'
+		'<iframe src="http://platform.twitter.com/widgets/tweet_button.html?lang=en&count=horizontal&amp;url=http://sobolev.us/stylish/&amp;height=20&amp;text=Safari extension for customizing your favorite web sites with Stylish and user styles!" frameborder="0" scrolling="no" id="tw"></iframe></div>'+
+
+		'<a href="https://ko-fi.com?i=46A16KRNL3M" target="_blank" class="coffee">Buy me a coffee</a>'
 	);
 };
 
@@ -129,6 +135,11 @@ String.prototype.hashCode = function() {
 		hash = hash & hash;
 	}
 	return hash;
+}
+
+function extend(obj, src) {
+	Object.keys(src).forEach(function(key) { obj[key] = src[key]; });
+	return obj;
 }
 
 function sortData(data,method) {
@@ -150,10 +161,11 @@ function loadStyle(src) {
 	document.getElementsByTagName('head')[0].appendChild(script);
 };
 
-function ajax(url, async, callback, json) {
-	var xmlhttp = new XMLHttpRequest();
-	xmlhttp.open("GET", url, async);
-	xmlhttp.send(null);
+function ajax(url, async, callback, json, parameters, post) {
+	var xmlhttp = new XMLHttpRequest(),
+		url = url + (post ? '' : parameters ? ('?' + param(parameters)) :'');
+	xmlhttp.open(post ? "POST" : "GET", url, async);
+	xmlhttp.send(post ? param(parameters) : null);
 	if (async) {
 		xmlhttp.onreadystatechange = function() {
 			if ( callback && xmlhttp.readyState == 4 && xmlhttp.status == 200) {
@@ -165,16 +177,79 @@ function ajax(url, async, callback, json) {
 	}
 }
 
-function getJSON(url, callback) {
-	ajax(url,true, callback, true);
+function getJSON(url, parameters, callback) {
+	ajax(url, true, callback, true, parameters, false);
 };
 
-function get(url, callback) {
-	ajax(url,true, callback);
+function get(url, parameters, callback) {
+	ajax(url, true, callback, false, parameters, false);
+};
+
+function post(url, parameters, callback) {
+	ajax(url, true, callback, false, parameters, true);
+};
+
+function param(obj) {
+	return obj ? Object.keys(obj).map(function(key) {
+	    return key + '=' + encodeURIComponent(obj[key]);
+	}).join('&') : '';
+};
+
+function sanitizeHTML(html) {
+	html = html.replace(/<script/g,'<textarea').replace(/<\/script>/g,'</textarea>').replace(/<link/g,'<br').replace(/<\/link/g,'</br').replace(/img alt="Good"/g,'hr').replace(/img alt="OK"/g,'hr').replace(/img alt="Bad"/g,'hr').replace(/img class="style-warning-icon"/g,'hr').replace(/onclick/g,'data-x').replace(/onerror/g,'data-y');
+	return html;
 };
 
 function g(id) {
 	return document.getElementById(id);
+};
+
+function uuid() {
+	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+	    var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+	    return v.toString(16);
+	});
+}
+
+function analytics(data) {
+	if (!DB.check('uuid')) DB.set('uuid',uuid());
+	var uaid = 'UA-72374231-1',
+		uuid = DB.get('uuid'),
+		payload_data = {
+			v: 1,
+			tid: uaid,
+			cid: uuid,
+			ds: 'app',
+			av: version,
+			an: 'Stylish for Safari'
+		},
+		options;
+	switch(data.type){
+		case 'event':
+			options = {
+				t: 'event',
+				ec: data.category,
+				ea: data.action,
+				el: data.label,
+				ev: data.value
+			}
+		break;
+		case 'screenview':
+			options = {
+				t: 'screenview',
+				cd: data.title
+			}
+		break;
+		case 'pageview':
+			options = {
+				t: 'pageview',
+				dh: data.host,
+				dp: data.page,
+				dt: data.title
+			}
+		break;
+	}
+	post('http://www.google-analytics.com/collect', extend(payload_data,options));
 };
 
 function log(l) {

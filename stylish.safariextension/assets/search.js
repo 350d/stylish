@@ -1,6 +1,8 @@
 $(function() {
 
 	navInit();
+
+	analytics({type:'screenview',title:'Search'});
 	
 	var dl = document.location,
 		hash = dl.hash.substr(1),
@@ -10,7 +12,7 @@ $(function() {
 	
 	initPopup();
 	
-	$('.style-install').live('click',function() {
+	$(document).on('click','.style-install',function() {
 		var t = $(this).attr('disabled','disabled').text('Downloading'),
 			s = t.parent();
 			id = t.attr('rel');
@@ -19,12 +21,14 @@ $(function() {
 			t.text('Installed');
 			s.removeClass('busy').addClass('installed');
 			json.enabled = true;
-			$.get('https://userstyles.org/styles/install/1?source=stylish-sf').error(function(){});
+			$.get('https://userstyles.org/styles/install/1?source=stylish-sf');
 			ping("saveStyle",{"id":id,"json":json});
+
+			analytics({type:'event', category:'Style',action:'Install',label:json.name,value:id});
 		});
 	});
 	
-	$('.pagination a').live('click',function(event) {
+	$(document).on('click', '.pagination a', function(event) {
 		event.preventDefault();
 		var a = $(this),
 			href = a.attr('href'),
@@ -44,17 +48,17 @@ $(function() {
 		return false;
 	})
 	
-	$('#ssearch').live('change',function() {
+	$(document).on('change', '#ssearch', function() {
 		hash = $(this).val();
 		if (hash!='') getSearchResults(hash);
 	})
 	
-	$('#subcategory-list li').live('click',function() {
+	$(document).on('click','#subcategory-list li',function() {
 		hash = $(this).attr('tname');
 		$('#ssearch').val(hash).trigger('change');
 	});
 	
-	$('.screenshot').live('click',function() {
+	$(document).on('click', '.screenshot', function() {
 		var i = $(this),
 			src = i.attr('src').replace('_thumbnails','s'),
 			img = new Image(),
@@ -63,7 +67,7 @@ $(function() {
 			.trigger('show')
 			.append(
 				$('<img>', {src: src, 'class': 'after'}),
-				$('<img>', {src: src.replace('_after','_before'), 'class':'before'}).error(function() {$(this).remove()})
+				$('<img>', {src: src.replace('_after','_before'), 'class':'before'}).on('error', function() {$(this).remove()})
 			);			
 	});
 });
@@ -93,7 +97,9 @@ function initPopup() {
 	
 };
 
-function renderList(html,host) {
+function renderList(html, host) {
+	html = sanitizeHTML(html);
+	//log(html);
 	$('#content dt input').val(host);
 	var content = $('#searchresult dd').empty();
 	if ($('.style-brief',html).length) {
@@ -103,6 +109,7 @@ function renderList(html,host) {
 			var a = $(a), id = a.attr('href').split('/')[2];
 			a.closest('.style-brief').attr('id',id);
 		});
+		
 		$('a',content).each(function(n,a) {
 			var a = $(a);
 			if (a.hasClass('delete-link')) {
@@ -110,19 +117,20 @@ function renderList(html,host) {
 			}
 			a.not('.pagination a').replaceWith(a.html());
 		});
+		
 		$('.style-brief-control-links, div[style="clear:left"], .ad').remove();
 		$('.style-brief-stats').each(function() {
 			var d = $(this), s = d.closest('article.style-brief'), a = s.attr('average-rating')*1,
 				r = Math.round(a*1.666666);
 			d.html(
-				$('<span/>',{class:'ratio',title:'Average rating: '+(r>0?r+'/5':'N/A')}).append(
-					$('<span/>').css('width',r*20+'%')
+				$('<span/>',{class:'ratio',html:'★★★★★',title:'Average rating: '+(r>0?r+'/5':'N/A')}).append(
+					$('<span/>',{html:'★★★★★'}).css('width',r*20+'%')
 				)
 			);
 		});
 		
 		imgSize();
-		
+	
 		$('.style-brief').each(function() {
 			var s = $(this).addClass('cln'), id = s.attr('id');
 			s.append(
@@ -131,7 +139,7 @@ function renderList(html,host) {
 		});
 		
 		$('.style-brief').last().addClass('last-child');
-	
+
 		renderNav();
 	
 		ping("getInstalledStyles",'');
@@ -142,29 +150,29 @@ function renderList(html,host) {
 
 function imgSize() {
 	$('.screenshot').each(function() {
-		$(this).load(function() {
-			var i = $(this),
-				src = i.attr('src'),
-				img = new Image(),
-				w, h, p;
-			img.src = src;
-			h = img.height;
-			w = img.width;
-			p = 145/83;
-			if (w/h > p) {
-				w = (w/h)*83;
-				h = 83;
-			} else {
-				w = 146;
-				h = 'auto';
-			}
-			i.css({
-				left: (146-w)/2,
-				top: (84-h)/2,
-				height: h,
-				width: w
+		var i = $(this);
+			i.on('load', function() {
+				var src = i.prop('src'),
+					img = new Image(),
+					w, h, p;
+				img.src = src;
+				h = img.height;
+				w = img.width;
+				p = 145/83;
+				if (w/h > p) {
+					w = (w/h)*83;
+					h = 83;
+				} else {
+					w = 146;
+					h = 'auto';
+				}
+				i.css({
+					left: (146-w)/2,
+					top: (84-h)/2,
+					height: h,
+					width: w
+				});
 			});
-		});
 	});
 };
 

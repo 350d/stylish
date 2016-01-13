@@ -7,18 +7,23 @@ ping('getInstalledStyles','');
 $(function() {
 
 	navInit();
+
+	analytics({type:'screenview',title:'Settings'});
 	
+/*
+
 	toggleLoginForm(false,true);
 	form = $('#logoutform');
 	$('.loginform').addClass('busy');
 
 	$.get('https://userstyles.org/login',function(html) {
+		html = sanitizeHTML(html);
 		form = $('#logoutform');
 		$('.loginform').removeClass('busy');
 		var user = getUserInfo(html);
 		toggleLoginForm(!user.loggedin,user.loggedin);
 		if (user.loggedin) updateInfo(user);
-	}).error(function(){});
+	});
 	
 	$('#loginform').submit(function() {
 		var name = $('#login').val(),
@@ -26,7 +31,15 @@ $(function() {
 			token = $('input[name="authenticity_token"]').val(),
 			form = $(this);
 		$('.loginform').addClass('busy');	
-		$.post('https://userstyles.org/login/authenticate_normal',{login:name,password:pass,remember:true,authenticity_token:token},function(html) {
+		$.post('https://userstyles.org/login/authenticate_normal',{
+			login:name,
+			password:pass,
+			remember:'true',
+			authenticity_token:token,
+			view:'password',
+			utf8: '✓'
+		},function(html) {
+			html = sanitizeHTML(html);
 			var user = getUserInfo(html);
 			toggleLoginForm(!user.loggedin,user.loggedin);
 			$('.loginform').removeClass('busy');
@@ -46,12 +59,16 @@ $(function() {
 		})
 		return false;
 	});
+
+*/
 	
 	$('#jsonfile')
 		.change(function(data) {
 			
+			log(data);
+			
 			var reader = new FileReader(),
-				file = data.srcElement.files[0];
+				file = data.srcElement ? data.srcElement.files[0] : data.currentTarget.files[0];
 			
 			reader.onload = function(e){
 				try {
@@ -81,75 +98,6 @@ $(function() {
 			$('.importexportform').removeClass('busy')
 		});
 	});
-	
-	var dbkey = 'lTgjafl34YA=|97NKxhx3Xhniq36M1hMxzlFlDJjKI/jceqNtlXQLOw==',
-		client = new Dropbox.Client({
-			key: dbkey,
-			sandbox: true
-		}),
-		dbform = $('#dropbox').show(),
-		dbsync = $('#sync').hide(),
-		dblink = $('#link').show(),
-		dbunlink = $('#unlink').hide();
-
-	client.authDriver(new Dropbox.Drivers.Popup({
-		rememberUser: true,
-	    receiverUrl: 'http://sobolev.us/download/stylish/oauth.html'
-	}));
-	
-	client.authenticate({interactive: false}, function(error, client) {
-		if (client.isAuthenticated() && !error) {
-			dblink.hide();
-			dbsync.show();
-			dbunlink.show();
-		} else {
-			dblink.show();
-		}
-		return false;
-	});
-		
-	dblink.click(function() {
-		
-		var dropboxstyle = {"hidden":true,"enabled":true,"name":"Dropbox","url":"","updateUrl":"","sections":[{"code":"body {\n\tbackground:red;\n}","domains":[],"regexps":[],"urlPrefixes":["https://www.dropbox.com/1/oauth/authorize?oauth_callback="],"urls":[]}]};
-		
-		ping("saveStyle",{"id":"dropbox","json":dropboxstyle});
-		
-		client.authenticate(function(error, client) {
-			if (!error) {
-				dblink.hide();
-				dbsync.show();
-				dbunlink.show();
-				ping('deleteStyle', {"id":"dropbox"});
-			}
-		});
-		return false;
-	});	
-	dbsync.click(function() {
-		client.readdir("/", function(error, entries) {
-			var i = $.inArray('stylish.json',entries);
-			if (i > -1) {
-				client.readFile('stylish.json', function(error, data) {
-					log(data);
-				});
-			} else {
-				client.writeFile("stylish.json", '{"test":4}', function(error, stat) {
-					log(stat.versionTag);
-				});
-			}
-		});
-		return false;
-	});
-	
-	dbunlink.click(function() {
-		ping('deleteStyle', {"id":"dropbox"});
-		client.signOut(function() {
-			dblink.show();
-			dbsync.hide();
-			dbunlink.hide();
-		});
-		return false;
-	});
-
 });
 
 $.fn.extend({
@@ -181,8 +129,8 @@ function updateInfo(user) {
 };
 
 function toggleLoginForm(f1,f2) {
-	$('#loginform').toggle(f1);
-	$('#logoutform').toggle(f2);
+	$('#loginform').toggleClass('hide',!f1);
+	$('#logoutform').toggleClass('hide',!f2);
 };
 
 function updateStylesInfo(list) {

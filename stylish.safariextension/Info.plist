@@ -5,7 +5,7 @@
 	<key>Author</key>
 	<string>Vladimir Sobolev</string>
 	<key>Builder Version</key>
-	<string>10600.5.17</string>
+	<string>11601.5.8.1</string>
 	<key>CFBundleDisplayName</key>
 	<string>Stylish</string>
 	<key>CFBundleIdentifier</key>
@@ -13,11 +13,22 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.6</string>
+	<string>1.8.1</string>
 	<key>CFBundleVersion</key>
-	<string>1.6.8</string>
+	<string>1.8.0</string>
 	<key>Chrome</key>
 	<dict>
+		<key>Context Menu Items</key>
+		<array>
+			<dict>
+				<key>Command</key>
+				<string>findmore</string>
+				<key>Identifier</key>
+				<string>findmore</string>
+				<key>Title</key>
+				<string>Find styles for this website</string>
+			</dict>
+		</array>
 		<key>Global Page</key>
 		<string>global.html</string>
 		<key>Popovers</key>

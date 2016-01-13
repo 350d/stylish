@@ -18,6 +18,9 @@ function events(event) {
 		DB.set(id,JSON.stringify(json));
 		t.className = 'style ani ' + (c.match(/off/)?'on':'off');
 		//renderList();
+
+		analytics({type:'event', category:'Popup',action:'Toggle',label:json.name,value:id});
+
 		return false;
 	}
 	if (t.id == 'find') {
@@ -48,17 +51,40 @@ function validate(event) {
 function renderList() {
 	if (DB.size()) {
 		var url = safari.application.activeBrowserWindow.activeTab.url,
-			html = '';
+			html = '',
+			counter1 = 0,
+			counter2 = 0;
 		for (var i=0;i<DB.size();i++) {
 			var id = DB.key(i);
-				json = JSON.parse(DB.get(id)),
-				valid = json.sections.filter(function(section){return filterSection(url,section)});
-			if (valid.length && !json.hidden) {
-				html += '<li id="'+id+'" class="style ani '+(json.enabled?'on':'off')+'">'+json.name+'</li>';
+			if (id != 'uuid') {
+				var json = JSON.parse(DB.get(id)),
+					valid;
+				if (json.hasOwnProperty('name') && json.hasOwnProperty('updateUrl') && json.hasOwnProperty('url')) {
+					valid = json.sections.filter(function(section){return filterSection(url,section)});
+					if (valid.length) {
+						if (!json.hidden) {
+							html += '<li id="'+id+'" class="style ani '+(json.enabled?'on':'off')+'">'+json.name+'</li>';
+							if (json.enabled) {
+								counter1++;
+							} else {
+								counter2++;
+							}
+						}
+						
+					}
+				}
 			}
 		}
 		if (html=='') html = '<li class="style nostyles ani">No styles for this page...</li>';
 		g('styleslist').innerHTML = html;
+		
+		if (counter1>0) {
+			//safari.extension.settings.unreadMessages = 0;
+			//safari.extension.toolbarItems[0].badge = counter1;
+		} else {
+			//safari.extension.settings.unreadMessages = counter2;
+			//safari.extension.toolbarItems[0].badge = 0;
+		}
 	}
 };
 
@@ -94,19 +120,3 @@ safari.application.addEventListener("message", pong, true);
 function log(l) {
 	safari.extension.globalPage.contentWindow.log(l);
 };
-
-function getRSS(url) {
-	getJSON('http://www.google.com/uds/Gfeeds',
-		{
-			context: 0,
-			num: 10,
-			hl: 'en',
-			output: 'json',
-			v: '1.0',
-			nocache: 0,
-			q: usss+val
-		},function(json) {
-			log(json);
-		}
-	)
-}

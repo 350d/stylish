@@ -1,6 +1,7 @@
 $(function() {
 	navInit();
 	ping("getInstalledStyles",'');
+	analytics({type:'screenview',title:'Manage'});
 });
 
 var busy = false;
@@ -56,6 +57,7 @@ function renderStylesList(m) {
 				$('<button/>',{rel:el.id,text:'Edit','class':'edit'}),
 				$('<button/>',{rel:el.id,text:'Delete','class':'delete red'}),
 				$('<button/>',{rel:el.id,text:json.enabled?'Disable':'Enable','class':'toggle'}),
+				$('<button/>',{rel:el.id,text:'Submit','class':'submit'}),
 				$('<button/>',{rel:el.id,text:'Check Updates','class':'checkupdate'}),
 				$('<button/>',{rel:el.id,text:'Update','class':'update'}).hide()
 			)
@@ -63,17 +65,31 @@ function renderStylesList(m) {
 	});
 	
 	$('.toggle').click(function() {
-		var b = $(this), s = b.text(), id = b.attr('rel');
+		var b = $(this), s = b.text(), id = b.attr('rel'), json = $('#'+id).data('json');
 		b.text( (s=='Enable')?'Disable':'Enable' );
 		$('#'+id+', dd[rev="'+id+'"]').attr('class', s=='Disable'?'disabled':'enabled')
 		ping(s.toLowerCase()+'Style', {"id":id});
+		analytics({type:'event', category:'Style',action:'Toggle',label:json.name,value:id});
 		return false;
 	})
 	
 	$('.delete').click(function() {
-		var b = $(this), id = b.attr('rel');
+		var b = $(this), id = b.attr('rel'), json = $('#'+id).data('json');
 		$('#'+id).add(b.parent()).fadeOut();
 		ping('deleteStyle', {"id":id});
+
+		analytics({type:'event', category:'Style',action:'Delete',label:json.name,value:id});
+
+		return false;
+	})
+
+	$('.submit').click(function() {
+		var b = $(this), id = b.attr('rel'), json = $('#'+id).data('json');
+		//ping('submitStyle', {"id":id});
+
+		
+		
+		log('Submit');
 		return false;
 	})
 	
@@ -89,10 +105,14 @@ function renderStylesList(m) {
 		
 		checkUpdate(id);
 		
+		/*
 		$.when(updateAvailable(id)).done(function(result){
 			log(result);
 		});
-		
+		*/
+
+		analytics({type:'event', category:'Style',action:'Check Update',label:json.name,value:id});
+
 		return false;
 	})
 	
@@ -102,6 +122,7 @@ function renderStylesList(m) {
 		b.text('Updated!').delay(2000).fadeIn(function() {$(this).text('Update').hide().prev().show()});
 		$('#'+id).data('json',json);
 		ping("saveStyle",{"id":id,"json":json});
+		analytics({type:'event', category:'Style',action:'Update',label:json.name,value:id});
 	});
 	
 	$('.edit').click(function() {
@@ -114,6 +135,7 @@ function renderStylesList(m) {
 function updateAvailable(id) {
 	var json = $.parseJSON(DB.get(id)),
 		d = $.Deferred();
+	log(json);
 	$.get(json.md5Url+'?_'+Math.random()*1E17,function(md5) {
 		log(json.originalMd5);
 		log(md5);
@@ -149,7 +171,6 @@ function checkUpdate(id) {
 				$('span.message',dd).remove();
 			});
 		}
-	}).error(function(data){
 	});
 };
 

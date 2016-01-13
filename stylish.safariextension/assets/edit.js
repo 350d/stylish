@@ -10,6 +10,7 @@ var tpl1 = '<dl><dt>{H1}</dt><dd class="editor"><form id="{ID}" class="stylesedi
 $(function() {
 	$('body').append('<iframe src="https://www.facebook.com/plugins/like.php?locale=en_US&amp;href=https://www.facebook.com/safaristylish&amp;send=true&amp;layout=button_count&amp;width=125&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font=arial&amp;height=20" frameborder="0" scrolling="no" id="fblike></iframe> ');
 	navInit();
+	analytics({type:'screenview',title:'Edit'});
 	var b = $('#content');
 	
 	$.fn.toggleAttr = function(a,b) {
@@ -19,7 +20,7 @@ $(function() {
 		});
 	};
 	
-	$('.rule .add').live('click',function(event) {
+	$(document).on('click', '.rule .add', function(event) {
 		event.preventDefault();
 		var b = $(this), p = b.parent(), n = parseInt($('.rule',p.parent()).length)+1;
 		p.after(
@@ -29,7 +30,7 @@ $(function() {
 		return false;
 	})
 
-	$('.rule .remove').live('click',function(event) {
+	$(document).on('click', '.rule .remove', function(event) {
 		event.preventDefault();
 		var b = $(this), p = b.parent(), fs = p.parent(), f = $('form');
 		if ($('.rule', fs).length > 1) p.remove();
@@ -37,16 +38,16 @@ $(function() {
 		return false;
 	});
 	
-	$('.rule select').live('change',function(){
+	$(document).on('change', '.rule select', function(){
 		var s = $(this), p = s.parent(), i = $('input',p), v = s.val(), g = v=='global', iv = i.val(), o = i.attr('old');
 		i.val(g?'':o).toggleAttr('disabled',g);
 	});
-	$('.rule input').live('change',function(){
+	$(document).on('change', '.rule input', function(){
 		var i = $(this), v = i.val();
 		i.attr('old',v);
 	});
 
-	$('.controls .add').live('click',function(event) {
+	$(document).on('click', '.controls .add', function(event) {
 		event.preventDefault();
 		var slen = $('.styleseditor fieldset').length,
 			stpl = tpl2.replace(/\{CODE\}/g,'').replace(/\{NUM\}/g,slen),
@@ -58,7 +59,7 @@ $(function() {
 		return false;
 	})
 
-	$('.controls .remove').live('click',function(event) {
+	$(document).on('click', '.controls .remove', function(event) {
 		event.preventDefault();
 		var b = $(this), section = b.parent().parent();
 		section.remove();
@@ -66,7 +67,7 @@ $(function() {
 		return false;
 	})
 	
-	$('#save').live('click',function(event) {
+	$(document).on('click', '#save', function(event) {
 		var data = {}, id = $(this).val();
 		data = { "enabled":datain.enabled, "name" : $('.stitle input').val(), "url" : datain.url, "updateUrl" : datain.updateUrl, "sections" : [] };
 
@@ -105,7 +106,7 @@ $(function() {
 		if (!event.altKey) window.location = safari.extension.baseURI + "manage.html";
 	});
 
-	$('#back').live('click',function(event) {
+	$(document).on('click', '#back', function(event) {
 		event.preventDefault();
 		window.location = safari.extension.baseURI + "manage.html";
 		return false;
@@ -139,7 +140,7 @@ $(function() {
 		var html = $(tpl1.replace(/\{TITLE\}/g,json.name).replace(/\{ID\}/g,id).replace(/\{H1\}/g,h1)), stpl ='',
 			b = $('#content');
 		b.append(html);
-		$.each(json.sections,function(i1,section) {
+		$.each(json.sections,function(i1, section) {
 			stpl = tpl2.replace(/\{NUM\}/g,i1);
 			var rules1='', rules2 ='', rules3 ='', rules4 = '';
 			$.each(section.urls,function(i2, rule) {
@@ -164,7 +165,7 @@ $(function() {
 			}
 			
 			$('.styleseditor').append($(stpl.replace(/\{RULES\}/g,rules1+rules2+rules3+rules4)));
-			$('.styleseditor textarea').last().val(section.code).attr('rows',section.code.length>400?16:6);
+			$('.styleseditor textarea').last().val(section.code).attr('rows',section.code.length>400?32:16);
 
 		});
 		$('#save').val(id);
