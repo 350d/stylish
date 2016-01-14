@@ -267,6 +267,7 @@ window.onerror = function(message, url, line) {
 function error(message, url, line) {
 	analytics({type:'event', category: 'Error', action: getfilename(url), label: message + ' (' + line + ')', value: line});
 	analytics({type:'exception', description: message + ' ('+getfilename(url)+' '+line+')', fatal: message.indexOf('atal')>0});
+	console.error(message);
 };
 
 function getfilename(url) {

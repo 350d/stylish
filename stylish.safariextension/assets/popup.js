@@ -8,23 +8,19 @@ function f() {
 };
 
 function events(event) {
+	event.preventDefault();
 	var t = event.target || event.srcElement,
 		c = t.className;
+	if (c.match(/nostyles/)) return false;
 	if (c.match(/style/)) {
-		event.preventDefault();
 		var id = t.id,
 			json = JSON.parse(DB.get(id));
-		pingAll((json.enabled = !json.enabled)?"enableStyle":"disableStyle",{"id":id})
+		pingAll((json.enabled = !json.enabled) ? "enableStyle" : "disableStyle", {"id":id})
 		DB.set(id,JSON.stringify(json));
 		t.className = 'style ani ' + (c.match(/off/)?'on':'off');
-		//renderList();
-
 		analytics({type:'event', category:'Popup',action:'Toggle',label:json.name,value:id});
-
-		return false;
 	}
 	if (t.id == 'find') {
-		event.preventDefault();
 		var url = safari.application.activeBrowserWindow.activeTab.url,
 			host = getHost(url),
 			newTab;
@@ -33,15 +29,13 @@ function events(event) {
 			newTab.url = safari.extension.baseURI + "search.html#"+host;
 		}
 		safari.self.hide();
-		return false;
 	}
 	if (t.id == 'manage') {
-		event.preventDefault();
 		var newTab = safari.application.activeBrowserWindow.openTab();
 		newTab.url = safari.extension.baseURI + "manage.html";
 		safari.self.hide();
-		return false;
 	}
+	return false;
 };
 
 function validate(event) {
@@ -50,7 +44,7 @@ function validate(event) {
 
 function renderList() {
 	if (DB.size()) {
-		var url = safari.application.activeBrowserWindow.activeTab.url,
+		var url = safari.application.activeBrowserWindow.activeTab.url || '',
 			html = '',
 			counter1 = 0,
 			counter2 = 0;

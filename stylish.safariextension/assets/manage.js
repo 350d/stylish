@@ -148,7 +148,7 @@ function checkUpdate(id) {
 	var dd = $('dd[rev="'+id+'"]'),
 		b = $('button.checkupdate[rel="'+id+'"]'),
 		json = $.parseJSON(DB.get(id)),
-		updateurl = json.updateUrl || 'https://userstyles.org/styles/chrome/'+id+'.json';
+		updateurl = json.hasOwnProperty('updateUrl') ? json.updateUrl : 'https://userstyles.org/styles/chrome/'+id+'.json';
 
 	b.text('Checking...');
 	$('span.busy, span.message',dd).remove();
