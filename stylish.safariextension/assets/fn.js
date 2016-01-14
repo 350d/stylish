@@ -204,7 +204,7 @@ function g(id) {
 	return document.getElementById(id);
 };
 
-function uuid() {
+function uuid_v4() {
 	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
 	    var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
 	    return v.toString(16);
@@ -212,7 +212,7 @@ function uuid() {
 }
 
 function analytics(data) {
-	if (!DB.check('uuid')) DB.set('uuid',uuid());
+	if (!DB.check('uuid')) DB.set('uuid',uuid_v4());
 	var uaid = 'UA-72374231-1',
 		uuid = DB.get('uuid'),
 		payload_data = {
@@ -248,9 +248,33 @@ function analytics(data) {
 				dt: data.title
 			}
 		break;
+		case 'exception':
+			options = {
+				t: 'exception',
+				exd: data.description,
+				exf: data.fatal
+			}
+		break;
 	}
 	post('http://www.google-analytics.com/collect', extend(payload_data,options));
 };
+
+window.onerror = function(message, url, line) {
+	error(message, url, line);
+	return true;
+};
+
+function error(message, url, line) {
+	analytics({type:'event', category: 'Error', action: getfilename(url), label: message + ' (' + line + ')', value: line});
+	analytics({type:'exception', description: message + ' ('+getfilename(url)+' '+line+')', fatal: message.indexOf('atal')>0});
+};
+
+function getfilename(url) {
+	url = url.substring(0, (url.indexOf("#") < 0) ? url.length : url.indexOf("#"));
+	url = url.substring(0, (url.indexOf("?") < 0) ? url.length : url.indexOf("?"));
+	url = url.substring(url.lastIndexOf("/") + 1, url.length);
+	return url;
+}
 
 function log(l) {
 	console.log(l);

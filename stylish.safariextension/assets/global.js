@@ -98,6 +98,12 @@ function pong(event) {
 			safari.extension.settings.unreadMessages = m;
 			safari.extension.toolbarItems[0].badge = m;
 		break;
+		case 'analytics':
+			analytics(m);
+		break;
+		case 'error':
+			error(m);
+		break;
 	}
 }
 
