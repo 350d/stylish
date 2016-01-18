@@ -1,11 +1,7 @@
 var DB = safari.extension.globalPage.contentWindow.DB;
 
 document.addEventListener('click', events, false);
-document.addEventListener('DOMContentLoaded',f);
-
-function f() {
-	renderList();
-};
+document.addEventListener('DOMContentLoaded', validate);
 
 function events(event) {
 	event.preventDefault();
@@ -43,11 +39,13 @@ function validate(event) {
 };
 
 function renderList() {
-	if (DB.size()) {
-		var url = safari.application.activeBrowserWindow.activeTab.url || '',
-			html = '',
-			counter1 = 0,
-			counter2 = 0;
+	var html = '',
+		empty = '<li class="style nostyles ani">No styles for this page...</li>',
+		counter1 = 0,
+		counter2 = 0;
+	if (DB.size() && safari.application.activeBrowserWindow.hasOwnProperty('activeTab')) {
+		var url = safari.application.activeBrowserWindow.activeTab.url
+			
 		for (var i=0;i<DB.size();i++) {
 			var id = DB.key(i);
 			if (id != 'uuid') {
@@ -69,8 +67,6 @@ function renderList() {
 				}
 			}
 		}
-		if (html=='') html = '<li class="style nostyles ani">No styles for this page...</li>';
-		g('styleslist').innerHTML = html;
 		
 		if (counter1>0) {
 			//safari.extension.settings.unreadMessages = 0;
@@ -80,6 +76,7 @@ function renderList() {
 			//safari.extension.toolbarItems[0].badge = 0;
 		}
 	}
+	g('styleslist').innerHTML = html ? html : empty;
 };
 
 function ping(name, data) {
