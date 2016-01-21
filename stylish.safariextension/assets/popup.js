@@ -43,7 +43,8 @@ function renderList() {
 		empty = '<li class="style nostyles ani">No styles for this page...</li>',
 		counter1 = 0,
 		counter2 = 0;
-	if (DB.size() && safari.application.activeBrowserWindow.hasOwnProperty('activeTab')) {
+
+	if (safari && DB.size() && check_nested(safari, 'application', 'activeBrowserWindow', 'activeTab')) {
 		var url = safari.application.activeBrowserWindow.activeTab.url
 			
 		for (var i=0;i<DB.size();i++) {

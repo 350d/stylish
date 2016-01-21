@@ -204,6 +204,18 @@ function g(id) {
 	return document.getElementById(id);
 };
 
+function check_nested(obj) {
+	var args = Array.prototype.slice.call(arguments, 1);
+
+	for (var i = 0; i < args.length; i++) {
+		if (!obj || !obj.hasOwnProperty(args[i])) {
+			return false;
+		}
+		obj = obj[args[i]];
+	}
+	return true;
+}
+
 function uuid_v4() {
 	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
 	    var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
