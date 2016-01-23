@@ -260,13 +260,6 @@ function log(e) {
 	console.log(e);
 };
 
-function uuid_v4() {
-	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-	    var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-	    return v.toString(16);
-	});
-}
-
 function analytics(data) {
 	if (!DB.check('uuid')) DB.set('uuid',uuid_v4());
 	var uaid = 'UA-72374231-1',
@@ -325,13 +318,6 @@ function error(m) {
 	analytics({type:'exception', description: m.message + ' ('+getfilename(m.url)+' '+m.line+')'});
 	console.error(message);
 };
-
-function getfilename(url) {
-	url = url.substring(0, (url.indexOf("#") < 0) ? url.length : url.indexOf("#"));
-	url = url.substring(0, (url.indexOf("?") < 0) ? url.length : url.indexOf("?"));
-	url = url.substring(url.lastIndexOf("/") + 1, url.length);
-	return url;
-}
 
 safari.application.addEventListener("message", pong, true);
 safari.application.addEventListener("command", command, false);

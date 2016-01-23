@@ -14,7 +14,7 @@ function events(event) {
 		pingAll((json.enabled = !json.enabled) ? "enableStyle" : "disableStyle", {"id":id})
 		DB.set(id,JSON.stringify(json));
 		t.className = 'style ani ' + (c.match(/off/)?'on':'off');
-		analytics({type:'event', category:'Popup',action:'Toggle',label:json.name,value:id});
+		ping('analytics', {type:'event', category:'Popup', action:'Toggle', label:json.name, value:id});
 	}
 	if (t.id == 'find') {
 		var url = safari.application.activeBrowserWindow.activeTab.url,
