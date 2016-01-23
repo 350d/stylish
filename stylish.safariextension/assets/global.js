@@ -1,8 +1,44 @@
+var DB = {
+	set: function(name, data) {	
+		safari.extension.settings.setItem(name, data);
+		return;
+	},
+	get: function(name) {
+		return safari.extension.settings.getItem(name);
+	},
+	delete: function(name) {
+		safari.extension.settings.removeItem(name);
+		return;
+	},
+	clear: function() {
+		safari.extension.settings.clear();
+		return;
+	},
+	size: function() {
+		return Object.keys(safari.extension.settings).length;
+	},
+	key: function(i) {
+		return Object.keys(safari.extension.settings)[i];
+	},
+	check: function(name) {
+		return !(DB.get(name) === null);
+	},
+	upgrade: function() {
+		var name, value;
+    	for (name in localStorage) {
+			value = localStorage.getItem(name);
+			if (!(value === null)) DB.set(name, value);
+		}
+		localStorage.clear();
+		return;
+    }
+}
+
+DB.upgrade();
+
 var usss = 'https://userstyles.org/styles/browse/', href,
 	w = window,
 	page;
-
-analytics({type:'screenview',title:'Global'});
 
 function ping(event, name, data) {
 	if ( page = event.target.page) {
@@ -224,5 +260,80 @@ function log(e) {
 	console.log(e);
 };
 
+function uuid_v4() {
+	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
+	    var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
+	    return v.toString(16);
+	});
+}
+
+function analytics(data) {
+	if (!DB.check('uuid')) DB.set('uuid',uuid_v4());
+	var uaid = 'UA-72374231-1',
+		uuid = DB.get('uuid'),
+		payload_data = {
+			v: 1,
+			tid: uaid,
+			cid: uuid,
+			ds: 'app',
+			av: version,
+			an: 'Stylish for Safari'
+		},
+		options;
+	switch(data.type){
+		case 'event':
+			options = {
+				t: 'event',
+				ec: data.category,
+				ea: data.action,
+				el: data.label,
+				ev: data.value
+			}
+		break;
+		case 'screenview':
+			options = {
+				t: 'screenview',
+				cd: data.title
+			}
+		break;
+		case 'pageview':
+			options = {
+				t: 'pageview',
+				dh: data.host,
+				dp: data.page,
+				dt: data.title
+			}
+		break;
+		case 'exception':
+			options = {
+				t: 'exception',
+				exd: data.description,
+				exf: data.fatal
+			}
+		break;
+	}
+	post('http://www.google-analytics.com/collect', extend(payload_data,options));
+};
+
+window.onerror = function(message, url, line) {
+	error({message: message, url: url, line: line});
+	return true;
+};
+
+function error(m) {
+	analytics({type:'event', category: 'Error', action: getfilename(m.url), label: m.message + ' (' + m.line + ')', value: m.line});
+	analytics({type:'exception', description: m.message + ' ('+getfilename(m.url)+' '+m.line+')'});
+	console.error(message);
+};
+
+function getfilename(url) {
+	url = url.substring(0, (url.indexOf("#") < 0) ? url.length : url.indexOf("#"));
+	url = url.substring(0, (url.indexOf("?") < 0) ? url.length : url.indexOf("?"));
+	url = url.substring(url.lastIndexOf("/") + 1, url.length);
+	return url;
+}
+
 safari.application.addEventListener("message", pong, true);
 safari.application.addEventListener("command", command, false);
+
+analytics({type:'screenview', title:'Global'});

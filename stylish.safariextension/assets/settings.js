@@ -8,7 +8,7 @@ $(function() {
 
 	navInit();
 
-	analytics({type:'screenview',title:'Settings'});
+	ping('analytics', {type:'screenview',title:'Settings'});
 	
 /*
 

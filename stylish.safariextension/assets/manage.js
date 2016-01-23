@@ -1,7 +1,7 @@
 $(function() {
 	navInit();
 	ping("getInstalledStyles",'');
-	analytics({type:'screenview',title:'Manage'});
+	ping('analytics', {type:'screenview',title:'Manage'});
 });
 
 var busy = false;
@@ -26,10 +26,10 @@ function pong(event) {
 
 function renderStylesList(m) {
 	var content = $('#content').empty(), list = $('<dl/>',{id:'styleslist'}).appendTo(content);
-	$.each(m,function(i,el){
+	$.each(m, function(i, el){
 		el.enabled = $.parseJSON(el.json).enabled;
 	});
-	$.each(sortData(m,'enabled'), function(i,el) {
+	$.each(sortData(m, 'enabled'), function(i, el) {
 
 		var json = $.parseJSON(el.json), domains = $('<ul/>',{'class':'applies'}), custom = (el.id.length > 12);
 
@@ -49,9 +49,32 @@ function renderStylesList(m) {
 					domains.append($('<li/>',{text:'Regexp', title:el}));
 				});
 			})
-		domains.html(domains.children().slice(0,8));
+		//domains.html(domains.children().slice(0,8));
+		var all_domains = domains.children(),
+			total_domains = all_domains.length;
+		if (total_domains > 8) {
+			all_domains.eq(7).after('<li class="more">+'+(total_domains-8)+' more</li>').next().nextAll().hide();
+		}
+		
 		list.append(
-			$('<dt/>',{id:el.id,text:json.name,'class':json.enabled?'enabled':'disabled'}).data('json',json).append(custom?$('<span/>',{'class':'badge',text:'Custom'}):$('<a/>',{'class':'badge userstyles ani',text:'Userstyles.org',href:'https://userstyles.org/styles/'+el.id,target:'_blank',title:'Link to original style'})),
+			$('<dt/>',{
+				id: el.id,
+				text: json.name,
+				'class': json.enabled ? 'enabled' : 'disabled'
+			}).data({
+				json: json
+			}).append(
+				custom ? $('<span/>', {
+					'class': 'badge',
+					text: 'Custom'
+				}) : $('<a/>', {
+					'class': 'badge userstyles ani',
+					text: 'Userstyles.org',
+					href: 'https://userstyles.org/styles/'+el.id,
+					target: '_blank',
+					title: 'Link to original style'
+				})
+			),
 			$('<dd/>',{rev:el.id,'class':(json.enabled?'enabled':'disabled')+(custom?' custom':'')}).append(
 				domains,
 				$('<button/>',{rel:el.id,text:'Edit','class':'edit'}),
@@ -67,9 +90,9 @@ function renderStylesList(m) {
 	$('.toggle').click(function() {
 		var b = $(this), s = b.text(), id = b.attr('rel'), json = $('#'+id).data('json');
 		b.text( (s=='Enable')?'Disable':'Enable' );
-		$('#'+id+', dd[rev="'+id+'"]').attr('class', s=='Disable'?'disabled':'enabled')
+		$('#'+id+', dd[rev="'+id+'"]').removeClass('enabled disabled').addClass(s=='Disable'?'disabled':'enabled')
 		ping(s.toLowerCase()+'Style', {"id":id});
-		analytics({type:'event', category:'Style',action:'Toggle',label:json.name,value:id});
+		ping('analytics', {type:'event', category:'Style',action:'Toggle',label:json.name,value:id});
 		return false;
 	})
 	
@@ -78,7 +101,7 @@ function renderStylesList(m) {
 		$('#'+id).add(b.parent()).fadeOut();
 		ping('deleteStyle', {"id":id});
 
-		analytics({type:'event', category:'Style',action:'Delete',label:json.name,value:id});
+		ping('analytics', {type:'event', category:'Style',action:'Delete',label:json.name,value:id});
 
 		return false;
 	})
@@ -111,7 +134,7 @@ function renderStylesList(m) {
 		});
 		*/
 
-		analytics({type:'event', category:'Style',action:'Check Update',label:json.name,value:id});
+		ping('analytics', {type:'event', category:'Style',action:'Check Update',label:json.name,value:id});
 
 		return false;
 	})
@@ -120,9 +143,9 @@ function renderStylesList(m) {
 		var b = $(this), id = b.attr('rel'), json = $('#'+id).data('newjson'), dd = $('dd[rev="'+id+'"]');
 		$('span.message',dd).remove();
 		b.text('Updated!').delay(2000).fadeIn(function() {$(this).text('Update').hide().prev().show()});
-		$('#'+id).data('json',json);
-		ping("saveStyle",{"id":id,"json":json});
-		analytics({type:'event', category:'Style',action:'Update',label:json.name,value:id});
+		$('#'+id).data({ json: json});
+		ping("saveStyle", {"id":id,"json":json});
+		ping('analytics', {type:'event', category:'Style',action:'Update',label:json.name,value:id});
 	});
 	
 	$('.edit').click(function() {
@@ -147,7 +170,7 @@ function updateAvailable(id) {
 function checkUpdate(id) {
 	var dd = $('dd[rev="'+id+'"]'),
 		b = $('button.checkupdate[rel="'+id+'"]'),
-		json = $.parseJSON(DB.get(id)),
+		json = $('#'+id).data(json),
 		updateurl = json.hasOwnProperty('updateUrl') ? json.updateUrl : 'https://userstyles.org/styles/chrome/'+id+'.json';
 
 	b.text('Checking...');
@@ -160,10 +183,10 @@ function checkUpdate(id) {
 	$.getJSON(updateurl,function(data) {
 		$('span.busy', dd).attr('class','message');
 		data.enabled = true;
-		if ( JSON.stringify(json).hashCode()!=JSON.stringify(data).hashCode() ) {
+		if ( JSON.stringify(json).hashCode() != JSON.stringify(data).hashCode() ) {
 			b.hide().text('Check Updates').next().show();
 			$('span.message',dd).text('Update available!');
-			$('#'+id).data('newjson',data);
+			$('#'+id).data('newjson', data);
 		} else {
 			$('span.message',dd).text('No updates found...');
 			b.delay(4000).fadeIn(function() {

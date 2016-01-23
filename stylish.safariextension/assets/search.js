@@ -2,7 +2,7 @@ $(function() {
 
 	navInit();
 
-	analytics({type:'screenview',title:'Search'});
+	ping('analytics', {type:'screenview',title:'Search'});
 	
 	var dl = document.location,
 		hash = dl.hash.substr(1),
@@ -22,9 +22,9 @@ $(function() {
 			s.removeClass('busy').addClass('installed');
 			json.enabled = true;
 			$.get('https://userstyles.org/styles/install/1?source=stylish-sf');
-			ping("saveStyle",{"id":id,"json":json});
+			ping("saveStyle", {"id":id,"json":json});
 
-			analytics({type:'event', category:'Style',action:'Install',label:json.name,value:id});
+			ping('analytics', {type:'event', category:'Style',action:'Install',label:json.name,value:id});
 		});
 	});
 	
@@ -242,8 +242,8 @@ function log(l) {
 	console.log(l);
 }
 
-function ping(name,data) {
-	safari.self.tab.dispatchMessage(name,data);
+function ping(name, data) {
+	safari.self.tab.dispatchMessage(name, data);
 }
 
 function pong(event) {

@@ -1,5 +1,7 @@
 version = getVersion();
 
+/* Switch to ext.settings from localStorage (since 1.8.7)
+
 DB = {
 	set: function(name, data) {	
 		localStorage.setItem(name,data);
@@ -23,6 +25,8 @@ DB = {
 		return !(localStorage.getItem(name) === null);
 	}
 }
+
+*/
 
 function getVersion() {
 	var keys = (new DOMParser()).parseFromString(ajax('info.plist', false).replace(/\r|\n|\t/gm,''),"text/xml").getElementsByTagName('key');
@@ -216,78 +220,16 @@ function check_nested(obj) {
 	return true;
 }
 
-function uuid_v4() {
-	return 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function(c) {
-	    var r = Math.random()*16|0, v = c == 'x' ? r : (r&0x3|0x8);
-	    return v.toString(16);
-	});
-}
-
-function analytics(data) {
-	if (!DB.check('uuid')) DB.set('uuid',uuid_v4());
-	var uaid = 'UA-72374231-1',
-		uuid = DB.get('uuid'),
-		payload_data = {
-			v: 1,
-			tid: uaid,
-			cid: uuid,
-			ds: 'app',
-			av: version,
-			an: 'Stylish for Safari'
-		},
-		options;
-	switch(data.type){
-		case 'event':
-			options = {
-				t: 'event',
-				ec: data.category,
-				ea: data.action,
-				el: data.label,
-				ev: data.value
-			}
-		break;
-		case 'screenview':
-			options = {
-				t: 'screenview',
-				cd: data.title
-			}
-		break;
-		case 'pageview':
-			options = {
-				t: 'pageview',
-				dh: data.host,
-				dp: data.page,
-				dt: data.title
-			}
-		break;
-		case 'exception':
-			options = {
-				t: 'exception',
-				exd: data.description,
-				exf: data.fatal
-			}
-		break;
-	}
-	post('http://www.google-analytics.com/collect', extend(payload_data,options));
-};
-
 window.onerror = function(message, url, line) {
-	error(message, url, line);
+	error({message: message, url: url, line: line});
 	return true;
 };
 
-function error(message, url, line) {
-	analytics({type:'event', category: 'Error', action: getfilename(url), label: message + ' (' + line + ')', value: line});
-	analytics({type:'exception', description: message + ' ('+getfilename(url)+' '+line+')', fatal: message.indexOf('atal')>0});
+function error(m) {
+	ping('analytics', {type:'event', category: 'Error', action: getfilename(m.url), label: m.message + ' (' + m.line + ')', value: m.line});
+	ping('analytics', {type:'exception', description: m.message + ' ('+getfilename(m.url)+' '+m.line+')'});
 	console.error(message);
 };
-
-function getfilename(url) {
-	url = url.substring(0, (url.indexOf("#") < 0) ? url.length : url.indexOf("#"));
-	url = url.substring(0, (url.indexOf("?") < 0) ? url.length : url.indexOf("?"));
-	url = url.substring(url.lastIndexOf("/") + 1, url.length);
-	return url;
-}
 
 function log(l) {
 	console.log(l);

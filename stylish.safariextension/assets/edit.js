@@ -10,7 +10,7 @@ var tpl1 = '<dl><dt>{H1}</dt><dd class="editor"><form id="{ID}" class="stylesedi
 $(function() {
 	$('body').append('<iframe src="https://www.facebook.com/plugins/like.php?locale=en_US&amp;href=https://www.facebook.com/safaristylish&amp;send=true&amp;layout=button_count&amp;width=125&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font=arial&amp;height=20" frameborder="0" scrolling="no" id="fblike></iframe> ');
 	navInit();
-	analytics({type:'screenview',title:'Edit'});
+	ping('analytics', {type:'screenview',title:'Edit'});
 	var b = $('#content');
 	
 	$.fn.toggleAttr = function(a,b) {
