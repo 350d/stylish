@@ -29,7 +29,7 @@ DB = {
 */
 
 function getVersion() {
-	var keys = (new DOMParser()).parseFromString(ajax('info.plist', false).replace(/\r|\n|\t/gm,''),"text/xml").getElementsByTagName('key');
+	var keys = (new DOMParser()).parseFromString(ajax('Info.plist', false).replace(/\r|\n|\t/gm,''),"text/xml").getElementsByTagName('key');
 	for (var i=0; i<keys.length; i++) {
 		//log(keys[i].textContent, keys[i].nextSibling.textContent);
 		if (keys[i].textContent == 'CFBundleVersion') return keys[i].nextSibling.textContent;
@@ -66,10 +66,12 @@ function filterSection(href, section) {
 	}
 	if (section.regexps && !found) {
 		section.regexps.forEach(function(regexp) {
-			if ((new RegExp(regexp)).test(href)) {
-				found = true;
-				return;
-			}
+			try {
+				if ((new RegExp(regexp)).test(href)) {
+					found = true;
+					return;
+				}
+			} catch(error){}
 		});
 	}
 	return found ? true : false;
