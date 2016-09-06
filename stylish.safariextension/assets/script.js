@@ -1,6 +1,7 @@
 var d = document,
 	dl = d.location,
-	w = window;
+	w = window,
+	domready = false;
 
 if (typeof(safari) == 'object') {
 	ping('getStyles', dl.href);
@@ -27,7 +28,18 @@ function injectStyle(css,id) {
 	style.setAttribute('type', 'text/css');
 	css = minify_css(css);
 	style.innerText = css.replace(regex_timer,timer).replace(regex_rnd,rnd);
-	(d.head || d.documentElement).appendChild(style, null);
+	//(d.body || d.documentElement || d.head).appendChild(style, null);
+	//d.documentElement.appendChild(style, null);
+
+	if (!domready) {
+		d.addEventListener('DOMContentLoaded', function(){
+		    (d.body || d.documentElement || d.head).appendChild(style, null);
+		    domready = true;
+		}, false);
+	} else {
+		(d.body || d.documentElement || d.head).appendChild(style, null);
+	}
+
 }
 
 function removeStyle(id) {

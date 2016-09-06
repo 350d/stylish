@@ -236,7 +236,7 @@ function findMore() {
 
 function saveData(id,data) {
 	data.enabled = true;
-	DB.set(id,JSON.stringify(data));
+	DB.set(id, JSON.stringify(data));
 }
 
 function getHost(url) {
