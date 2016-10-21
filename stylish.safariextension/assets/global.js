@@ -88,7 +88,7 @@ function pong(event) {
 
 					var id = DB.key(i);
 
-					if (id != 'uuid') {
+					if (id != 'uuid' && id != 'hideFindMore') {
 						list.push(
 							{'id':id,'json':DB.get(id)}
 						);
@@ -104,7 +104,7 @@ function pong(event) {
 			if (l = DB.size()) {
 				for (var i=0;i<l;i++) {
 					var id = DB.key(i);
-					if (id != 'uuid') {
+					if (id != 'uuid' && id != 'hideFindMore') {
 						var json = JSON.parse(DB.get(id)),
 							id = DB.key(i),
 							filter, css;
@@ -134,6 +134,12 @@ function pong(event) {
 			safari.extension.settings.unreadMessages = m;
 			safari.extension.toolbarItems[0].badge = m;
 		break;
+		case 'getFindMore':
+			ping(event, 'setFindMore', safari.extension.settings.hideFindMore);
+		break;
+		case 'hideFindMore':
+			safari.extension.settings.hideFindMore = m;
+		break;
 		case 'analytics':
 			analytics(m);
 		break;
@@ -150,6 +156,14 @@ function command(event) {
 		case 'findmore':
 			findMore();
 		break;
+	}
+}
+
+function validate(event) {
+	if (event.target.identifier == 'findmore') {
+		if (safari.extension.settings.hideFindMore === true) {
+			event.target.disabled = true;
+		}
 	}
 }
 
@@ -240,10 +254,10 @@ function saveData(id,data) {
 }
 
 function getHost(url) {
-    var a = document.createElement('a'), host;
-    a.href = url;
+  var a = document.createElement('a'), host;
+  a.href = url;
 	host = a.hostname.replace('www.','');
-    return host;
+  return host;
 }
 
 function installStyle(m) {
@@ -321,5 +335,6 @@ function error(m) {
 
 safari.application.addEventListener("message", pong, true);
 safari.application.addEventListener("command", command, false);
+safari.application.addEventListener("validate", validate, false);
 
 analytics({type:'screenview', title:'Global'});
