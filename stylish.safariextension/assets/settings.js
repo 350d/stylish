@@ -98,6 +98,10 @@ $(function() {
 			$('.importexportform').removeClass('busy')
 		});
 	});
+
+	$('#hidefindmore').change(function() {
+		ping('hideFindMore', this.checked);
+	});
 });
 
 $.fn.extend({
@@ -172,9 +176,18 @@ function pong(event) {
 		case 'setInstalledStyles':
 			updateStylesInfo(m);
 		break;
+		case 'setFindMore':
+			document.getElementById("hidefindmore").checked = m;
+		break;
 	}
 }
 
 function log(e) {console.log(e)};
 
-function ping(name,data) {safari.self.tab.dispatchMessage(name,data)};safari.self.addEventListener("message", pong, true);
+function restore() {
+	ping('getFindMore','');
+}
+
+function ping(name,data) {safari.self.tab.dispatchMessage(name,data);}
+safari.self.addEventListener("message", pong, true);
+document.addEventListener("DOMContentLoaded", restore);
