@@ -17,7 +17,7 @@ if (typeof(safari) == 'object') {
 	});
 	
 	d.addEventListener("DOMSubtreeModified", function(event) {
-		if (!busy && page_styles.length && event.target.localName == 'body') {
+		if (!busy && Object.size(page_styles) && event.target.localName == 'body') {
 			checkStyles(page_styles);
 		}
 	});
@@ -27,7 +27,7 @@ if (typeof(safari) == 'object') {
 	};
 }
 
-function injectStyle(css, id) {
+function injectStyle(css, id, element) {
 	if (!dl.host) return;
 //	if (w != w.top) return;
 	removeStyle(id);
@@ -35,13 +35,16 @@ function injectStyle(css, id) {
 		regex_rnd = /\?rnd=(.\d)/gi,
 		time = (new Date()).getTime(),
 		timer = function(s,n) {return '?timer='+Math.floor(time/(1000*parseInt(n)))}, // Cahche images for 10 minutes
-		rnd = '?rnd='+Math.random(),
+		rnd = '?rnd='+Math.random(), style = element ? element : false;
+	
+	if (!style) {
 		style = d.createElement('style');
-	style.setAttribute('id', '' + id);
-	style.style.display = 'none !important';
-	style.setAttribute('type', 'text/css');
-	if (settings.minify) css = minify_css(css);
-	style.innerText = css.replace(regex_timer, timer).replace(regex_rnd, rnd);
+		style.setAttribute('id', '' + id);
+		style.style.display = 'none !important';
+		style.setAttribute('type', 'text/css');
+		if (settings.minify) css = minify_css(css);
+		style.innerText = css.replace(regex_timer, timer).replace(regex_rnd, rnd);
+	}
 
 	inject(style);
 
@@ -59,7 +62,7 @@ function injectStyle(css, id) {
 	function inject(style) {
 		busy = true;
 		(d.body || d.documentElement || d.head).appendChild(style, null);
-		if (!page_styles.hasOwnProperty(id)) page_styles[id] = css;
+		if (!page_styles.hasOwnProperty(id)) page_styles[id] = {css: css, element: style};
 		busy = false;
 	};
 }
@@ -70,7 +73,7 @@ function checkStyle(id) {
 
 function checkStyles(page_styles) {
 	for (var id in page_styles) {
-		if (!checkStyle(id)) injectStyle(page_styles[id], id);
+		if (!checkStyle(id)) injectStyle(page_styles[id]['css'], id, page_styles[id]['element']);
 	}
 }
 
@@ -257,6 +260,12 @@ function serialize(form, as_json) {
 		return pushState.apply(history, arguments);
 	}
 })(w.history);
+
+Object.size = function(obj) {
+	var size = 0, key;
+	for (key in obj) if (obj.hasOwnProperty(key)) size++;
+	return size;
+};
 
 function minify_css(css){
 	var before = css.length,
