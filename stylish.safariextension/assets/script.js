@@ -5,8 +5,8 @@ var d = document,
 	settings;
 
 if (typeof(safari) == 'object') {
-	ping('getStyles', dl.href);
 	safari.self.addEventListener("message", pong, false);
+	ping('getStyles', dl.href);
 	d.addEventListener("stylishInstall", function(event) {pong(event);},false);
 	d.addEventListener("stylishUpdate", function(event) {pong(event);},false);
 	d.addEventListener('DOMContentLoaded', function(){
@@ -62,7 +62,7 @@ function pong(event) {
 		metaid = getMeta('stylish-id-url')?getMeta('stylish-id-url').replace(/^https?:\/\/userstyles.org\/styles\//,''):false;
 	switch(n) {
 		case 'injectStyle':
-			if ( m.settings) settings = m.settings;
+			if (m.settings) settings = m.settings;
 			if (m.location == dl.href) injectStyle(m.css, m.id);
 		break;
 		case 'removeStyle':
