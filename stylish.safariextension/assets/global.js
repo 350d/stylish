@@ -24,21 +24,52 @@ var DB = {
 		return !(DB.get(name) === null);
 	},
 	upgrade: function() {
-		var name, value;
-    	for (name in localStorage) {
-			value = localStorage.getItem(name);
-			if (!(value === null)) DB.set(name, value);
+		var name, value,
+			dbversion = DB.check('dbversion') ? DB.get('dbversion') : 1;
+
+		if (dbversion < 3) {
+
+			// v2
+			// moving from localStorage to safari.extension.settings
+
+			for (name in localStorage) {
+				value = localStorage.getItem(name);
+				if (!(value === null)) DB.set(name, value);
+			}
+			localStorage.clear();
+
+			// v3
+			// remove old json stringify method
+
+			for (id in safari.extension.settings) {
+
+				if (skip_items.indexOf(id) < 0 && typeof DB.get(id) == 'string') {
+					DB.set(id, JSON.parse(DB.get(id)));
+				}
+
+				DB.set('dbversion', 3);
+			}
+			
+			DB.set('settings', default_settings);
+
 		}
-		localStorage.clear();
+
 		return;
     }
 }
 
-DB.upgrade();
-
 var usss = 'https://userstyles.org/styles/browse/', href,
 	w = window,
-	page;
+	page,
+	skip_items = ['uuid', 'settings', 'dbversion'],
+	default_settings = {
+		context: 'on',
+		minify: 'on',
+		tracking: 'on'
+	},
+	settings = loadSettings();
+
+DB.upgrade();
 
 function ping(event, name, data) {
 	if ( page = event.target.page) {
@@ -56,27 +87,27 @@ function pong(event) {
 			installStyle(m);
 		break;
 		case 'saveStyle':
-			saveData(m.id,m.json);
-			if (!m.import) pingAll('applyStyle', {"id":m.id});
+			saveData(m.id, m.json);
+			if (!m.import) pingAll('applyStyle', {id: m.id});
 		break;
 		case 'disableStyle':
 			disableStyle(m.id);
-			pingAll('disableStyle', {"id":m.id});
+			pingAll('disableStyle', {id: m.id});
 		break;
 		case 'enableStyle':
 			enableStyle(m.id);
-			pingAll('enableStyle', {"id":m.id});
+			pingAll('enableStyle', {id: m.id});
 		break;
 		case 'updateStyle':
 			updateStyle(m.id, m.json);
-			pingAll('updateStyle', {"id":m.id,"css":m.json});
+			pingAll('updateStyle', {id:m.id, css: m.json});
 		break;
 		case 'editStyle':
-			pingAll('editStyle', {"id":m.id,"json":DB.get(m.id)});
+			pingAll('editStyle', {id: m.id, json: DB.get(m.id)});
 		break;
 		case 'deleteStyle':
 			deleteStyle(m.id);
-			pingAll('removeStyle', {"id":m.id});
+			pingAll('removeStyle', {id: m.id});
 		break;
 		case 'submitStyle':
 			submitStyle(m.id);
@@ -88,9 +119,9 @@ function pong(event) {
 
 					var id = DB.key(i);
 
-					if (id != 'uuid') {
+					if (skip_items.indexOf(id) < 0) {
 						list.push(
-							{'id':id,'json':DB.get(id)}
+							{id: id, json: DB.get(id)}
 						);
 					}
 				}
@@ -98,20 +129,20 @@ function pong(event) {
 			}
 		break;
 		case 'checkInstall':
-			ping(event, 'checkInstall', DB.size()?DB.check(m):false);
+			ping(event, 'checkInstall', DB.size() ? DB.check(m) : false);
 		break;
 		case 'getStyles':
 			if (l = DB.size()) {
 				for (var i=0;i<l;i++) {
 					var id = DB.key(i);
-					if (id != 'uuid') {
-						var json = JSON.parse(DB.get(id)),
+					if (skip_items.indexOf(id) < 0) {
+						var json = DB.get(id),
 							id = DB.key(i),
 							filter, css;
 						if (json.enabled) {
 							if (filter = json.sections.filter(function(section) { return filterSection(m,section)})) {
 								if (css = filter.map(function(section) {return section.code;}).join("\n")) {
-									ping(event, 'injectStyle', {"css":css, "id":id, "location":m});
+									ping(event, 'injectStyle', {css: css, id: id, location: m, settings: settings});
 								}
 							}
 						}
@@ -120,12 +151,12 @@ function pong(event) {
 			}
 		break;
 		case 'applyStyle':
-			var json = JSON.parse(DB.get(m.id)),
+			var json = DB.get(m.id),
 				filter, css;
 			if (json.enabled) {
 				if (filter = json.sections.filter(function(section) { return filterSection(m.href,section)})) {
 					if (css = filter.map(function(section) {return section.code;}).join("\n")) {
-						ping(event, 'injectStyle', {"css":css, "id":m.id, "location":m.href});
+						ping(event, 'injectStyle', {css: css, id: m.id, location: m.href});
 					}
 				}
 			}
@@ -140,11 +171,34 @@ function pong(event) {
 		case 'error':
 			error(m);
 		break;
+		case 'saveSettings':
+			saveSettings(m);
+		break;
+		case 'loadSettings':
+			ping(event, 'loadSettings', settings);
+		break;
+		
 	}
 }
 
+function loadSettings(option_name) {
+	var obj = DB.get('settings');
+	for (var name in obj) {
+		if (!obj.hasOwnProperty(name)) obj[name] = default_settings[name];
+	};
+	return !option_name ? obj : obj[option_name];
+};
+
+function saveSettings(m) {
+	var obj = {};
+	m.forEach(function(option) {
+		obj[option.name] = option.value;
+	});
+	DB.set('settings', obj);
+	settings = obj;
+};
+
 function command(event) {
-	log(event);
 	var name = event.command;
 	switch(name){
 		case 'findmore':
@@ -154,19 +208,19 @@ function command(event) {
 }
 
 function disableStyle(id) {
-	var json = JSON.parse(DB.get(id));
+	var json = DB.get(id);
 	json.enabled = false;
-	DB.set(id,JSON.stringify(json));
+	DB.set(id, json);
 }
 
 function enableStyle(id) {
-	var json = JSON.parse(DB.get(id));
+	var json = DB.get(id);
 	json.enabled = true;
-	DB.set(id,JSON.stringify(json));	
+	DB.set(id, json);
 }
 
 function updateStyle(id,data) {
-	DB.set(id,JSON.stringify(data));
+	DB.set(id, data);
 }
 
 function deleteStyle(id) {
@@ -174,7 +228,7 @@ function deleteStyle(id) {
 }
 
 function submitStyle(id) {
-	var json = JSON.parse(DB.get(id)), token;
+	var json = DB.get(id), token;
 	log(json);
 
 	var css = '@namespace url(http://www.w3.org/1999/xhtml);@-moz-document domain("facebook.com") {body {}}';
@@ -234,24 +288,24 @@ function findMore() {
 	}
 };
 
-function saveData(id,data) {
-	data.enabled = true;
-	DB.set(id, JSON.stringify(data));
+function saveData(id, json) {
+	json.enabled = json.hasOwnProperty('enabled') ? json.enabled : true;
+	DB.set(id, json);
 }
 
 function getHost(url) {
-    var a = document.createElement('a'), host;
-    a.href = url;
+	var a = document.createElement('a'), host;
+	a.href = url;
 	host = a.hostname.replace('www.','');
-    return host;
+	return host;
 }
 
 function installStyle(m) {
 	var styleurl = 'https://userstyles.org/styles/chrome/'+m.id+'.json';
 	getJSON(styleurl, m.options, function(json) {
-		saveData(m.id,json);
-		pingAll('applyStyle', {"id":m.id});
-		pingAll('updateListing', {"id":m.id});
+		saveData(m.id, json);
+		pingAll('applyStyle', {id: m.id});
+		pingAll('updateListing', {id: m.id});
 	});
 };
 
@@ -261,7 +315,8 @@ function log(e) {
 };
 
 function analytics(data) {
-	if (!DB.check('uuid')) DB.set('uuid',uuid_v4());
+	if (settings.tracking != 'on') return;
+	if (!DB.check('uuid')) DB.set('uuid', uuid_v4());
 	var uaid = 'UA-72374231-1',
 		uuid = DB.get('uuid'),
 		payload_data = {
@@ -314,12 +369,29 @@ window.onerror = function(message, url, line) {
 };
 
 function error(m) {
-	analytics({type:'event', category: 'Error', action: getfilename(m.url), label: m.message + ' (' + m.line + ')', value: m.line});
-	analytics({type:'exception', description: m.message + ' ('+getfilename(m.url)+' '+m.line+')'});
+	if (settings.tracking == 'on') {
+		analytics({type:'event', category: 'Error', action: getfilename(m.url), label: m.message + ' (' + m.line + ')', value: m.line});
+		analytics({type:'exception', description: m.message + ' ('+getfilename(m.url)+' '+m.line+')'});
+	}
 	console.error(message);
 };
 
 safari.application.addEventListener("message", pong, true);
 safari.application.addEventListener("command", command, false);
+safari.application.addEventListener("contextmenu", contextmenu, false);
+safari.application.addEventListener("validate", validate, false);
+
+function validate(event) {
+	if (event.command == 'findmore') {
+		event.target.disabled = settings.context != 'on';
+	}
+	return true;
+};
+function contextmenu(event) {
+//	log(event);
+//	if (event.userInfo === "IMG") {
+//		event.contextMenu.appendContextMenuItem("enlarge", "Enlarge Item");
+//	}
+}
 
 analytics({type:'screenview', title:'Global'});

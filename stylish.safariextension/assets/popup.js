@@ -1,4 +1,6 @@
-var DB = safari.extension.globalPage.contentWindow.DB;
+var DB = safari.extension.globalPage.contentWindow.DB,
+	skip_items = ['uuid', 'settings', 'dbversion'];
+	
 
 document.addEventListener('click', events, false);
 document.addEventListener('DOMContentLoaded', validate);
@@ -10,9 +12,9 @@ function events(event) {
 	if (c.match(/nostyles/)) return false;
 	if (c.match(/style/)) {
 		var id = t.id,
-			json = JSON.parse(DB.get(id));
+			json = DB.get(id);
 		pingAll((json.enabled = !json.enabled) ? "enableStyle" : "disableStyle", {"id":id})
-		DB.set(id,JSON.stringify(json));
+		DB.set(id, json);
 		t.className = 'style ani ' + (c.match(/off/)?'on':'off');
 		ping('analytics', {type:'event', category:'Popup', action:'Toggle', label:json.name, value:id});
 	}
@@ -49,8 +51,8 @@ function renderList() {
 			
 		for (var i=0;i<DB.size();i++) {
 			var id = DB.key(i);
-			if (id != 'uuid') {
-				var json = JSON.parse(DB.get(id)),
+			if (skip_items.indexOf(id) < 0) {
+				var json = DB.get(id),
 					valid;
 				if (json.hasOwnProperty('name') && json.hasOwnProperty('updateUrl') && json.hasOwnProperty('url')) {
 					valid = json.sections.filter(function(section){return filterSection(url,section)});

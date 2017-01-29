@@ -1,19 +1,21 @@
 var d = document,
 	dl = d.location,
 	w = window,
-	domready = false;
+	domready = false,
+	settings;
 
 if (typeof(safari) == 'object') {
 	ping('getStyles', dl.href);
 	safari.self.addEventListener("message", pong, false);
 	d.addEventListener("stylishInstall", function(event) {pong(event);},false);
 	d.addEventListener("stylishUpdate", function(event) {pong(event);},false);
-	d.addEventListener('DOMContentLoaded',function(){
+	d.addEventListener('DOMContentLoaded', function(){
+		domready = true;
 		if (getMeta('stylish-id-url')) userstyles();
 	});
 }
 
-function injectStyle(css,id) {
+function injectStyle(css, id) {
 	if (!dl.host) return;
 //	if (w != w.top) return;
 	removeStyle(id);
@@ -26,19 +28,21 @@ function injectStyle(css,id) {
 	style.setAttribute('id', '' + id);
 	style.style.display = 'none !important';
 	style.setAttribute('type', 'text/css');
-	css = minify_css(css);
-	style.innerText = css.replace(regex_timer,timer).replace(regex_rnd,rnd);
-	//(d.body || d.documentElement || d.head).appendChild(style, null);
-	//d.documentElement.appendChild(style, null);
+	if (settings.minify) css = minify_css(css);
+	style.innerText = css.replace(regex_timer, timer).replace(regex_rnd, rnd);
 
 	if (!domready) {
-		d.addEventListener('DOMContentLoaded', function(){
-		    (d.body || d.documentElement || d.head).appendChild(style, null);
-		    domready = true;
+		d.addEventListener('DOMContentLoaded', function() {
+			inject(style);
+			domready = true;
 		}, false);
 	} else {
-		(d.body || d.documentElement || d.head).appendChild(style, null);
+		inject(style);
 	}
+	
+	function inject(style) {
+		(d.body || d.documentElement || d.head).appendChild(style, null);
+	};
 
 }
 
@@ -58,7 +62,8 @@ function pong(event) {
 		metaid = getMeta('stylish-id-url')?getMeta('stylish-id-url').replace(/^https?:\/\/userstyles.org\/styles\//,''):false;
 	switch(n) {
 		case 'injectStyle':
-			if (m.location == dl.href) injectStyle(m.css,m.id);
+			if ( m.settings) settings = m.settings;
+			if (m.location == dl.href) injectStyle(m.css, m.id);
 		break;
 		case 'removeStyle':
 			removeStyle(m.id);
@@ -77,12 +82,15 @@ function pong(event) {
 			log(m);
 			sendEvent(m?'styleAlreadyInstalled':'styleCanBeInstalled');
 		break;
+		case 'loadSettings':
+			settings = m;
+		break;
 		case 'applyStyle':
 			ping('applyStyle',{'id':m.id, 'href':dl.href});
 			if (metaid && m.id && m.id == metaid) sendEvent('styleAlreadyInstalled');
 		break;
 		case 'log':
-			console.log('Global: ',m);
+			console.log('Global: ', m);
 		break;
 	}
 	switch(type) {

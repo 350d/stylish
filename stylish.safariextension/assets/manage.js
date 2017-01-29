@@ -27,11 +27,11 @@ function pong(event) {
 function renderStylesList(m) {
 	var content = $('#content').empty(), list = $('<dl/>',{id:'styleslist'}).appendTo(content);
 	$.each(m, function(i, el){
-		el.enabled = $.parseJSON(el.json).enabled;
+		el.enabled = el.json.enabled;
 	});
 	$.each(sortData(m, 'enabled'), function(i, el) {
 
-		var json = $.parseJSON(el.json), domains = $('<ul/>',{'class':'applies'}), custom = (el.id.length > 12);
+		var json = el.json, domains = $('<ul/>',{'class':'applies'}), custom = (el.id.length > 12);
 
 			if (json.hidden) return;
 
@@ -77,12 +77,14 @@ function renderStylesList(m) {
 			),
 			$('<dd/>',{rev:el.id,'class':(json.enabled?'enabled':'disabled')+(custom?' custom':'')}).append(
 				domains,
-				$('<button/>',{rel:el.id,text:'Edit','class':'edit'}),
-				$('<button/>',{rel:el.id,text:'Delete','class':'delete red'}),
-				$('<button/>',{rel:el.id,text:json.enabled?'Disable':'Enable','class':'toggle'}),
-				$('<button/>',{rel:el.id,text:'Submit','class':'submit'}),
-				$('<button/>',{rel:el.id,text:'Check Updates','class':'checkupdate'}),
-				$('<button/>',{rel:el.id,text:'Update','class':'update'}).hide()
+				$('<nav>').append(
+					$('<button/>',{rel:el.id,text:'Edit','class':'edit'}),
+					$('<button/>',{rel:el.id,text:'Delete','class':'delete red'}),
+					$('<button/>',{rel:el.id,text:json.enabled ? 'Disable' : 'Enable','class':'toggle'}),
+					$('<button/>',{rel:el.id,text:'Submit','class':'submit'}).hide(),
+					$('<button/>',{rel:el.id,text:'Check Updates','class':'checkupdate'}),
+					$('<button/>',{rel:el.id,text:'Update','class':'update'}).hide()
+				)
 			)
 		);
 	});
@@ -98,11 +100,9 @@ function renderStylesList(m) {
 	
 	$('.delete').click(function() {
 		var b = $(this), id = b.attr('rel'), json = $('#'+id).data('json');
-		$('#'+id).add(b.parent()).fadeOut();
+		$('#'+id).add(b.closest('dd')).fadeOut();
 		ping('deleteStyle', {"id":id});
-
 		ping('analytics', {type:'event', category:'Style',action:'Delete',label:json.name,value:id});
-
 		return false;
 	})
 
@@ -156,7 +156,7 @@ function checkUpdate(id) {
 
 	b.text('Checking...');
 	$('span.busy, span.message',dd).remove();
-	dd.append($('<span/>',{'class':'busy'}));
+	$('nav', dd).append($('<span/>',{'class':'busy'}));
 
 /* OLD */
 /*

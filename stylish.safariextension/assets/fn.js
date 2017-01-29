@@ -1,33 +1,5 @@
 version = getVersion();
 
-/* Switch to ext.settings from localStorage (since 1.8.7)
-
-DB = {
-	set: function(name, data) {	
-		localStorage.setItem(name,data);
-	},
-	get: function(name) {
-		return localStorage.getItem(name);
-	},
-	delete: function(name) {
-		localStorage.removeItem(name);
-	},
-	clear: function() {
-		localStorage.clear();
-	},
-	size: function() {
-		return localStorage.length;
-	},
-	key: function(i) {
-		return localStorage.key(i);
-	},
-	check: function(name) {
-		return !(localStorage.getItem(name) === null);
-	}
-}
-
-*/
-
 function getVersion() {
 	var keys = (new DOMParser()).parseFromString(ajax('Info.plist', false).replace(/\r|\n|\t/gm,''),"text/xml").getElementsByTagName('key');
 	for (var i=0; i<keys.length; i++) {
@@ -128,7 +100,7 @@ function navInit() {
 		'<iframe src="https://plusone.google.com/_/+1/fastbutton?bsv&amp;size=medium&amp;hl=en-US&amp;url=https://www.facebook.com/safaristylish" allowtransparency="true" frameborder="0" scrolling="no" title="+1" marginheight="0" marginwidth="0" id="gplus"></iframe>'+
 		'<iframe src="http://platform.twitter.com/widgets/tweet_button.html?lang=en&count=horizontal&amp;url=http://sobolev.us/stylish/&amp;height=20&amp;text=Safari extension for customizing your favorite web sites with Stylish and user styles!" frameborder="0" scrolling="no" id="tw"></iframe></div>'+
 
-		'<a href="https://ko-fi.com?i=46A16KRNL3M" target="_blank" class="coffee">Buy me a coffee</a>'
+		'<a href="https://ko-fi.com/A464JX7" target="_blank" class="coffee">Buy me a coffee</a>'
 	);
 };
 

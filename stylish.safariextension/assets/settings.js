@@ -8,7 +8,21 @@ $(function() {
 
 	navInit();
 
-	ping('analytics', {type:'screenview',title:'Settings'});
+	ping('analytics', {type:'screenview', title:'Settings'});
+
+	ping('loadSettings');
+
+	$('#content input, #content select, #content textarea').on('change update', function(){
+		var form = $('#content form'), data = form.serializeArray();
+		
+		data = data.concat(
+			$('input[type=checkbox]:not(:checked)', form)
+				.map(function() {
+					return {name: this.name, value: 'off'}
+				}).get()
+		    );
+		ping('saveSettings', data);
+	});
 	
 /*
 
@@ -65,8 +79,6 @@ $(function() {
 	$('#jsonfile')
 		.change(function(data) {
 			
-			log(data);
-			
 			var reader = new FileReader(),
 				file = data.srcElement ? data.srcElement.files[0] : data.currentTarget.files[0];
 			
@@ -74,11 +86,15 @@ $(function() {
 				try {
 					json = $.parseJSON(e.target.result);
 					$.each(json.data, function(n,e) {
-						ping('saveStyle',{"import":true,"id":e.id,"json":$.parseJSON(e.json)});
+						ping('saveStyle', {
+							import: true,
+							id: e.id,
+							json: e.json
+						});
 					});
 					$('.importexportform').removeClass('busy');
 				} catch(e) {
-					alert('Wrong file format');
+					alert('Wrong file format!');
 				}
 			}
 			
@@ -93,22 +109,13 @@ $(function() {
 	
 	$('#export').click(function(data) {
 		$('.importexportform').addClass('busy');
-		$('#jsontextarea').val(JSON.stringify(stylishjson));
-		$('#importexport').iframer().delay(2000).show(function() {
-			$('.importexportform').removeClass('busy')
+		var uri_content = "data:application/octet-stream," + encodeURIComponent(JSON.stringify(stylishjson, null, "\t"));
+		$('#export').attr({
+			href: uri_content
 		});
+		$('.importexportform').removeClass('busy');
 	});
 });
-
-$.fn.extend({
-	iframer: function(options) {
-		options = $.extend({},{ src:'null.html', id: 'iframer-'+(new Date()).getTime(), onComplete:function(){}},options);
-		var iframe = $('<iframe/>',{seamless:true,name:options.id,id:options.id}).hide(),
-			form = $(this).append(iframe).attr('target', options.id).submit();
-		return form;
-	}
-});
-
 
 function updateInfo(user) {
 	//log(user);
@@ -171,6 +178,25 @@ function pong(event) {
 	switch(n) {
 		case 'setInstalledStyles':
 			updateStylesInfo(m);
+		break;
+		case 'loadSettings':
+			$.each(m, function(name, value){
+				var input = $('input[name="'+name+'"]'), type = input.get(0).type;
+				switch(type) {
+					case 'checkbox':
+						if (value == 'on') {
+							input.attr({checked: 'checked'});
+						} else {
+							input.removeAttr('checked');
+						}
+					break;
+					case 'input':
+					case 'select':
+					case 'textarea':
+						input.val(value);
+					break;
+				}
+			});
 		break;
 	}
 }

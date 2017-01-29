@@ -65,8 +65,7 @@ h1, h2, h3, h4, h5 ,h6 {
 	border-width:1px 0;
 	height:18px;
 	padding:9px 0 8px 16px;
-	
-	-webkit-transition: all .2s ease-in-out;
+	transition: all .2s ease-in-out;
 }
 #menu a:hover {
 	color:#08c;
@@ -79,8 +78,8 @@ h1, h2, h3, h4, h5 ,h6 {
 }
 #menu a svg {
 	position: absolute;
-	right:10px;
-	top:50%;
+	right: 10px;
+	top: 50%;
 	transfrom:translate(-50%,-50%);
 	width: 12px;
 	height: 12px;
@@ -89,8 +88,7 @@ h1, h2, h3, h4, h5 ,h6 {
 	border-radius: 50%;
 	margin: -7px 0 0 0;
 	fill:#fff;
-	
-	-webkit-transition: all .2s ease-in-out;
+	transition: all .2s ease-in-out;
 }
 
 #menu a:hover svg {
@@ -124,7 +122,7 @@ h1, h2, h3, h4, h5 ,h6 {
 	font-weight:bold;
 	position:relative;
 	opacity:1;
-	-webkit-transition: opacity 400ms ease-in-out;
+	transition: opacity .4s ease-in-out;
 }
 #content dt .badge {
 	position:static;
@@ -163,15 +161,13 @@ h1, h2, h3, h4, h5 ,h6 {
 	margin:0 -4px;
 }
 
-button.delete {
-	float:right;
-}
 #styleslist dd {
 	padding-right:0;
 	opacity:1;
-	-webkit-transition: opacity 400ms ease-in-out;
+	transition: opacity .4s ease-in-out;
+	position: relative;
 }
-#styleslist dd span.busy {
+#styleslist div span.busy {
 	display:inline-block;
 	width:11px;
 	height:11px;
@@ -182,6 +178,13 @@ button.delete {
 #styleslist dd span.message {
 	font-size:12px;
 	color:#666;
+}
+#styleslist nav {
+}
+#styleslist dd:hover nav {
+}
+#styleslist nav button.red {
+	float:right;
 }
 
 button.submit {
@@ -332,11 +335,12 @@ fieldset p.rule:last-of-type .add {
 #styleslist dt.disabled,
 #styleslist dd.disabled {
 	opacity:.5;
+	filter: grayscale(100%);
 }
 
 #styleslist dd.custom .checkupdate,
 #styleslist dd.custom .update {
-	display:none;
+	display: none;
 }
 
 /* SELECT */
@@ -419,8 +423,7 @@ fieldset p.rule:last-of-type .add {
 	overflow:hidden;
 	line-height:83px;
 	vertical-align:center;
-	
-	-webkit-transform: translate3d(0, 0, 0);
+	transform: translate3d(0, 0, 0);
 }
 
 .no-screenshots:after {
@@ -444,14 +447,14 @@ fieldset p.rule:last-of-type .add {
 	-webkit-transition: all 400ms ease-in-out;
 	*/
 	image-rendering:optimizeQuality;
-	-webkit-transform: translate3d(0, 0, 0);
+	transform: translate3d(0, 0, 0);
 }
 .screenshot-thumbnail img:hover {
 	/*
 	-webkit-transform: scale(1.5);
 	*/
 	cursor:pointer;
-	-webkit-transform:translate3d(0,0,0);
+	transform:translate3d(0,0,0);
 }
 
 .style-brief a {
@@ -559,8 +562,8 @@ fieldset p.rule:last-of-type .add {
 	min-width:320px;
 	border:4px solid #fff;
 	box-shadow:0 8px 32px rgba(0,0,0,.8);
-	-webkit-transform:translate3d(0,0,0) translate(-50%, -50%);
-	-webkit-transition: opacity .4s ease-in-out;
+	transform:translate3d(0,0,0) translate(-50%, -50%);
+	transition: opacity .4s ease-in-out;
 	image-rendering:optimizeQuality;
 	background: #fff;
 }
@@ -649,13 +652,13 @@ dt sup {
 .social,
 #menu a.coffee {
 	transform: translate3d(0,0,0);
-	-webkit-filter: grayscale(100%);
+	filter: grayscale(100%);
 	opacity:.5;
 	transition:all 200ms ease-in-out;
 }
 .social:hover,
 #menu a.coffee:hover {
-	-webkit-filter: grayscale(1%);
+	filter: grayscale(1%);
 	opacity:1;
 }
 

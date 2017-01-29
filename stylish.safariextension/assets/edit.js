@@ -99,8 +99,8 @@ $(function() {
 				"urls" : url
 			}
 		})
-		if (JSON.stringify(data).hashCode()!=JSON.stringify(datain).hashCode()) {
-			ping('saveStyle', {"id":id,"json":data});
+		if (JSON.stringify(data).hashCode() != JSON.stringify(datain).hashCode()) {
+			ping('saveStyle', {id:id, json: data});
 		}
 		saved = true;
 		if (!event.altKey) window.location = safari.extension.baseURI + "manage.html";
@@ -113,9 +113,21 @@ $(function() {
 	});
 
 	if (id) {
-		ping('editStyle', {"id":id});
+		ping('editStyle', {id: id});
 	} else {
-		editStyle(false,{"name":"New Style","sections":[{"domains":[''],"urls":[],"urlPrefixes":[],"regexps":[],"code":""}],"updateUrl":"","url":"","enabled":true});
+		editStyle(false, {
+			name: "New Style",
+			sections: [{
+				domains: [''],
+				urls: [],
+				urlPrefixes: [],
+				regexps: [],
+				code: ''
+			}],
+			updateUrl: '',
+			url: '',
+			enabled: true
+		});
 	}
 		
 })
@@ -133,9 +145,8 @@ $(function() {
 
 	function editStyle(id, json) {
 		if ($('#content').hasClass('inprogress')) return;
-		json = id?$.parseJSON(json):json;
 		var h1 = id?'Edit style':'Edit new style';
-		id = id?id:(new Date().getTime());
+		id = id ? id : (new Date().getTime());
 		datain = json;
 		var html = $(tpl1.replace(/\{TITLE\}/g,json.name).replace(/\{ID\}/g,id).replace(/\{H1\}/g,h1)), stpl ='',
 			b = $('#content');
@@ -209,7 +220,7 @@ function pong(event) {
 			renderStylesList(m);
 		break;
 		case 'editStyle':
-			editStyle(m.id,m.json);
+			editStyle(m.id, m.json);
 		break;
 	}
 }

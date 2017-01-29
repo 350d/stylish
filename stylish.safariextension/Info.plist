@@ -5,7 +5,7 @@
 	<key>Author</key>
 	<string>Vladimir Sobolev</string>
 	<key>Builder Version</key>
-	<string>11601.7.7</string>
+	<string>12602.3.12.0.1</string>
 	<key>CFBundleDisplayName</key>
 	<string>Stylish</string>
 	<key>CFBundleIdentifier</key>
@@ -13,9 +13,9 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.9.2</string>
+	<string>1.9.3</string>
 	<key>CFBundleVersion</key>
-	<string>1.9.2</string>
+	<string>1.9.3</string>
 	<key>Chrome</key>
 	<dict>
 		<key>Context Menu Items</key>
@@ -91,8 +91,8 @@
 		</dict>
 	</dict>
 	<key>Update Manifest URL</key>
-	<string>http://sobolev.us/download/stylish/update.plist</string>
+	<string>https://sobolev.us/download/stylish/update.plist</string>
 	<key>Website</key>
-	<string>http://sobolev.us/stylish</string>
+	<string>https://sobolev.us/stylish</string>
 </dict>
 </plist>
