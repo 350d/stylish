@@ -13,7 +13,7 @@ function events(event) {
 	if (c.match(/style/)) {
 		var id = t.id,
 			json = DB.get(id);
-		pingAll((json.enabled = !json.enabled) ? "enableStyle" : "disableStyle", {"id":id})
+		pingAll((json.enabled = !json.enabled) ? "enableStyle" : "disableStyle", {id: id})
 		DB.set(id, json);
 		t.className = 'style ani ' + (c.match(/off/)?'on':'off');
 		ping('analytics', {type:'event', category:'Popup', action:'Toggle', label:json.name, value:id});

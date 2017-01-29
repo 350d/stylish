@@ -132,6 +132,7 @@ function pong(event) {
 			ping(event, 'checkInstall', DB.size() ? DB.check(m) : false);
 		break;
 		case 'getStyles':
+			ping(event, 'updateSettings', settings);
 			if (l = DB.size()) {
 				for (var i=0;i<l;i++) {
 					var id = DB.key(i);
@@ -142,7 +143,7 @@ function pong(event) {
 						if (json.enabled) {
 							if (filter = json.sections.filter(function(section) { return filterSection(m,section)})) {
 								if (css = filter.map(function(section) {return section.code;}).join("\n")) {
-									ping(event, 'injectStyle', {css: css, id: id, location: m, settings: settings});
+									ping(event, 'injectStyle', {css: css, id: id, location: m});
 								}
 							}
 						}

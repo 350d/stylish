@@ -16,7 +16,7 @@ if (typeof(safari) == 'object') {
 	});
 	
 	d.addEventListener("DOMSubtreeModified", function(event) {
-		checkStyles(page_styles);
+		//checkStyles(page_styles);
 	});
 	
 	w.onpopstate = history.onpushstate = function(event) {
@@ -54,10 +54,11 @@ function injectStyle(css, id) {
 	}
 	
 	function inject(style) {
+		busy = true;
 		(d.body || d.documentElement || d.head).appendChild(style, null);
 		if (!page_styles.hasOwnProperty(id)) page_styles[id] = css;
+		busy = false;
 	};
-
 }
 
 function checkStyle(id) {
@@ -65,6 +66,7 @@ function checkStyle(id) {
 }
 
 function checkStyles(page_styles) {
+	log(111);
 	for (var id in page_styles) {
 		if (!checkStyle(id)) injectStyle(page_styles[id], id);
 	}
@@ -86,7 +88,6 @@ function pong(event) {
 		metaid = getMeta('stylish-id-url')?getMeta('stylish-id-url').replace(/^https?:\/\/userstyles.org\/styles\//,''):false;
 	switch(n) {
 		case 'injectStyle':
-			if (m.settings) settings = m.settings;
 			if (m.location == dl.href) injectStyle(m.css, m.id);
 		break;
 		case 'removeStyle':
@@ -97,16 +98,16 @@ function pong(event) {
 			removeStyle(m.id);
 		break;
 		case 'enableStyle':
-			ping('applyStyle',{'id':m.id, 'href':dl.href});
+			ping('applyStyle',{id: m.id, href: dl.href});
 		break;
 		case 'updateStyle':
-			ping('applyStyle',{'id':m.id, 'href':dl.href});
+			ping('applyStyle',{id: m.id, href: dl.href});
 		break;
 		case 'checkInstall':
 			log(m);
 			sendEvent(m?'styleAlreadyInstalled':'styleCanBeInstalled');
 		break;
-		case 'loadSettings':
+		case 'updateSettings':
 			settings = m;
 		break;
 		case 'applyStyle':
