@@ -13,9 +13,9 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.9.4</string>
+	<string>1.9.5</string>
 	<key>CFBundleVersion</key>
-	<string>1.9.4</string>
+	<string>1.9.5</string>
 	<key>Chrome</key>
 	<dict>
 		<key>Context Menu Items</key>
@@ -93,6 +93,6 @@
 	<key>Update Manifest URL</key>
 	<string>https://sobolev.us/download/stylish/update.plist</string>
 	<key>Website</key>
-	<string>https://sobolev.us/stylish</string>
+	<string>http://sobolev.us/stylish</string>
 </dict>
 </plist>

@@ -3,7 +3,8 @@ var d = document,
 	w = window,
 	domready = false,
 	settings,
-	page_styles = {};
+	page_styles = {},
+	busy = false;
 
 if (typeof(safari) == 'object') {
 	safari.self.addEventListener("message", pong, false);
@@ -16,11 +17,13 @@ if (typeof(safari) == 'object') {
 	});
 	
 	d.addEventListener("DOMSubtreeModified", function(event) {
-		//checkStyles(page_styles);
+		if (!busy && page_styles.length && event.target.localName == 'body') {
+			checkStyles(page_styles);
+		}
 	});
 	
 	w.onpopstate = history.onpushstate = function(event) {
-		checkStyles(page_styles);
+		if (!busy) checkStyles(page_styles);
 	};
 }
 
@@ -66,13 +69,13 @@ function checkStyle(id) {
 }
 
 function checkStyles(page_styles) {
-	log(111);
 	for (var id in page_styles) {
 		if (!checkStyle(id)) injectStyle(page_styles[id], id);
 	}
 }
 
 function removeStyle(id) {
+	delete page_styles[id];
 	if (e = checkStyle(id)) e.parentNode.removeChild(e);
 }
 
