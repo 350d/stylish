@@ -2,17 +2,26 @@ var d = document,
 	dl = d.location,
 	w = window,
 	domready = false,
-	settings;
+	settings,
+	page_styles = {};
 
 if (typeof(safari) == 'object') {
 	safari.self.addEventListener("message", pong, false);
 	ping('getStyles', dl.href);
 	d.addEventListener("stylishInstall", function(event) {pong(event);},false);
 	d.addEventListener("stylishUpdate", function(event) {pong(event);},false);
-	d.addEventListener('DOMContentLoaded', function(){
+	d.addEventListener("DOMContentLoaded", function(){
 		domready = true;
 		if (getMeta('stylish-id-url')) userstyles();
 	});
+	
+	d.addEventListener("DOMSubtreeModified", function(event) {
+		checkStyles(page_styles);
+	});
+	
+	w.onpopstate = history.onpushstate = function(event) {
+		checkStyles(page_styles);
+	};
 }
 
 function injectStyle(css, id) {
@@ -31,23 +40,38 @@ function injectStyle(css, id) {
 	if (settings.minify) css = minify_css(css);
 	style.innerText = css.replace(regex_timer, timer).replace(regex_rnd, rnd);
 
+	inject(style);
+
 	if (!domready) {
 		d.addEventListener('DOMContentLoaded', function() {
-			inject(style);
 			domready = true;
+			var style_exist = checkStyle(id);
+			if (style_exist && style_exist.parentNode.localName != 'body') {
+				style_exist.className = 'moved';
+				inject(style_exist);
+			}
 		}, false);
-	} else {
-		inject(style);
 	}
 	
 	function inject(style) {
 		(d.body || d.documentElement || d.head).appendChild(style, null);
+		if (!page_styles.hasOwnProperty(id)) page_styles[id] = css;
 	};
 
 }
 
+function checkStyle(id) {
+	return d.getElementById(''+id);
+}
+
+function checkStyles(page_styles) {
+	for (var id in page_styles) {
+		if (!checkStyle(id)) injectStyle(page_styles[id], id);
+	}
+}
+
 function removeStyle(id) {
-	if (e = d.getElementById(''+id)) e.parentNode.removeChild(e);
+	if (e = checkStyle(id)) e.parentNode.removeChild(e);
 }
 
 function ping(name, data) {
@@ -221,6 +245,14 @@ function serialize(form, as_json) {
 	}
 	return as_json ? json : q.join('&');
 }
+
+(function(history){
+	var pushState = history.pushState;
+	history.pushState = function(state) {
+		if (typeof history.onpushstate == "function") history.onpushstate({state: state});
+		return pushState.apply(history, arguments);
+	}
+})(w.history);
 
 function minify_css(css){
 	var before = css.length,
