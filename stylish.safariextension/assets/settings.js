@@ -89,13 +89,13 @@ $(function() {
 						ping('saveStyle', {
 							import: true,
 							id: e.id,
-							json: e.json
+							json: typeof e.json == 'object' ? e.json : JSON.parse(e.json)
 						});
 					});
-					$('.importexportform').removeClass('busy');
 				} catch(e) {
 					alert('Wrong file format!');
 				}
+				$('.importexportform').removeClass('busy');
 			}
 			
 			reader.readAsText(file);
