@@ -5,7 +5,7 @@
 	<key>Author</key>
 	<string>Vladimir Sobolev</string>
 	<key>Builder Version</key>
-	<string>12602.3.12.0.1</string>
+	<string>12602.4.8</string>
 	<key>CFBundleDisplayName</key>
 	<string>Stylish</string>
 	<key>CFBundleIdentifier</key>
@@ -13,9 +13,9 @@
 	<key>CFBundleInfoDictionaryVersion</key>
 	<string>6.0</string>
 	<key>CFBundleShortVersionString</key>
-	<string>1.9.6</string>
+	<string>1.9.7</string>
 	<key>CFBundleVersion</key>
-	<string>1.9.6</string>
+	<string>1.9.7</string>
 	<key>Chrome</key>
 	<dict>
 		<key>Context Menu Items</key>
@@ -75,7 +75,7 @@
 		</dict>
 	</dict>
 	<key>Description</key>
-	<string>Stylish for Safari</string>
+	<string>Customize your favorite web sites with your own custom CSS styles</string>
 	<key>DeveloperIdentifier</key>
 	<string>5555L95H45</string>
 	<key>ExtensionInfoDictionaryVersion</key>

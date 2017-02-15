@@ -15,12 +15,19 @@ if (typeof(safari) == 'object') {
 		domready = true;
 		if (getMeta('stylish-id-url')) userstyles();
 	});
-	
+/*
 	d.addEventListener("DOMSubtreeModified", function(event) {
 		if (!busy && Object.size(page_styles) && event.target.localName == 'body') {
 			checkStyles(page_styles);
 		}
 	});
+*/
+	d.addEventListener('DOMNodeRemoved', function(event) {
+		if (!busy && Object.size(page_styles) && event.target.localName == 'style' && event.target.id[0] == '') {
+			var id = event.target.id.slice(1);
+			if (page_styles.hasOwnProperty(id)) injectStyle(page_styles[id]['css'], id);
+		}
+	}, false);
 	
 	w.onpopstate = history.onpushstate = function(event) {
 		if (!busy) checkStyles(page_styles);
@@ -29,19 +36,21 @@ if (typeof(safari) == 'object') {
 
 function injectStyle(css, id, element) {
 	if (!dl.host) return;
+	busy = true;
 //	if (w != w.top) return;
 	removeStyle(id);
 	var regex_timer = /\?timer=(.\d)/gi,
 		regex_rnd = /\?rnd=(.\d)/gi,
 		time = (new Date()).getTime(),
-		timer = function(s,n) {return '?timer='+Math.floor(time/(1000*parseInt(n)))}, // Cahche images for 10 minutes
+		timer = function(s,n) {return '?timer='+Math.floor(time/(1000*parseInt(n)))}, // Cache images for 10 minutes
 		rnd = '?rnd='+Math.random(), style = element ? element : false;
 	
 	if (!style) {
 		style = d.createElement('style');
-		style.setAttribute('id', '' + id);
-		style.style.display = 'none !important';
-		style.setAttribute('type', 'text/css');
+		style.id = '' + id;
+//		style.style.display = 'none !important';
+//		style.setAttribute('type', 'text/css');
+//		style.className = 'stylish';
 		if (settings.minify) css = minify_css(css);
 		style.innerText = css.replace(regex_timer, timer).replace(regex_rnd, rnd);
 	}
@@ -51,18 +60,17 @@ function injectStyle(css, id, element) {
 	if (!domready) {
 		d.addEventListener('DOMContentLoaded', function() {
 			domready = true;
+			busy = true;
 			var style_exist = checkStyle(id);
 			if (style_exist && style_exist.parentNode.localName != 'body') {
-				style_exist.className = 'moved';
 				inject(style_exist);
 			}
 		}, false);
 	}
 	
 	function inject(style) {
-		busy = true;
 		(d.body || d.documentElement || d.head).appendChild(style, null);
-		if (!page_styles.hasOwnProperty(id)) page_styles[id] = {css: css, element: style};
+		page_styles[id] = {css: css, element: style};
 		busy = false;
 	};
 }
