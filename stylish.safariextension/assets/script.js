@@ -51,8 +51,8 @@ function injectStyle(css, id, element) {
 //		style.style.display = 'none !important';
 //		style.setAttribute('type', 'text/css');
 //		style.className = 'stylish';
-		if (settings.minify) css = minify_css(css);
-		style.innerText = css.replace(regex_timer, timer).replace(regex_rnd, rnd);
+		if (settings.minify == 'on') css = minify_css(css);
+		style.textContent = css.replace(regex_timer, timer).replace(regex_rnd, rnd);
 	}
 
 	inject(style);
