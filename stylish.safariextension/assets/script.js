@@ -6,7 +6,7 @@ var d = document,
 	page_styles = {},
 	busy = false;
 
-if (typeof(safari) == 'object') {
+if (typeof safari == 'object') {
 	safari.self.addEventListener("message", pong, false);
 	ping('getStyles', dl.href);
 	d.addEventListener("stylishInstall", function(event) {pong(event);},false);
@@ -23,15 +23,17 @@ if (typeof(safari) == 'object') {
 	});
 */
 	d.addEventListener('DOMNodeRemoved', function(event) {
-		if (!busy && Object.size(page_styles) && event.target.localName == 'style' && event.target.id[0] == '') {
-			var id = event.target.id.slice(1);
-			if (page_styles.hasOwnProperty(id)) injectStyle(page_styles[id]['css'], id);
+		if (!busy && Object.size(page_styles)) {
+			if (event.relatedNode.localName == 'head' || event.relatedNode.localName == 'body' || event.target.localName == 'head' || event.target.localName == 'body') {
+				checkStyles(page_styles);
+			}
 		}
 	}, false);
 	
 	w.onpopstate = history.onpushstate = function(event) {
 		if (!busy) checkStyles(page_styles);
 	};
+
 }
 
 function injectStyle(css, id, element) {

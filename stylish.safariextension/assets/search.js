@@ -40,7 +40,7 @@ $(function() {
 			$('body').animate({scrollTop:0},function() {
 				content.slideUp(function() {
 					content.empty().show();
-					getSearchResults(hash,a.attr('href'));
+					getSearchResults(hash, a.attr('href'));
 				})	
 			});
 
@@ -62,7 +62,7 @@ $(function() {
 		var i = $(this),
 			src = i.attr('src').replace('_thumbnails','s'),
 			img = new Image(),
-			w,h;
+			w, h;
 		$('#popup')
 			.trigger('show')
 			.append(
@@ -97,20 +97,36 @@ function initPopup() {
 	
 };
 
-function renderList(html, host) {
-	html = sanitizeHTML(html);
-	//log(html);
+function renderList(json, host) {
 	$('#content dt input').val(host);
 	var content = $('#searchresult dd').empty();
-	if ($('.style-brief',html).length) {
-		html = $('#main-article',html).html();
-		content.append(html);
+	// #main-article
+	if (json.data.length) {
+		content.append('<ul id="styles"/>');
+		$.each(json.data, function(n, s) {
+			var r = Math.round(s.rating*1.666666)
+			$('#styles', content).append(
+				'<li class="style-brief" id="'+s.id+'"><div class="listing-left-info"><figure class="'+(s.screenshot_url ? 'screenshot-thumbnail' : 'no-screenshots')+'">'+(s.screenshot_url ? '<img src="'+s.screenshot_url+'" alt="" class="screenshot">':'')+'</figure></div><article class="style-brief-text"><header>'+s.name+'</header><p>'+s.description+'</p><div class="style-brief-stats"><span class="ratio" title="Average rating: '+s.rating+'">★★★★★<span style="width:'+(Math.round(s.rating * 2) / 2).toFixed(1)*20+'%">★★★★★</span></span></div><button class="style-install" rel="'+s.id+'">Install</button></article></li>'
+			);
+		});
+
+		if (json.total_pages > 1) {
+			content.append('<div class="pagination"/>');
+			for(i = 1; i < json.total_pages; i++){
+			    $('.pagination', content).append('<a href="'+i+'" class="point '+(i == json.current_page ? 'active' : '')+'"/>');
+			}
+		}
+
+
+
+		/*
+
 		$('.style-brief-text header a').each(function(n,a){
 			var a = $(a), id = a.attr('href').split('/')[2];
-			a.closest('.style-brief').attr('id',id);
+			a.closest('.style-brief').attr('id', id);
 		});
 		
-		$('a',content).each(function(n,a) {
+		$('a', content).each(function(n,a) {
 			var a = $(a);
 			if (a.hasClass('delete-link')) {
 				a.closest('style-brief').attr('id',a.attr('href').replace('/styles/delete/',''));
@@ -140,7 +156,9 @@ function renderList(html, host) {
 		
 		$('.style-brief').last().addClass('last-child');
 
-		renderNav();
+		*/
+
+		//renderNav();
 	
 		ping("getInstalledStyles",'');
 	} else {
@@ -201,39 +219,35 @@ function renderNav() {
 //	nav.clone().prependTo(content);
 }
 
-function renderSitesList(html) {
+function renderSitesList(json) {
 	var content = $('#searchresult dd').empty();
-	html = $('#subcategory-list', html);
-	content.append(html);
-	$('a', content).each(function() {
-		var a = $(this), li = a.parent(),
-			n = a.attr('href').replace('/styles/browse/','').replace('/styles/browse?category=',''),
-			c = /(\d+)/.exec(li.text().replace(',',''))[0];
-		li.attr({
-			'tname': n,
-			'tcount': c 
-		}).html(n+'<i>'+c+'</i>')
-	})
+	if (json.data.length) {
+		content.append('<ul id="subcategory-list"/>');
+		$.each(json.data, function(n, s) {
+			$('ul', content).append('<li tname="'+s.name+'" tcount="'+s.styles+'">'+s.name+'<i>'+s.styles+'</i></li>');
+		});
+	}
 };
 
-function getSearchResults(host,page) {
+function getSearchResults(host, page) {
 	$('#searchresult').addClass('busy');
 	if (host) {
 		domain = getDomain(host);
 		document.title = 'userstyles for «'+host+'»';
 //		OLD STYLE
 //		var usss = 'https://userstyles.org/styles/browse/';
-		var usss = 'https://userstyles.org/styles/browse/site?sort=popularity&search_terms=';
-		$.get(usss+domain+'&per_page=22'+(page?'&page='+page:''), function(html) {
+//		var usss = 'https://userstyles.org/styles/browse/site?sort=popularity&search_terms=';
+		var usss = 'https://userstyles.org/api/v1/styles/subcategory?search=';
+		$.getJSON(usss+domain+'&per_page=22'+(page?'&page='+page:''), function(json) {
 			$('#searchresult').removeClass('busy');
-			renderList(html,host);
+			renderList(json, host);
 		})
 	} else {
 		document.title = 'Search userstyles';
-		var usss = 'https://userstyles.org/categories/site';
-		$.get(usss, function(html) {
+		var usss = 'https://userstyles.org/api/v1/categories/site';
+		$.getJSON(usss, function(json) {
 			$('#searchresult').removeClass('busy');
-			renderSitesList(html);
+			renderSitesList(json);
 		})
 	}
 }

@@ -95,6 +95,7 @@ function navInit() {
 	$('#menu').append('<nav><ul><li><a href="search.html">Search'+arrow+'</a></li><li><a href="manage.html">Manage'+arrow+'</a></li><li><a href="edit.html">Edit'+arrow+'</a></li><li><a href="settings.html">Settings'+arrow+'</a></li></ul></nav>');
 	$('#menu a[href="'+name+'"]').addClass('active').click(function() { return false; });
 	
+
 	$('#menu').append(
 		'<div class="social ani"><iframe src="https://www.facebook.com/plugins/like.php?locale=en_US&amp;href=https://www.facebook.com/safaristylish&amp;send=false&amp;layout=button&amp;width=125&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font=arial&amp;height=20" frameborder="0" scrolling="no" id="fblike"></iframe>'+
 		'<iframe src="https://plusone.google.com/_/+1/fastbutton?bsv&amp;size=medium&amp;hl=en-US&amp;url=https://www.facebook.com/safaristylish" allowtransparency="true" frameborder="0" scrolling="no" title="+1" marginheight="0" marginwidth="0" id="gplus"></iframe>'+
@@ -102,6 +103,7 @@ function navInit() {
 
 		'<a href="https://ko-fi.com/A464JX7" target="_blank" class="coffee">Buy me a coffee</a>'
 	);
+
 };
 
 String.prototype.hashCode = function() {
@@ -120,8 +122,15 @@ function extend(obj, src) {
 	return obj;
 }
 
-function sortData(data,method) {
+function sortData(data, method) {
 	return data.sort(function(a,b) {return b[method]-a[method]});
+};
+function sortDataJson(data, prop) {
+	return data.sort(function(a,b) {
+		if (a.json[prop] < b.json[prop]) return -1;
+		if (a.json[prop] > b.json[prop]) return 1;
+		return 0;
+	});
 };
 
 function loadScript(src) {

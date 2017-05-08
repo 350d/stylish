@@ -343,7 +343,7 @@ fieldset p.rule:last-of-type .add {
 	display: none;
 }
 
-/* SELECT */
+/* SEARCH */
 
 .ad { 
 	display:none;
@@ -370,6 +370,8 @@ fieldset p.rule:last-of-type .add {
 	border-bottom: 1px solid #E5E5E5;
 	margin-bottom: 18px;
 	position:relative;
+	list-style: none;
+	min-height: 100px;
 }
 .style-brief.busy {
 	background:url(../images/busy.gif) 85% 34px no-repeat;
@@ -394,15 +396,15 @@ fieldset p.rule:last-of-type .add {
 	text-overflow:ellipsis;
 }
 .style-brief.last-child {
-	border:0;
+	border: 0;
 }
 
 .listing-left-info {
-	width:157px;
-	height:101px;
-	float:left;
-	margin-left:-6px;
-	position:relative;
+	width: 157px;
+	height: 101px;
+	float: left;
+	margin-left: -6px;
+	position: relative;
 }
 .listing-left-info figure,
 .no-screenshots {
@@ -410,8 +412,8 @@ fieldset p.rule:last-of-type .add {
 	height: 83px;
 	border: 4px solid #fff;
 	background: linear-gradient(to bottom, #f1f1f1 0%,#d6d5d5 100%);
-	box-shadow:0 1px 2px rgba(0,0,0,.3);
-	color:transparent;
+	box-shadow: 0 1px 2px rgba(0,0,0,.3);
+	color: transparent;
 	font-size: 0;
 }
 
@@ -494,6 +496,7 @@ fieldset p.rule:last-of-type .add {
 	height: 100%;
 }
 
+/* PAGINATION */
 
 .pagination {
 	width:100%;

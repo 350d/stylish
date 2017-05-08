@@ -29,24 +29,24 @@ function renderStylesList(m) {
 	$.each(m, function(i, el){
 		el.enabled = el.json.enabled;
 	});
-	$.each(sortData(m, 'enabled'), function(i, el) {
+	$.each(sortData(sortDataJson(m, 'name'), 'enabled'), function(i, el) {
 
 		var json = el.json, domains = $('<ul/>',{'class':'applies'}), custom = (el.id.length > 12);
 
 			if (json.hidden) return;
 
-			$.each(json.sections,function(i,el) {
-				$.each(el.domains,function(i,el) {
-					domains.append($('<li/>',{text:el}));
+			$.each(json.sections, function(i, el) {
+				$.each(el.domains, function(i, el) {
+					domains.append($('<li/>',{text: el}));
 				});
 				$.each(el.urlPrefixes,function(i,el) {
-					domains.append($('<li/>',{text:el}));
+					domains.append($('<li/>',{text: el}));
 				});
-				$.each(el.urls,function(i,el) {
-					domains.append($('<li/>',{text:el}));
+				$.each(el.urls, function(i,el) {
+					domains.append($('<li/>',{text: el}));
 				});
-				$.each(el.regexps,function(i,el) {
-					domains.append($('<li/>',{text:'Regexp', title:el}));
+				$.each(el.regexps, function(i,el) {
+					domains.append($('<li/>',{text:'Regexp', title: el}));
 				});
 			})
 		//domains.html(domains.children().slice(0,8));

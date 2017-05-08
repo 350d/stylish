@@ -65,7 +65,8 @@ var usss = 'https://userstyles.org/styles/browse/', href,
 	default_settings = {
 		context: 'on',
 		minify: 'on',
-		tracking: 'on'
+		tracking: 'on',
+		support: 'on'
 	},
 	settings = loadSettings();
 
