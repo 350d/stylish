@@ -49,6 +49,8 @@ var DB = {
 
 				DB.set('dbversion', 3);
 			}
+
+
 			
 			DB.set('settings', default_settings);
 
@@ -68,9 +70,13 @@ var usss = 'https://userstyles.org/styles/browse/', href,
 		tracking: 'on',
 		support: 'on'
 	},
-	settings = loadSettings();
+	settings;
 
 DB.upgrade();
+
+settings = loadSettings();
+
+// safari.extension.settings.settings
 
 function ping(event, name, data) {
 	if ( page = event.target.page) {
@@ -317,6 +323,7 @@ function log(e) {
 };
 
 function analytics(data) {
+	log(settings);
 	if (settings.tracking != 'on') return;
 	if (!DB.check('uuid')) DB.set('uuid', uuid_v4());
 	var uaid = 'UA-72374231-1',

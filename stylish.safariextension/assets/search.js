@@ -66,8 +66,8 @@ $(function() {
 		$('#popup')
 			.trigger('show')
 			.append(
-				$('<img>', {src: src, 'class': 'after'}),
-				$('<img>', {src: src.replace('_after','_before'), 'class':'before'}).on('error', function() {$(this).remove()})
+				$('<img>', {src: src, 'class': 'after'})
+				//$('<img>', {src: src.replace('_after','_before'), 'class':'before'}).on('error', function() {$(this).remove()})
 			);			
 	});
 });
@@ -106,7 +106,7 @@ function renderList(json, host) {
 		$.each(json.data, function(n, s) {
 			var r = Math.round(s.rating*1.666666)
 			$('#styles', content).append(
-				'<li class="style-brief" id="'+s.id+'"><div class="listing-left-info"><figure class="'+(s.screenshot_url ? 'screenshot-thumbnail' : 'no-screenshots')+'">'+(s.screenshot_url ? '<img src="'+s.screenshot_url+'" alt="" class="screenshot">':'')+'</figure></div><article class="style-brief-text"><header>'+s.name+'</header><p>'+s.description+'</p><div class="style-brief-stats"><span class="ratio" title="Average rating: '+s.rating+'">★★★★★<span style="width:'+(Math.round(s.rating * 2) / 2).toFixed(1)*20+'%">★★★★★</span></span></div><button class="style-install" rel="'+s.id+'">Install</button></article></li>'
+				'<li class="style-brief" id="'+s.id+'"><div class="listing-left-info"><figure class="'+(s.screenshot_url ? 'screenshot-thumbnail' : 'no-screenshots')+'">'+(s.screenshot_url ? '<img src="https://userstyles.org/style_screenshot_thumbnails/'+s.screenshot_url+'" alt="" class="screenshot">':'')+'</figure></div><article class="style-brief-text"><header>'+s.name+'</header><p>'+s.description+'</p><div class="style-brief-stats"><span class="ratio" title="Average rating: '+s.rating+'">★★★★★<span style="width:'+(Math.round(s.rating * 2) / 2).toFixed(1)*20+'%">★★★★★</span></span></div><button class="style-install" rel="'+s.id+'">Install</button></article></li>'
 			);
 		});
 
@@ -238,7 +238,7 @@ function getSearchResults(host, page) {
 //		var usss = 'https://userstyles.org/styles/browse/';
 //		var usss = 'https://userstyles.org/styles/browse/site?sort=popularity&search_terms=';
 		var usss = 'https://userstyles.org/api/v1/styles/subcategory?search=';
-		$.getJSON(usss+domain+'&per_page=22'+(page?'&page='+page:''), function(json) {
+		$.getJSON(usss+domain+'&per_page=22&country=us&page='+(page?page:1), function(json) {
 			$('#searchresult').removeClass('busy');
 			renderList(json, host);
 		})

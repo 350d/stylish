@@ -140,6 +140,9 @@ h1, h2, h3, h4, h5 ,h6 {
 #content dd p {
 	padding:8px 0;
 }
+#content dd h3 {
+	padding:8px 0 0 0;
+}
 
 .applies {
 	clear:both;
