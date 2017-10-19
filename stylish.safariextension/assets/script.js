@@ -105,7 +105,9 @@ function pong(event) {
 		metaid = getMeta('stylish-id-url')?getMeta('stylish-id-url').replace(/^https?:\/\/userstyles.org\/styles\//,''):false;
 	switch(n) {
 		case 'injectStyle':
-			if (m.location == dl.href) injectStyle(m.css, m.id);
+			var filteredLocation = m.location.split('?')[0]
+			var filteredHref = dl.href.split('?')[0]
+			if (filteredLocation == filteredHref) injectStyle(m.css, m.id);
 		break;
 		case 'removeStyle':
 			removeStyle(m.id);
