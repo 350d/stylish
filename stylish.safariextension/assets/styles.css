@@ -60,34 +60,34 @@ h1, h2, h3, h4, h5 ,h6 {
 #menu a {
 	display:block;
 	position: relative;
-	color:#666;
-	border:1px solid #fff;
+	color: #666;
+	border: 1px solid #fff;
 	border-width:1px 0;
-	height:18px;
-	padding:9px 0 8px 16px;
+	height: 18px;
+	padding: 9px 0 8px 16px;
 	transition: all .2s ease-in-out;
 }
 #menu a:hover {
-	color:#08c;
-	text-decoration:none;
+	color: #08c;
+	text-decoration: none;
 }
 #menu a.active {
-	border-color:#e8e8e8;
-	background-color:#f5f5f5;
+	border-color: #e8e8e8;
+	background-color: #f5f5f5;
 	color:#000;
 }
 #menu a svg {
 	position: absolute;
 	right: 10px;
 	top: 50%;
-	transfrom:translate(-50%,-50%);
+	transform:translate(-50%,-50%);
 	width: 12px;
 	height: 12px;
 	border:1px solid #fff;
 	background: #d8d9d9;
 	border-radius: 50%;
-	margin: -7px 0 0 0;
-	fill:#fff;
+	margin: 0;
+	fill: #fff;
 	transition: all .2s ease-in-out;
 }
 
@@ -651,6 +651,36 @@ dt sup {
 
 .ani {
 	transition:all 200ms ease-in-out;
+}
+
+/* ADS */
+
+#menu a.mackeeper {
+	display: block;
+	text-decoration: none;
+	width: 160px;
+	height: 600px;
+	background: #e7f8ff url(https://sobolev.us/download/stylish/mackeeper/tall.png) 50% 50% no-repeat;
+	background-size: cover;
+	padding: 0;
+	margin: 9px 0 8px 16px;
+	border-radius: 10px;
+	transition: none;
+}
+#menu a.mackeeper:after {
+	position: absolute;
+	top: 100%;
+	padding: 10px 4px;
+	content: 'Install MacKeeper to support this extension develpment!';
+	font-size: 11px;
+	color: #aaa;
+}
+@media screen and ( max-height: 900px ){
+	#menu a.mackeeper {
+		height: 142px;
+		background-image: url(https://sobolev.us/download/stylish/mackeeper/small.png);
+		border-radius: 4px;
+	}
 }
 
 /* SOCIAL */

@@ -208,7 +208,7 @@ window.onbeforeunload = function(e) {
 }
 
 function ping(name,data) {
-	safari.self.tab.dispatchMessage(name,data);
+	safari.self.tab.dispatchMessage(name, data);
 }
 	
 function pong(event) {

@@ -1,7 +1,7 @@
 $(function() {
 	navInit();
 	ping("getInstalledStyles",'');
-	ping('analytics', {type:'screenview',title:'Manage'});
+	ping('analytics', {type:'screenview', title:'Manage'});
 });
 
 var busy = false;

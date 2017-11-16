@@ -94,16 +94,8 @@ function navInit() {
 	document.getElementById('version').innerHTML = version;
 	$('#menu').append('<nav><ul><li><a href="search.html">Search'+arrow+'</a></li><li><a href="manage.html">Manage'+arrow+'</a></li><li><a href="edit.html">Edit'+arrow+'</a></li><li><a href="settings.html">Settings'+arrow+'</a></li><li><a href="about.html">About'+arrow+'</a></li></ul></nav>');
 	$('#menu a[href="'+name+'"]').addClass('active').click(function() { return false; });
-	
 
-	$('#menu').append(
-		'<div class="social ani"><iframe src="https://www.facebook.com/plugins/like.php?locale=en_US&amp;href=https://www.facebook.com/safaristylish&amp;send=false&amp;layout=button&amp;width=125&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font=arial&amp;height=20" frameborder="0" scrolling="no" id="fblike"></iframe>'+
-		'<iframe src="https://plusone.google.com/_/+1/fastbutton?bsv&amp;size=medium&amp;hl=en-US&amp;url=https://www.facebook.com/safaristylish" allowtransparency="true" frameborder="0" scrolling="no" title="+1" marginheight="0" marginwidth="0" id="gplus"></iframe>'+
-		'<iframe src="http://platform.twitter.com/widgets/tweet_button.html?lang=en&count=horizontal&amp;url=http://sobolev.us/stylish/&amp;height=20&amp;text=Safari extension for customizing your favorite web sites with Stylish and user styles!" frameborder="0" scrolling="no" id="tw"></iframe></div>'+
-
-		'<a href="https://ko-fi.com/A464JX7" target="_blank" class="coffee">Buy me a coffee</a>'
-	);
-
+	showAd();
 };
 
 String.prototype.hashCode = function() {
@@ -231,3 +223,20 @@ function getfilename(url) {
 function log(l) {
 	console.log(l);
 };
+
+function showAd(step) {
+	if (!localStorage.getItem('ad')) {
+	
+			$('#menu').append(
+				$('<a href="#mackeeper" class="mackeeper" title="Clean and protect your Mac with MacKepper"/>').on('click', function() {
+					ping('showAd');
+					ping('analytics', {type:'event', category: 'click', action: 'ad', label: 'mackeeper'});
+					localStorage.setItem('ad', 'done');
+					$(this).remove();
+					return false;
+				})
+			);
+
+
+	}
+}
