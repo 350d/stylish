@@ -211,7 +211,6 @@ function getOptions(asjson) {
 		for (i in old_selects) new_selects[i].selectedIndex = old_selects[i].selectedIndex;
 		options = serialize(new_form, asjson);
 	}
-	log(options);
 	return options;
 }
 
