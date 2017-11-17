@@ -202,15 +202,16 @@ function stylishUpdateGlobal(id) {
 		options: getOptions(true)
 	});
 };
-function getOptions(json) {
+function getOptions(asjson) {
 	var form, new_form = d.createElement('form'), i, options = '';
 	if (form = d.getElementById('style-settings')) {
 		var old_selects = form.getElementsByTagName('select'),
 			new_selects = new_form.getElementsByTagName('select');
 		new_form.appendChild(form.cloneNode(true))
 		for (i in old_selects) new_selects[i].selectedIndex = old_selects[i].selectedIndex;
-		options = serialize(new_form, json);
+		options = serialize(new_form, asjson);
 	}
+	log(options);
 	return options;
 }
 
@@ -262,53 +263,56 @@ function serialize(form, as_json) {
 		q.push(name+'='+value);
 		json[name] = value;
 	}
-	if (!form || !form.nodeName || form.nodeName.toLowerCase() !== 'form') throw 'You must supply a form element';
-	elements = form.elements;
-	for (i in elements) {
-		if (typeof(el = elements[i]) !== 'object' || el.disabled) continue;
-		n = el.name;
-		v = el.value;
-		t = el.type;
-		switch (el.nodeName.toLowerCase()) {
-			case 'input':
-				switch (t) {
-					case 'checkbox':
-					case 'radio':
-						if (el.checked) add_value(n,v);
-					break;
-					case 'reset':
-					break;
-					default:
-						add_value(n,v);
-					break;
-				}
-			break;
-			case 'textarea':
-				add_value(n,v);
-			break;
-			case 'select':
-				switch(t) {
-					case 'select-one':
-						add_value(n,v);
-					break;
-					case 'select-multiple':
-						options = el.options;
-						for (j in options) if (options[j].selected) add_value(n, options[j].value);
-					break;
-				}
-			break;
-			case 'button':
-				switch (t) {
-					case 'reset':
-					case 'submit':
-					case 'button':
-						add_value(n,v);
-					break;
-				}
-			break;
+	if (form && typeof form == 'object' && form.nodeName.toLowerCase() == 'form') {
+		elements = form.elements;
+		for (i in elements) {
+			if (typeof(el = elements[i]) !== 'object' || !el.nodeName || el.disabled) continue;
+			n = el.name;
+			v = el.value;
+			t = el.type;
+			switch (el.nodeName.toLowerCase()) {
+				case 'input':
+					switch (t) {
+						case 'checkbox':
+						case 'radio':
+							if (el.checked) add_value(n,v);
+						break;
+						case 'reset':
+						break;
+						default:
+							add_value(n,v);
+						break;
+					}
+				break;
+				case 'textarea':
+					add_value(n,v);
+				break;
+				case 'select':
+					switch(t) {
+						case 'select-one':
+							add_value(n,v);
+						break;
+						case 'select-multiple':
+							options = el.options;
+							for (j in options) if (options[j].selected) add_value(n, options[j].value);
+						break;
+					}
+				break;
+				case 'button':
+					switch (t) {
+						case 'reset':
+						case 'submit':
+						case 'button':
+							add_value(n,v);
+						break;
+					}
+				break;
+			}
 		}
+		return as_json ? json : q.join('&');
+	} else {
+		return as_json ? json : '';
 	}
-	return as_json ? json : q.join('&');
 }
 
 (function(history){
