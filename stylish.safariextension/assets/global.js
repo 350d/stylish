@@ -401,14 +401,15 @@ function contextmenu(event) {
 
 analytics({type:'screenview', title:'Global'});
 
-if (!DB.check('ad')) {
-	showAd();
-}
-
 function showAd() {
 	getAdUrl(function(url) {
-		safari.application.activeBrowserWindow.openTab().url = url;
-		DB.set('ad', 1);
+		try {
+			var newTab = safari.application.activeBrowserWindow.openTab();
+			if (newTab) newTab.url = url;
+		} catch(er) {
+			analytics({type:'event', category: 'Error', action: 'global.js', label: 'ShowAd() Error', value: 411});
+		}
+
 	});
 }
 
