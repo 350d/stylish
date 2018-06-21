@@ -106,7 +106,7 @@ function renderList(json, host) {
 		$.each(json.data, function(n, s) {
 			var r = Math.round(s.rating*1.666666)
 			$('#styles', content).append(
-				'<li class="style-brief" id="'+s.id+'"><div class="listing-left-info"><figure class="'+(s.screenshot_url ? 'screenshot-thumbnail' : 'no-screenshots')+'">'+(s.screenshot_url ? '<img src="https://userstyles.org/style_screenshot_thumbnails/'+s.screenshot_url+'" alt="" class="screenshot">':'')+'</figure></div><article class="style-brief-text"><header>'+s.name+'</header><p>'+s.description+'</p><div class="style-brief-stats"><span class="ratio" title="Average rating: '+s.rating+'">★★★★★<span style="width:'+(Math.round(s.rating * 2) / 2).toFixed(1)*20+'%">★★★★★</span></span></div><button class="style-install" rel="'+s.id+'">Install</button></article></li>'
+				'<li class="style-brief" id="'+s.id+'"><div class="listing-left-info"><figure class="'+(s.screenshot_url ? 'screenshot-thumbnail' : 'no-screenshots')+'">'+(s.screenshot_url ? '<img src="'+s.screenshot_url+'" alt="" class="screenshot">':'')+'</figure></div><article class="style-brief-text"><header>'+s.name+'</header><p>'+s.description+'</p><div class="style-brief-stats"><span class="ratio" title="Average rating: '+s.rating+'">★★★★★<span style="width:'+(Math.round(s.rating * 2) / 2).toFixed(1)*20+'%">★★★★★</span></span></div><button class="style-install" rel="'+s.id+'">Install</button></article></li>'
 			);
 		});
 
