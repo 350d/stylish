@@ -5,7 +5,7 @@
 	<key>Author</key>
 	<string>Vladimir Sobolev</string>
 	<key>Builder Version</key>
-	<string>13604.3.5</string>
+	<string>13605.2.8</string>
 	<key>CFBundleDisplayName</key>
 	<string>Stylish</string>
 	<key>CFBundleIdentifier</key>
@@ -77,7 +77,7 @@
 	<key>Description</key>
 	<string>Customize your favorite web sites with your own custom CSS styles</string>
 	<key>DeveloperIdentifier</key>
-	<string>5555L95H45</string>
+	<string>0000000000</string>
 	<key>ExtensionInfoDictionaryVersion</key>
 	<string>1.0</string>
 	<key>Permissions</key>
