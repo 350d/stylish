@@ -292,7 +292,7 @@ p.code label {
 
 textarea.code {
 	display:inline-block;
-	width:500px;
+	width:580px;
 	background: #F1F5F9;
 	border:1px solid #ccc;
 	padding:4px 6px;
@@ -737,4 +737,10 @@ dt sup {
 	line-height: 28px;
 	height: 28px;
 	margin: 4px 10px 0 17px;
+}
+
+#aceEditor
+{
+	border: 1px solid rgb(160, 160, 160);
+	border-radius: 4px;
 }

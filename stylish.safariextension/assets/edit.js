@@ -1,11 +1,14 @@
 var tpl1 = '<dl><dt>{H1}</dt><dd class="editor"><form id="{ID}" class="styleseditor"><p class="stitle"><label for="TITLE{ID}">Title:</label><input type="text" name="title" value="{TITLE}" id="TITLE{ID}"></p></form></dd></dl><p class="controls"><button class="add">Add section</button><button id="save" class="fr">Save Style</button></p>',
-	tpl2 = '<fieldset><legend>Section #{NUM}</legend><p class="code"><label>CSS:</label><textarea class="code zc-use_tab-true zc-syntax-css zc-profile-css" id="CSS{NUM}">{CODE}</textarea></p><p class="controls section"><button class="remove fr red">Delete section</button></p>{RULES}</fieldset>',
+	tpl2 = '<fieldset><legend>Section #{NUM}</legend><p class="code"><label>CSS:</label><textarea class="code zc-use_tab-true zc-syntax-css zc-profile-css" ace-editor="css" id="CSS{NUM}">{CODE}</textarea></p><p class="controls section"><button class="remove fr red">Delete section</button></p>{RULES}</fieldset>',
 	tpl3 = '<p class="rule"><label>Applies to:</label><select name="apply"><option value="url">URL</option><option value="pre">URL prefix</option><option value="dom">Domain</option><option value="reg">Regexp</option><option value="global">Global</option></select><input name="rule" type="text" value="{RULE}"><button class="remove red">Delete</button><button class="add">Add rule</button></p>',
 	datain, b,
 	dl = document.location,
 	id = dl.hash.substr(1),
 	altKey = false,
 	saved = true;
+
+	var textarea;
+	var editor;
 
 $(function() {
 	$('body').append('<iframe src="https://www.facebook.com/plugins/like.php?locale=en_US&amp;href=https://www.facebook.com/safaristylish&amp;send=true&amp;layout=button_count&amp;width=125&amp;show_faces=false&amp;action=like&amp;colorscheme=light&amp;font=arial&amp;height=20" frameborder="0" scrolling="no" id="fblike></iframe> ');
@@ -68,6 +71,7 @@ $(function() {
 	})
 	
 	$(document).on('click', '#save', function(event) {
+		textarea.val(editor.getSession().getValue());
 		var data = {}, id = $(this).val();
 		data = { "enabled":datain.enabled, "name" : $('.stitle input').val(), "url" : datain.url, "updateUrl" : datain.updateUrl, "sections" : [] };
 
@@ -141,6 +145,28 @@ $(function() {
 			if (r.length==1) r.eq(0).attr('disabled',true);
 		});
 		$('.rule select').trigger('change');
+		$(function() {
+			$('textarea[ace-editor]').each(function() {
+			  textarea = $(this);
+			  if(textarea.css('display') != 'none') {
+			  	textarea.attr('rows', 36);
+			 	 var mode = textarea.data('editor');
+			 	 var editDiv = $('<div>', {
+					'id': 'aceEditor',
+					position: 'absolute',
+					width: textarea.width(),
+					height: textarea.height(),
+					'class': textarea.attr('class')
+			  	}).insertBefore(textarea);
+			 	textarea.css('display', 'none');
+			  	editor = ace.edit(editDiv[0]);
+			 	editor.getSession().setValue(textarea.val());
+			 	editor.getSession().setMode("ace/mode/css");
+			  	editor.setTheme("ace/theme/chrome");
+		  	  	editor.session.setUseWrapMode(true);
+			  }
+			});
+	  	});
 	}
 
 	function editStyle(id, json) {
