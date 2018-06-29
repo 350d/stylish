@@ -152,6 +152,7 @@ $(function() {
 			  	textarea.attr('rows', 36);
 			 	 var mode = textarea.data('editor');
 			 	 var editDiv = $('<div>', {
+					'id': 'aceEditor',
 					position: 'absolute',
 					width: textarea.width(),
 					height: textarea.height(),
