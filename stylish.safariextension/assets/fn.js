@@ -92,10 +92,17 @@ function navInit() {
 		name = path.substring(path.lastIndexOf('/')+1),
 		arrow = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 512 512"><path d="M238.3 373l84.5-96c1-1.3 1.4-2.8 2.3-4 1.3-1.8 2.4-3.4 3-5.4 1-2 1.4-4 1.8-6.2.4-2 .7-3.7.7-5.6 0-2.2-.4-4.3-.8-6.5-.4-1.8-.8-3.6-1.4-5.4-1-2.3-2-4-3.4-6-1-1-1-2.5-2-3.6l-85.4-95.8c-11.7-13.2-32-14.4-45.2-2.6-13.2 12-14.4 32-2.6 45.3L256 256l-65.8 75c-11.7 13-10.4 33.4 3 45 13.2 11.7 33.4 10.4 45-3z" /></svg>';
 	document.getElementById('version').innerHTML = version;
-	$('#menu').append('<nav><ul><li><a href="search.html">Search'+arrow+'</a></li><li><a href="manage.html">Manage'+arrow+'</a></li><li><a href="edit.html">Edit'+arrow+'</a></li><li><a href="settings.html">Settings'+arrow+'</a></li><li><a href="about.html">About'+arrow+'</a></li></ul></nav>');
+	$('#menu').append(
+		'<nav><ul><li><a href="search.html">Search'+arrow+'</a></li><li><a href="manage.html">Manage'+arrow+'</a></li><li><a href="edit.html">Edit'+arrow+'</a></li><li><a href="settings.html">Settings'+arrow+'</a></li><li><a href="about.html">About'+arrow+'</a></li></ul></nav>'
+	);
 	$('#menu a[href="'+name+'"]').addClass('active').click(function() { return false; });
 
-	showAd();
+	$('#menu').append(
+		$('<a href="https://www.amazon.com?&_encoding=UTF8&tag=stylish04-20" target="_blank" class="ad" title="Shop through our link to support this extension develpment!"/>').on('click', function() {
+			ping('analytics', {type:'event', category: 'click', action: 'ad', label: 'amazon'});
+		})
+	);
+
 };
 
 String.prototype.hashCode = function() {
@@ -223,20 +230,3 @@ function getfilename(url) {
 function log(l) {
 	console.log(l);
 };
-
-function showAd(step) {
-	if (!localStorage.getItem('ad')) {
-	
-			$('#menu').append(
-				$('<a href="#mackeeper" class="mackeeper" title="Clean and protect your Mac with MacKepper"/>').on('click', function() {
-					ping('showAd');
-					ping('analytics', {type:'event', category: 'click', action: 'ad', label: 'mackeeper'});
-					localStorage.setItem('ad', 'done');
-					$(this).remove();
-					return false;
-				})
-			);
-
-
-	}
-}

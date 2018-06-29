@@ -1,5 +1,5 @@
 var tpl1 = '<dl><dt>{H1}</dt><dd class="editor"><form id="{ID}" class="styleseditor"><p class="stitle"><label for="TITLE{ID}">Title:</label><input type="text" name="title" value="{TITLE}" id="TITLE{ID}"></p></form></dd></dl><p class="controls"><button class="add">Add section</button><button id="save" class="fr">Save Style</button></p>',
-	tpl2 = '<fieldset><legend>Section #{NUM}</legend><p class="code"><label>CSS:</label><textarea class="code zc-use_tab-true zc-syntax-css zc-profile-css" id="CSS{NUM}">{CODE}</textarea></p><p class="controls section"><button class="remove fr red">Delete section</button></p>{RULES}</fieldset>',
+	tpl2 = '<fieldset><legend>Section #{NUM}</legend><p class="code"><label>CSS:</label><span class="errors"></span><textarea class="code" id="CSS{NUM}" autocomplete="off" autocorrect="off" autocapitalize="off" spellcheck="false"></textarea></p><p class="controls section"><button class="remove fr red">Delete section</button></p>{RULES}</fieldset>',
 	tpl3 = '<p class="rule"><label>Applies to:</label><select name="apply"><option value="url">URL</option><option value="pre">URL prefix</option><option value="dom">Domain</option><option value="reg">Regexp</option><option value="global">Global</option></select><input name="rule" type="text" value="{RULE}"><button class="remove red">Delete</button><button class="add">Add rule</button></p>',
 	datain, b,
 	dl = document.location,
@@ -26,7 +26,8 @@ $(function() {
 		p.after(
 			$(tpl3.replace(/\{RULE\}/g,''))
 		);
-		updateControls()
+		updateControls();
+		saved = false;
 		return false;
 	})
 
@@ -35,27 +36,38 @@ $(function() {
 		var b = $(this), p = b.parent(), fs = p.parent(), f = $('form');
 		if ($('.rule', fs).length > 1) p.remove();
 		updateControls();
+		if (!event.isTrigger) saved = false;
 		return false;
 	});
 	
-	$(document).on('change', '.rule select', function(){
-		var s = $(this), p = s.parent(), i = $('input',p), v = s.val(), g = v=='global', iv = i.val(), o = i.attr('old');
-		i.val(g?'':o).toggleAttr('disabled',g);
+	$(document).on('change', '.rule select', function(event) {
+		var s = $(this),
+			p = s.parent(),
+			i = $('input',p),
+			v = s.val(),
+			g = v == 'global',
+			iv = i.val(),
+			o = i.attr('old');
+		i.val(g ? '' : o).toggleAttr('disabled',g);
+		if (!event.isTrigger) saved = false;
 	});
-	$(document).on('change', '.rule input', function(){
+	$(document).on('change', '.rule input', function(event) {
 		var i = $(this), v = i.val();
 		i.attr('old',v);
+		if (!event.isTrigger) saved = false;
 	});
 
 	$(document).on('click', '.controls .add', function(event) {
 		event.preventDefault();
 		var slen = $('.styleseditor fieldset').length,
-			stpl = tpl2.replace(/\{CODE\}/g,'').replace(/\{NUM\}/g,slen),
-			rule = tpl3.replace(/\{NUM\}/g,slen).replace(/\{RULE\}/g,'');
+			stpl = tpl2.replace(/\{NUM\}/g, slen),
+			rule = tpl3.replace(/\{NUM\}/g, slen).replace(/\{RULE\}/g,'');
 		$('.styleseditor').append(
 			$(stpl.replace(/\{RULES\}/g,rule))
-		)
+		);
+		codemirror(document.getElementById('CSS'+slen));
 		updateControls();
+		if (!event.isTrigger) saved = false;
 		return false;
 	})
 
@@ -64,18 +76,20 @@ $(function() {
 		var b = $(this), section = b.parent().parent();
 		section.remove();
 		updateControls();
+		if (!event.isTrigger) saved = false;
 		return false;
 	})
 	
 	$(document).on('click', '#save', function(event) {
+
 		var data = {}, id = $(this).val();
-		data = { "enabled":datain.enabled, "name" : $('.stitle input').val(), "url" : datain.url, "updateUrl" : datain.updateUrl, "sections" : [] };
+		data = { "enabled": datain.enabled, "name" : $('.stitle input').val(), "url" : datain.url, "updateUrl" : datain.updateUrl, "sections" : [] };
 
 		$.each($('.styleseditor fieldset'), function(i,f) {
 			var dom = [], reg = [], url = [], pre = []; 
-			$.each($('.rule',f),function(n,rule) {
-				var type = $('select',rule).val(),
-					val = $('input',rule).val();
+			$.each($('.rule',f),function(n, rule) {
+				var type = $('select', rule).val(),
+					val = $('input', rule).val();
 				switch(type) {
 					case 'dom':
 						dom.push(val);
@@ -90,13 +104,13 @@ $(function() {
 						pre.push(val);
 					break;
 				}
-			})
+			});
 			data.sections[i] = {
-				"code" : $('textarea.code',f).val(),
-				"domains" : dom,
-				"regexps" : reg,
-				"urlPrefixes" : pre,
-				"urls" : url
+				code : $('textarea.code', f).val(),
+				domains : dom,
+				regexps : reg,
+				urlPrefixes : pre,
+				urls : url
 			}
 		})
 		if (JSON.stringify(data).hashCode() != JSON.stringify(datain).hashCode()) {
@@ -176,12 +190,17 @@ $(function() {
 			}
 			
 			$('.styleseditor').append($(stpl.replace(/\{RULES\}/g,rules1+rules2+rules3+rules4)));
-			$('.styleseditor textarea').last().val(section.code).attr('rows',section.code.length>400?32:16);
+			$('.styleseditor textarea').last().val(section.code);
 
 		});
 		$('#save').val(id);
 		$('#content').addClass('inprogress');
-		zen_textarea.setup();
+
+
+		$("textarea.code").each(function(n, textarea) {
+			codemirror(textarea);
+		});
+
 		updateControls();
 	}
 
@@ -198,13 +217,75 @@ $(window)
 			altKey = false;
 			$('#save').html('Save Style');
 		}
-	})
-	.keypress(function() {
-		saved = false;
 	});
 
 window.onbeforeunload = function(e) {
 	if (e && !saved) return 'Some changes are not saved!';
+}
+
+function codemirror(textarea) {
+
+	var editor = CodeMirror.fromTextArea(textarea, {
+			mode: "css",
+			indentWithTabs: true,
+			lineWrapping: true,
+			styleActiveLine: true,
+			matchBrackets: true,
+			inputStyle: "contenteditable"
+		}),
+		doc = editor.getDoc(),
+		errors = [],
+		errorslabel = $(textarea).prev('.errors');
+
+	editor.setSize(null, Math.min(Math.max(8, textarea.value.split("\n").length), 36) * 18 + 8);
+	emmetCodeMirror(editor);
+	emmetCodeMirror.emmet.preferences.define('css.autoInsertVendorPrefixes', false);
+
+	csslint();
+
+	editor.on('change', function(event) {
+		saved = false;
+		editor.save();
+		editor.setSize(null, Math.min(Math.max(8, textarea.value.split("\n").length), 36) * 18 + 8);
+
+		csslint();
+	});
+	editor.on('cursorActivity', csslint)
+
+	function csslint() {
+
+		var lint = CSSLint.verify(textarea.value);
+
+		if (lint.messages) {
+
+			var newerrors = [];
+
+			$.each(lint.messages, function(n, message) {
+				if (message.type == 'error') newerrors.push(message.line);
+			});
+
+			if (newerrors.length) {
+				errorslabel.text('⚠️ ' + newerrors.length + ' Error' + (newerrors.length > 1 ? 's' : '')).show();
+				clearerrors();
+				$.each(newerrors, function(n, line) {
+					doc.addLineClass(line - 1, 'text', 'csserror');
+				});
+			} else {
+				errorslabel.hide();
+				clearerrors();
+			}
+
+
+			errors = newerrors;
+		}	
+
+	}
+
+	function clearerrors() {
+		$.each(errors, function(n, line) {
+			doc.removeLineClass(line - 1, 'text', 'csserror');
+		});
+	}
 }
 
 function ping(name,data) {

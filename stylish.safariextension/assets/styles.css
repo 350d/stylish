@@ -275,8 +275,23 @@ button.submit {
 	width:70px;
 	font-size:12px;
 }
+
+p.code {
+	position: relative;
+}
 p.code label {
 	vertical-align:top;
+}
+p.code .errors {
+	position: absolute;
+	right: 0;
+	top: 50%;
+	width: 100px;
+	text-align: center;
+	font-size: 10px;
+	color: #f44;
+	line-height: 18px;
+	display: none;
 }
 
 .styleseditor select {
@@ -285,27 +300,32 @@ p.code label {
 .styleseditor input[name="rule"] {
 	width:220px;
 	margin:0 6px;
+	padding: 0 6px;
 }
 .styleseditor p.stitle input {
 	width:508px;
 }
 
 textarea.code {
-	display:inline-block;
-	width:500px;
-	background: #F1F5F9;
-	border:1px solid #ccc;
-	padding:4px 6px;
-	color:#444;
-	border-radius:4px;
-	margin:0;
-	font-family: monospace;
-	font-size:12px;
-	tab-size: 4;
+	height: auto;
 }
-textarea.code:focus {
-	border-color:#bbb;
-	color:#333;
+.CodeMirror {
+	display: inline-block;
+	width: 500px;
+	background: transparent;
+	border: 1px solid #ccc;
+	padding: 0 6px;
+	border-radius: 4px;
+	margin: 0;
+	font-family: Consolas, Monaco, 'Andale Mono', 'Ubuntu Mono', monospace;
+	font-size: 12px;
+	line-height: 1.5;
+	tab-size: 4;
+	height: auto;
+	max-height: 800px;
+}
+.CodeMirror .csserror {
+	background: rgba(255, 0, 0, .1);
 }
 
 .controls.section {
@@ -655,32 +675,25 @@ dt sup {
 
 /* ADS */
 
-#menu a.mackeeper {
+#menu a.ad {
 	display: block;
 	text-decoration: none;
 	width: 160px;
-	height: 600px;
-	background: #e7f8ff url(https://sobolev.us/download/stylish/mackeeper/tall.png) 50% 50% no-repeat;
-	background-size: cover;
+	height: 160px;
+	background: #232f3e url(../images/amazon.svg) 50% 50% no-repeat;
+	background-size: 50% auto;
 	padding: 0;
 	margin: 9px 0 8px 16px;
 	border-radius: 10px;
 	transition: none;
 }
-#menu a.mackeeper:after {
+#menu a.ad:after {
 	position: absolute;
 	top: 100%;
 	padding: 10px 4px;
-	content: 'Install MacKeeper to support this extension develpment!';
-	font-size: 11px;
+	content: 'Shop through our link to support this extension!';
+	font-size: 12px;
 	color: #aaa;
-}
-@media screen and ( max-height: 900px ){
-	#menu a.mackeeper {
-		height: 142px;
-		background-image: url(https://sobolev.us/download/stylish/mackeeper/small.png);
-		border-radius: 4px;
-	}
 }
 
 /* SOCIAL */
