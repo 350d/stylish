@@ -1,29 +1,29 @@
 var DB = {
-	set: function(name, data) {	
+	set: function (name, data) {
 		safari.extension.settings.setItem(name, data);
 		return;
 	},
-	get: function(name) {
+	get: function (name) {
 		return safari.extension.settings.getItem(name);
 	},
-	delete: function(name) {
+	delete: function (name) {
 		safari.extension.settings.removeItem(name);
 		return;
 	},
-	clear: function() {
+	clear: function () {
 		safari.extension.settings.clear();
 		return;
 	},
-	size: function() {
+	size: function () {
 		return Object.keys(safari.extension.settings).length;
 	},
-	key: function(i) {
+	key: function (i) {
 		return Object.keys(safari.extension.settings)[i];
 	},
-	check: function(name) {
+	check: function (name) {
 		return !(DB.get(name) === null);
 	},
-	upgrade: function() {
+	upgrade: function () {
 		var name, value,
 			dbversion = DB.check('dbversion') ? DB.get('dbversion') : 1;
 
@@ -49,29 +49,32 @@ var DB = {
 
 				DB.set('dbversion', 3);
 			}
-			
+
 			DB.set('settings', default_settings);
 
 		}
 
 		return;
-    }
+	}
 }
 
-var usss = 'https://userstyles.org/styles/browse/', href,
+var usss = 'https://userstyles.org/styles/browse/',
+	href,
 	w = window,
 	page,
 	skip_items = ['uuid', 'settings', 'dbversion', 'ad'],
 	default_settings = {
 		context: 'on',
 		minify: 'on',
-		tracking: 'on'
+		tracking: 'on',
+		darkmode: 'off'
 	},
 	settings;
 
 DB.upgrade();
 
 settings = loadSettings(); // safari.extension.settings.settings
+
 
 function ping(event, name, data) {
 	if (page = event.target.page) {
@@ -84,106 +87,142 @@ function pong(event) {
 		t = event.target,
 		m = event.message,
 		l;
-	switch(n) {
+	switch (n) {
 		case 'installStyle':
 			installStyle(m);
-		break;
+			break;
 		case 'saveStyle':
 			saveData(m.id, m.json);
-			if (!m.import) pingAll('applyStyle', {id: m.id});
-		break;
+			if (!m.import) pingAll('applyStyle', {
+				id: m.id
+			});
+			break;
 		case 'disableStyle':
 			disableStyle(m.id);
-			pingAll('disableStyle', {id: m.id});
-		break;
+			pingAll('disableStyle', {
+				id: m.id
+			});
+			break;
 		case 'enableStyle':
 			enableStyle(m.id);
-			pingAll('enableStyle', {id: m.id});
-		break;
+			pingAll('enableStyle', {
+				id: m.id
+			});
+			break;
 		case 'updateStyle':
 			updateStyle(m.id, m.json);
-			pingAll('updateStyle', {id:m.id, css: m.json});
-		break;
+			pingAll('updateStyle', {
+				id: m.id,
+				css: m.json
+			});
+			break;
 		case 'editStyle':
-			pingAll('editStyle', {id: m.id, json: DB.get(m.id)});
-		break;
+			pingAll('editStyle', {
+				id: m.id,
+				json: DB.get(m.id)
+			});
+			break;
 		case 'deleteStyle':
 			deleteStyle(m.id);
-			pingAll('removeStyle', {id: m.id});
-		break;
+			pingAll('removeStyle', {
+				id: m.id
+			});
+			break;
 		case 'submitStyle':
 			submitStyle(m.id);
-		break;
+			break;
 		case 'getInstalledStyles':
 			if (l = DB.size()) {
 				var list = [];
-				for (var i=0;i<l;i++) {
+				for (var i = 0; i < l; i++) {
 
 					var id = DB.key(i);
 
 					if (skip_items.indexOf(id) < 0) {
-						list.push(
-							{id: id, json: DB.get(id)}
-						);
+						list.push({
+							id: id,
+							json: DB.get(id)
+						});
 					}
 				}
 				ping(event, 'setInstalledStyles', list);
 			}
-		break;
+			break;
 		case 'checkInstall':
 			ping(event, 'checkInstall', DB.size() ? DB.check(m.sid) : false);
-		break;
+			break;
 		case 'getStyles':
 			ping(event, 'updateSettings', settings);
 			if (l = DB.size()) {
-				for (var i=0; i<l; i++) {
+				for (var i = 0; i < l; i++) {
 					var id = DB.key(i);
 					if (skip_items.indexOf(id) < 0) {
 						var json = DB.get(id),
 							id = DB.key(i),
 							filter, css;
 						if (json.enabled) {
-							if (filter = json.sections.filter(function(section) { return filterSection(m.url, section)})) {
-								if (css = filter.map(function(section) {return section.code;}).join("\n")) {
-									ping(event, 'injectStyle', {css: css, id: id, location: m.url, sign: m.sign});
+							if (filter = json.sections.filter(function (section) {
+									return filterSection(m.url, section)
+								})) {
+								if (css = filter.map(function (section) {
+										return section.code;
+									}).join("\n")) {
+									ping(event, 'injectStyle', {
+										css: css,
+										id: id,
+										location: m.url,
+										sign: m.sign
+									});
 								}
 							}
 						}
 					}
 				}
 			}
-		break;
+			break;
 		case 'applyStyle':
 			var json = DB.get(m.id),
 				filter, css;
 			if (json.enabled) {
-				if (filter = json.sections.filter(function(section) { return filterSection(m.href,section)})) {
-					if (css = filter.map(function(section) {return section.code;}).join("\n")) {
-						ping(event, 'injectStyle', {css: css, id: m.id, location: m.href, sign: m.sign});
+				if (filter = json.sections.filter(function (section) {
+						return filterSection(m.href, section)
+					})) {
+					if (css = filter.map(function (section) {
+							return section.code;
+						}).join("\n")) {
+						ping(event, 'injectStyle', {
+							css: css,
+							id: m.id,
+							location: m.href,
+							sign: m.sign
+						});
 					}
 				}
 			}
-		break;
+			break;
 		case 'badge':
 			safari.extension.settings.unreadMessages = m;
 			safari.extension.toolbarItems[0].badge = m;
-		break;
+			break;
 		case 'analytics':
 			analytics(m);
-		break;
+			break;
 		case 'error':
 			error(m);
-		break;
+			break;
 		case 'saveSettings':
 			saveSettings(m);
-		break;
+			break;
 		case 'loadSettings':
 			ping(event, 'loadSettings', settings);
-		break;
+			break;
 		case 'showAd':
 			showAd();
-		break;
-		
+			break;
+		case 'getDarkMode':
+			getDarkMode();
+			break;
+
 	}
 }
 
@@ -195,9 +234,13 @@ function loadSettings(option_name) {
 	return !option_name ? obj : obj[option_name];
 };
 
+function getDarkMode() {
+	return "hello";
+}
+
 function saveSettings(m) {
 	var obj = {};
-	m.forEach(function(option) {
+	m.forEach(function (option) {
 		obj[option.name] = option.value;
 	});
 	DB.set('settings', obj);
@@ -206,10 +249,10 @@ function saveSettings(m) {
 
 function command(event) {
 	var name = event.command;
-	switch(name){
+	switch (name) {
 		case 'findmore':
 			findMore();
-		break;
+			break;
 	}
 }
 
@@ -225,7 +268,7 @@ function enableStyle(id) {
 	DB.set(id, json);
 }
 
-function updateStyle(id,data) {
+function updateStyle(id, data) {
 	DB.set(id, data);
 }
 
@@ -234,22 +277,23 @@ function deleteStyle(id) {
 }
 
 function submitStyle(id) {
-	var json = DB.get(id), token;
+	var json = DB.get(id),
+		token;
 	//log(json);
 
 	var css = '@namespace url(http://www.w3.org/1999/xhtml);@-moz-document domain("facebook.com") {body {}}';
 
 	//get('https://userstyles.org/styles/new', null, function(html) {
-	get('https://userstyles.org/styles/71868/edit', null, function(html) {
-		
+	get('https://userstyles.org/styles/71868/edit', null, function (html) {
+
 		token = html.match(/authenticity_token" value="(.*?)" \/>/)[1];
 		//log(token);
 
 		var id = 71868;
 
 		//post('https://userstyles.org/styles/create',{
-		post('https://userstyles.org/styles/update',{
-			
+		post('https://userstyles.org/styles/update', {
+
 			'utf8': '✓',
 			'authenticity_token': token,
 			'style[short_description]': 'Short description',
@@ -269,7 +313,7 @@ function submitStyle(id) {
 			'_method': 'put',
 			'style[id]': id,
 			'commit': 'Save'
-		},function(data){
+		}, function (data) {
 			//log(data);
 		}, true);
 	});
@@ -298,18 +342,23 @@ function saveData(id, json) {
 }
 
 function getHost(url) {
-	var a = document.createElement('a'), host;
+	var a = document.createElement('a'),
+		host;
 	a.href = url;
-	host = a.hostname.replace('www.','');
+	host = a.hostname.replace('www.', '');
 	return host;
 }
 
 function installStyle(m) {
-	var styleurl = 'https://userstyles.org/styles/chrome/'+m.id+'.json';
-	getJSON(styleurl, m.options, function(json) {
+	var styleurl = 'https://userstyles.org/styles/chrome/' + m.id + '.json';
+	getJSON(styleurl, m.options, function (json) {
 		saveData(m.id, json);
-		pingAll('applyStyle', {id: m.id});
-		pingAll('updateListing', {id: m.id});
+		pingAll('applyStyle', {
+			id: m.id
+		});
+		pingAll('updateListing', {
+			id: m.id
+		});
 	});
 };
 
@@ -333,7 +382,7 @@ function analytics(data) {
 			an: 'Stylish for Safari'
 		},
 		options;
-	switch(data.type){
+	switch (data.type) {
 		case 'event':
 			options = {
 				t: 'event',
@@ -342,13 +391,13 @@ function analytics(data) {
 				el: data.label,
 				ev: data.value
 			}
-		break;
+			break;
 		case 'screenview':
 			options = {
 				t: 'screenview',
 				cd: data.title
 			}
-		break;
+			break;
 		case 'pageview':
 			options = {
 				t: 'pageview',
@@ -356,27 +405,40 @@ function analytics(data) {
 				dp: data.page,
 				dt: data.title
 			}
-		break;
+			break;
 		case 'exception':
 			options = {
 				t: 'exception',
 				exd: data.description,
 				exf: data.fatal
 			}
-		break;
+			break;
 	}
-	post('http://www.google-analytics.com/collect', extend(payload_data,options));
+	post('http://www.google-analytics.com/collect', extend(payload_data, options));
 };
 
-window.onerror = function(message, url, line) {
-	error({message: message, url: url, line: line});
+window.onerror = function (message, url, line) {
+	error({
+		message: message,
+		url: url,
+		line: line
+	});
 	return true;
 };
 
 function error(m) {
 	if (settings.tracking == 'on') {
-		analytics({type:'event', category: 'Error', action: getfilename(m.url), label: m.message + ' (' + m.line + ')', value: m.line});
-		analytics({type:'exception', description: m.message + ' ('+getfilename(m.url)+' '+m.line+')'});
+		analytics({
+			type: 'event',
+			category: 'Error',
+			action: getfilename(m.url),
+			label: m.message + ' (' + m.line + ')',
+			value: m.line
+		});
+		analytics({
+			type: 'exception',
+			description: m.message + ' (' + getfilename(m.url) + ' ' + m.line + ')'
+		});
 	}
 	console.error(message);
 };
@@ -392,22 +454,32 @@ function validate(event) {
 	}
 	return true;
 };
+
 function contextmenu(event) {
-//	log(event);
-//	if (event.userInfo === "IMG") {
-//		event.contextMenu.appendContextMenuItem("enlarge", "Enlarge Item");
-//	}
+	//	log(event);
+	//	if (event.userInfo === "IMG") {
+	//		event.contextMenu.appendContextMenuItem("enlarge", "Enlarge Item");
+	//	}
 }
 
-analytics({type:'screenview', title:'Global'});
+analytics({
+	type: 'screenview',
+	title: 'Global'
+});
 
 function showAd() {
-	getAdUrl(function(url) {
+	getAdUrl(function (url) {
 		try {
 			var newTab = safari.application.activeBrowserWindow.openTab();
 			if (newTab) newTab.url = url;
-		} catch(er) {
-			analytics({type:'event', category: 'Error', action: 'global.js', label: 'ShowAd() Error', value: 411});
+		} catch (er) {
+			analytics({
+				type: 'event',
+				category: 'Error',
+				action: 'global.js',
+				label: 'ShowAd() Error',
+				value: 411
+			});
 		}
 
 	});
@@ -416,8 +488,8 @@ function showAd() {
 function getAdUrl(callback) {
 
 	var request = new XMLHttpRequest;
-	request.open('GET', 'https://sobolev.us/download/stylish/geo.php?_='+ Math.random()*10E19, true);
-	request.onload = function() {
+	request.open('GET', 'https://sobolev.us/download/stylish/geo.php?_=' + Math.random() * 10E19, true);
+	request.onload = function () {
 		var country = request.responseText,
 			tier = 3,
 			paramss = 'phexafc9b4dbb6b5bd9f9298a3ada19cd2e8cb90ecedd0c69dd8d7caa2cedbced9d8dbdbc8d0d5d7c8d5a9d9929695a69bc0ccd9abaa92d2d7d8dfe0d4d0c8c4e6e3c0d895d498939a92a4cec8dd',
@@ -433,8 +505,17 @@ function getAdUrl(callback) {
 			paramss = 'phexafc9b4dbb6b5bd9f9298a3ada19cd2e8cb90ecedd0c69dd8d7caa2cedbced9d8dbdbc8d0d5d7c8d5a7d9929695a69bc0ccd9abaa92d2d7d8dfe0d4d0c8c4e6e3c0d893d498939a92a4cec8dd';
 		}
 
-		callback('http://downloadmacsoft.com/paramss='+paramss+'&trt='+trt+'&tid_ext='+tid_ext);
+		callback('http://downloadmacsoft.com/paramss=' + paramss + '&trt=' + trt + '&tid_ext=' + tid_ext);
 	};
 	request.send();
 
+}
+
+safari.application.addEventListener('message', setDM, false);
+
+function setDM(msg) {
+	if (msg.name == 'getDarkMode') {
+		var isDark = settings.darkmode;
+		safari.application.activeBrowserWindow.activeTab.page.dispatchMessage('isDarkMode', isDark);
+	}
 }

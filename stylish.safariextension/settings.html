@@ -1,15 +1,16 @@
 <!DOCTYPE HTML>
 <html lang="en-US">
+
 <head>
 	<meta charset="UTF-8">
 	<title>Stylish Settings</title>
-
 	<link rel="stylesheet" type="text/css" href="assets/styles.css" media="all">
+	<script type="text/javascript" src="assets/checkDarkMode.js"></script>
 	<script type="text/javascript" src="assets/jquery.js"></script>
 	<script type="text/javascript" src="assets/fn.js"></script>
 	<script type="text/javascript" src="assets/settings.js"></script>
-	
 </head>
+
 <body class="cln">
 
 	<section id="menu">
@@ -21,7 +22,9 @@
 
 	<section id="content" class="cln settings">
 		<dl>
-			<dt class="hide">Userstyles.org account <sup>β</sup></dt>
+			<dt class="hide">Userstyles.org account
+				<sup>β</sup>
+			</dt>
 			<dd class="loginform hide">
 				<form id="loginform" method="POST" action="https://userstyles.org/login/authenticate_normal" class="hide">
 					<fieldset class="controls">
@@ -31,7 +34,7 @@
 						<button>Log in</button>
 					</fieldset>
 				</form>
-				
+
 				<form id="logoutform" method="GET" action="https://userstyles.org/logout" class="hide">
 					<fieldset class="fl userinfo">
 					</fieldset>
@@ -42,7 +45,9 @@
 				</form>
 			</dd>
 
-			<dt>Import/Export Styles<sup>β</sup></dt>
+			<dt>Import/Export Styles
+				<sup>β</sup>
+			</dt>
 			<dd class="importexportform">
 				<form action="http://sobolev.us/download/stylish/export.php" id="importexport" method="POST" enctype="multipart/form-data">
 					<fieldset>
@@ -61,27 +66,35 @@
 			<dd class="tracking">
 				<form action="#" id="tracking">
 					<fieldset>
-						<label for="tracking-checkbox"><input type="checkbox" checked id="tracking-checkbox" name="tracking"> Collect anonymous usage statistics</label>
+						<label for="tracking-checkbox">
+							<input type="checkbox" checked id="tracking-checkbox" name="tracking"> Collect anonymous usage statistics</label>
 					</fieldset>
 				</form>
 			</dd>
-			
+
 			<dt>Extension settings</dt>
 			<dd class="settings">
 				<form action="#" id="settings">
 					<fieldset>
 						<p>
-							<label for="minify-checkbox"><input type="checkbox" checked id="minify-checkbox" name="minify"> Minify CSS before injecting</label>
+							<label for="minify-checkbox">
+								<input type="checkbox" checked id="minify-checkbox" name="minify"> Minify CSS before injecting</label>
 						</p>
 						<p>
-							<label for="context-checkbox"><input type="checkbox" checked id="context-checkbox" name="context"> Enable context menu item</label>
+							<label for="context-checkbox">
+								<input type="checkbox" checked id="context-checkbox" name="context"> Enable context menu item</label>
+						</p>
+						<p>
+							<label for="darkmode-checkbox">
+								<input type="checkbox" id="darkmode-checkbox" name="darkmode"> Enable dark mode</label>
 						</p>
 					</fieldset>
-					
+
 				</form>
 			</dd>
 
 		</dl>
-	</section>	
+	</section>
 </body>
+
 </html>
