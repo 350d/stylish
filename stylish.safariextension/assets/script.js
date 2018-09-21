@@ -247,21 +247,6 @@ function getOptions(asjson) {
   return options;
 }
 
-function loadScript(src, async) {
-  var script = d.createElement("script");
-  script.type = "text/javascript";
-  script.src = src;
-  if (async) script.async = true;
-  d.getElementsByTagName("head")[0].appendChild(script);
-}
-function loadStyle(src) {
-  var link = document.createElement("link");
-  link.type = "text/css";
-  link.rel = "stylesheet";
-  link.href = src;
-  document.getElementsByTagName("head")[0].appendChild(link);
-}
-
 function log(l) {
   console.log("injected: ", l);
 }

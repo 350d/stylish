@@ -95,7 +95,7 @@ function renderList() {
       //safari.extension.toolbarItems[0].badge = 0;
     }
   }
-  g("styleslist").innerHTML = html ? html : empty;
+  document.getElementById("styleslist").innerHTML = html ? html : empty;
 }
 
 function ping(name, data) {

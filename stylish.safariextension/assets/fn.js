@@ -453,13 +453,6 @@ String.prototype.hashCode = function() {
   return hash;
 };
 
-function extend(obj, src) {
-  Object.keys(src).forEach(function(key) {
-    obj[key] = src[key];
-  });
-  return obj;
-}
-
 function sortData(data, method) {
   return data.sort(function(a, b) {
     return b[method] - a[method];
@@ -471,21 +464,6 @@ function sortDataJson(data, prop) {
     if (a.json[prop] > b.json[prop]) return 1;
     return 0;
   });
-}
-
-function loadScript(src) {
-  var script = document.createElement("script");
-  script.type = "text/javascript";
-  script.async = true;
-  script.src = src;
-  document.getElementsByTagName("head")[0].appendChild(script);
-}
-function loadStyle(src) {
-  var script = document.createElement("link");
-  script.type = "text/css";
-  script.rel = "stylesheet";
-  script.href = src;
-  document.getElementsByTagName("head")[0].appendChild(script);
 }
 
 function ajax(url, async, callback, json, parameters, post) {
@@ -543,10 +521,6 @@ function sanitizeHTML(html) {
   return html;
 }
 
-function g(id) {
-  return document.getElementById(id);
-}
-
 function check_nested(obj) {
   var args = Array.prototype.slice.call(arguments, 1);
 
@@ -559,14 +533,6 @@ function check_nested(obj) {
   return true;
 }
 
-function uuid_v4() {
-  return "xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx".replace(/[xy]/g, function(c) {
-    var r = (Math.random() * 16) | 0,
-      v = c == "x" ? r : (r & 0x3) | 0x8;
-    return v.toString(16);
-  });
-}
-
 window.onerror = function(message, url, line) {
   error({ message: message, url: url, line: line });
   return true;
@@ -574,13 +540,6 @@ window.onerror = function(message, url, line) {
 
 function error(m) {
   console.error(message);
-}
-
-function getfilename(url) {
-  url = url.substring(0, url.indexOf("#") < 0 ? url.length : url.indexOf("#"));
-  url = url.substring(0, url.indexOf("?") < 0 ? url.length : url.indexOf("?"));
-  url = url.substring(url.lastIndexOf("/") + 1, url.length);
-  return url;
 }
 
 function log(l) {
