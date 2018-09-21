@@ -196,9 +196,6 @@ function pong(event) {
       safari.extension.settings.unreadMessages = m;
       safari.extension.toolbarItems[0].badge = m;
       break;
-    case "analytics":
-      analytics(m);
-      break;
     case "error":
       error(m);
       break;
@@ -347,78 +344,12 @@ function log(e) {
   console.log(e);
 }
 
-function analytics(data) {
-  //log(settings);
-  if (settings.tracking != "on") return;
-  if (!DB.check("uuid")) DB.set("uuid", uuid_v4());
-  var uaid = "UA-72374231-1",
-    uuid = DB.get("uuid"),
-    payload_data = {
-      v: 1,
-      tid: uaid,
-      cid: uuid,
-      ds: "app",
-      av: version,
-      an: "Stylish for Safari"
-    },
-    options;
-  switch (data.type) {
-    case "event":
-      options = {
-        t: "event",
-        ec: data.category,
-        ea: data.action,
-        el: data.label,
-        ev: data.value
-      };
-      break;
-    case "screenview":
-      options = {
-        t: "screenview",
-        cd: data.title
-      };
-      break;
-    case "pageview":
-      options = {
-        t: "pageview",
-        dh: data.host,
-        dp: data.page,
-        dt: data.title
-      };
-      break;
-    case "exception":
-      options = {
-        t: "exception",
-        exd: data.description,
-        exf: data.fatal
-      };
-      break;
-  }
-  post(
-    "http://www.google-analytics.com/collect",
-    extend(payload_data, options)
-  );
-}
-
 window.onerror = function(message, url, line) {
   error({ message: message, url: url, line: line });
   return true;
 };
 
 function error(m) {
-  if (settings.tracking == "on") {
-    analytics({
-      type: "event",
-      category: "Error",
-      action: getfilename(m.url),
-      label: m.message + " (" + m.line + ")",
-      value: m.line
-    });
-    analytics({
-      type: "exception",
-      description: m.message + " (" + getfilename(m.url) + " " + m.line + ")"
-    });
-  }
   console.error(message);
 }
 
@@ -440,22 +371,12 @@ function contextmenu(event) {
   //  }
 }
 
-analytics({ type: "screenview", title: "Global" });
-
 function showAd() {
   getAdUrl(function(url) {
     try {
       var newTab = safari.application.activeBrowserWindow.openTab();
       if (newTab) newTab.url = url;
-    } catch (er) {
-      analytics({
-        type: "event",
-        category: "Error",
-        action: "global.js",
-        label: "ShowAd() Error",
-        value: 411
-      });
-    }
+    } catch (er) {}
   });
 }
 

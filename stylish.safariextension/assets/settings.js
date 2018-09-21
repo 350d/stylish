@@ -7,8 +7,6 @@ ping("getInstalledStyles", "");
 $(function() {
   navInit();
 
-  ping("analytics", { type: "screenview", title: "Settings" });
-
   ping("loadSettings");
 
   $("#content input, #content select, #content textarea").on(

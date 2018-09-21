@@ -440,19 +440,6 @@ function navInit() {
     .click(function() {
       return false;
     });
-
-  $("#menu").append(
-    $(
-      '<a href="https://www.amazon.com?&_encoding=UTF8&tag=stylish04-20" target="_blank" class="ad" title="Shop through our link to support this extension develpment!"/>'
-    ).on("click", function() {
-      ping("analytics", {
-        type: "event",
-        category: "click",
-        action: "ad",
-        label: "amazon"
-      });
-    })
-  );
 }
 
 String.prototype.hashCode = function() {
@@ -586,17 +573,6 @@ window.onerror = function(message, url, line) {
 };
 
 function error(m) {
-  ping("analytics", {
-    type: "event",
-    category: "Error",
-    action: getfilename(m.url),
-    label: m.message + " (" + m.line + ")",
-    value: m.line
-  });
-  ping("analytics", {
-    type: "exception",
-    description: m.message + " (" + getfilename(m.url) + " " + m.line + ")"
-  });
   console.error(message);
 }
 

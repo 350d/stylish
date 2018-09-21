@@ -1,7 +1,6 @@
 $(function() {
   navInit();
   ping("getInstalledStyles", "");
-  ping("analytics", { type: "screenview", title: "Manage" });
 });
 
 var busy = false;
@@ -126,13 +125,6 @@ function renderStylesList(m) {
       .removeClass("enabled disabled")
       .addClass(s == "Disable" ? "disabled" : "enabled");
     ping(s.toLowerCase() + "Style", { id: id });
-    ping("analytics", {
-      type: "event",
-      category: "Style",
-      action: "Toggle",
-      label: json.name,
-      value: id
-    });
     return false;
   });
 
@@ -144,13 +136,6 @@ function renderStylesList(m) {
       .add(b.closest("dd"))
       .fadeOut();
     ping("deleteStyle", { id: id });
-    ping("analytics", {
-      type: "event",
-      category: "Style",
-      action: "Delete",
-      label: json.name,
-      value: id
-    });
     return false;
   });
 
@@ -180,15 +165,6 @@ function renderStylesList(m) {
           : "https://userstyles.org/styles/chrome/" + id + ".json";
 
     checkUpdate(id);
-
-    ping("analytics", {
-      type: "event",
-      category: "Style",
-      action: "Check Update",
-      label: json.name,
-      value: id
-    });
-
     return false;
   });
 
@@ -210,13 +186,6 @@ function renderStylesList(m) {
       });
     $("#" + id).data({ json: json });
     ping("saveStyle", { id: id, json: json });
-    ping("analytics", {
-      type: "event",
-      category: "Style",
-      action: "Update",
-      label: json.name,
-      value: id
-    });
   });
 
   $(".edit").click(function() {

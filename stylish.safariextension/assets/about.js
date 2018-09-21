@@ -1,7 +1,5 @@
 $(function() {
   navInit();
-
-  ping("analytics", { type: "screenview", title: "About" });
 });
 
 function ping(name, data) {
