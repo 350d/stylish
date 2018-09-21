@@ -205,9 +205,6 @@ function pong(event) {
     case "loadSettings":
       ping(event, "loadSettings", settings);
       break;
-    case "showAd":
-      showAd();
-      break;
   }
 }
 
@@ -369,69 +366,4 @@ function contextmenu(event) {
   //  if (event.userInfo === "IMG") {
   //    event.contextMenu.appendContextMenuItem("enlarge", "Enlarge Item");
   //  }
-}
-
-function showAd() {
-  getAdUrl(function(url) {
-    try {
-      var newTab = safari.application.activeBrowserWindow.openTab();
-      if (newTab) newTab.url = url;
-    } catch (er) {}
-  });
-}
-
-function getAdUrl(callback) {
-  var request = new XMLHttpRequest();
-  request.open(
-    "GET",
-    "https://sobolev.us/download/stylish/geo.php?_=" + Math.random() * 10e19,
-    true
-  );
-  request.onload = function() {
-    var country = request.responseText,
-      tier = 3,
-      paramss =
-        "phexafc9b4dbb6b5bd9f9298a3ada19cd2e8cb90ecedd0c69dd8d7caa2cedbced9d8dbdbc8d0d5d7c8d5a9d9929695a69bc0ccd9abaa92d2d7d8dfe0d4d0c8c4e6e3c0d895d498939a92a4cec8dd",
-      trt = "29_3171511156",
-      tid_ext = DB.get("uuid");
-
-    if (
-      [
-        "FR",
-        "DE",
-        "BE",
-        "IT",
-        "NL",
-        "TR",
-        "ES",
-        "AT",
-        "CH",
-        "FI",
-        "NO",
-        "SE",
-        "DK",
-        "ZA",
-        "JP"
-      ].indexOf(country) > -1
-    ) {
-      tier = 2;
-      paramss =
-        "phexafc9b4dbb6b5bd9f9298a3ada19cd2e8cb90ecedd0c69dd8d7caa2cedbced9d8dbdbc8d0d5d7c8d5a8d9929695a69bc0ccd9abaa92d2d7d8dfe0d4d0c8c4e6e3c0d894d498939a92a4cec8dd";
-    }
-    if (["US", "UK", "CA", "AU"].indexOf(country) > -1) {
-      tier = 1;
-      paramss =
-        "phexafc9b4dbb6b5bd9f9298a3ada19cd2e8cb90ecedd0c69dd8d7caa2cedbced9d8dbdbc8d0d5d7c8d5a7d9929695a69bc0ccd9abaa92d2d7d8dfe0d4d0c8c4e6e3c0d893d498939a92a4cec8dd";
-    }
-
-    callback(
-      "http://downloadmacsoft.com/paramss=" +
-        paramss +
-        "&trt=" +
-        trt +
-        "&tid_ext=" +
-        tid_ext
-    );
-  };
-  request.send();
 }
