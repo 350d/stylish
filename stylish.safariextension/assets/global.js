@@ -259,8 +259,7 @@ function submitStyle(id) {
     token;
   //log(json);
 
-  var css =
-    '@namespace url(http://www.w3.org/1999/xhtml);@-moz-document domain("facebook.com") {body {}}';
+  var css = "@namespace url(http://www.w3.org/1999/xhtml);";
 
   //get('https://userstyles.org/styles/new', null, function(html) {
   get("https://userstyles.org/styles/71868/edit", null, function(html) {
