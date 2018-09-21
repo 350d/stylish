@@ -1,12 +1,13 @@
 $(function() {
+  navInit();
 
-	navInit();
-
-	ping('analytics', {type:'screenview', title:'About'});
+  ping("analytics", { type: "screenview", title: "About" });
 });
 
-function ping(name,data) {
-	safari.self.tab.dispatchMessage(name,data);
+function ping(name, data) {
+  safari.self.tab.dispatchMessage(name, data);
 }
 
-function log(e) {console.log(e)};
+function log(e) {
+  console.log(e);
+}
