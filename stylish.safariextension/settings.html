@@ -1,90 +1,81 @@
 <!DOCTYPE HTML>
 <html lang="en-US">
 <head>
-	<meta charset="UTF-8">
-	<title>Stylish Settings</title>
+  <meta charset="UTF-8">
+  <title>Stylish Settings</title>
 
-	<link rel="stylesheet" type="text/css" href="assets/styles.css" media="all">
-	<script type="text/javascript" src="assets/jquery.js"></script>
-	<script type="text/javascript" src="assets/fn.js"></script>
-	<script type="text/javascript" src="assets/settings.js"></script>
-	
+  <link rel="stylesheet" type="text/css" href="assets/styles.css" media="all">
+  <script type="text/javascript" src="assets/jquery.js"></script>
+  <script type="text/javascript" src="assets/fn.js"></script>
+  <script type="text/javascript" src="assets/settings.js"></script>
+
 </head>
 <body class="cln">
 
-	<section id="menu">
-		<header>
-			<h1>Stylish</h1>
-			<span class="badge" id="version"></span>
-		</header>
-	</section>
+  <section id="menu">
+    <header>
+      <h1>Stylish</h1>
+      <span class="badge" id="version"></span>
+    </header>
+  </section>
 
-	<section id="content" class="cln settings">
-		<dl>
-			<dt class="hide">Userstyles.org account <sup>β</sup></dt>
-			<dd class="loginform hide">
-				<form id="loginform" method="POST" action="https://userstyles.org/login/authenticate_normal" class="hide">
-					<fieldset class="controls">
-						<legend></legend>
-						<input id="login" name="login" placeholder="name">
-						<input id="password" name="password" type="password" placeholder="password">
-						<button>Log in</button>
-					</fieldset>
-				</form>
-				
-				<form id="logoutform" method="GET" action="https://userstyles.org/logout" class="hide">
-					<fieldset class="fl userinfo">
-					</fieldset>
-					<fieldset class="controls fr">
-						<legend></legend>
-						<button class="red">Log out</button>
-					</fieldset>
-				</form>
-			</dd>
+  <section id="content" class="cln settings">
+    <dl>
+      <dt class="hide">Userstyles.org account <sup>β</sup></dt>
+      <dd class="loginform hide">
+        <form id="loginform" method="POST" action="https://userstyles.org/login/authenticate_normal" class="hide">
+          <fieldset class="controls">
+            <legend></legend>
+            <input id="login" name="login" placeholder="name">
+            <input id="password" name="password" type="password" placeholder="password">
+            <button>Log in</button>
+          </fieldset>
+        </form>
 
-			<dt>Import/Export Styles<sup>β</sup></dt>
-			<dd class="importexportform">
-				<form action="http://sobolev.us/download/stylish/export.php" id="importexport" method="POST" enctype="multipart/form-data">
-					<fieldset>
-						<span>
-							<input type="file" name="jsonfile" id="jsonfile">
-							<input type="hidden" name="timestamp" id="timestamp">
-							<button id="import">Import</button>
-						</span>
-						<a href="#" id="export" class="button" download="stylish-export.json">Export</a>
-						<!--<p>You can rename exported file to something more usefull than <code>Unknown</code></p>-->
-					</fieldset>
-				</form>
-			</dd>
+        <form id="logoutform" method="GET" action="https://userstyles.org/logout" class="hide">
+          <fieldset class="fl userinfo">
+          </fieldset>
+          <fieldset class="controls fr">
+            <legend></legend>
+            <button class="red">Log out</button>
+          </fieldset>
+        </form>
+      </dd>
 
-			<dt>Tracking</dt>
-			<dd class="tracking">
-				<form action="#" id="tracking">
-					<fieldset>
-						<label for="tracking-checkbox"><input type="checkbox" checked id="tracking-checkbox" name="tracking"> Collect anonymous usage statistics</label>
-					</fieldset>
-				</form>
-			</dd>
-			
-			<dt>Extension settings</dt>
-			<dd class="settings">
-				<form action="#" id="settings">
-					<fieldset>
-						<p>
-							<label for="minify-checkbox"><input type="checkbox" checked id="minify-checkbox" name="minify"> Minify CSS before injecting</label>
-						</p>
-						<p>
-							<label for="context-checkbox"><input type="checkbox" checked id="context-checkbox" name="context"> Enable context menu item</label>
-						</p>
-						<p class="hide">
-							<label for="darktheme-checkbox"><input type="checkbox" id="darktheme-checkbox" name="darktheme"> Enable dark theme</label>
-						</p>
-					</fieldset>
-					
-				</form>
-			</dd>
+      <dt>Import/Export Styles<sup>β</sup></dt>
+      <dd class="importexportform">
+        <form action="http://sobolev.us/download/stylish/export.php" id="importexport" method="POST" enctype="multipart/form-data">
+          <fieldset>
+            <span>
+              <input type="file" name="jsonfile" id="jsonfile">
+              <input type="hidden" name="timestamp" id="timestamp">
+              <button id="import">Import</button>
+            </span>
+            <a href="#" id="export" class="button" download="stylish-export.json">Export</a>
+            <!--<p>You can rename exported file to something more usefull than <code>Unknown</code></p>-->
+          </fieldset>
+        </form>
+      </dd>
 
-		</dl>
-	</section>	
+      <dt>Extension settings</dt>
+      <dd class="settings">
+        <form action="#" id="settings">
+          <fieldset>
+            <p>
+              <label for="minify-checkbox"><input type="checkbox" checked id="minify-checkbox" name="minify"> Minify CSS before injecting</label>
+            </p>
+            <p>
+              <label for="context-checkbox"><input type="checkbox" checked id="context-checkbox" name="context"> Enable context menu item</label>
+            </p>
+            <p class="hide">
+              <label for="darktheme-checkbox"><input type="checkbox" id="darktheme-checkbox" name="darktheme"> Enable dark theme</label>
+            </p>
+          </fieldset>
+
+        </form>
+      </dd>
+
+    </dl>
+  </section>
 </body>
 </html>
